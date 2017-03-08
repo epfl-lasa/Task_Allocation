@@ -71,7 +71,7 @@ struct S_object {
 	bool First_Object_state_is_set_;
 	bool Grabbing_state_is_set_[Max_Grabbing_state];
 	ENUM_State_of_prediction Object_motion_;
-	const double	MAX_PREDICTIONTIME_=100; // patrick
+	const double	MAX_PREDICTIONTIME_=100; // patrick test
 	int N_grabbing_pos_; 				 // Number of the grabbing positions
 	VectorXd X_O_First_; 				// The State of the object with respect to the world frame
 	VectorXd X_O_;		 				// The State of the object with respect to the world frame
