@@ -1,0 +1,69 @@
+# Definition of all trackable objects (rigid bodies) and their respective
+# pose topics and TF frame name (child_frame_id).
+#
+# The marker ID corresponds to the *User Data* field in the Motive
+#  configuration.
+
+rigid_bodies:
+    '1':
+        pose: KUKA_7/pose
+ #       pose2d: Robot_1/ground_pose
+ #       child_frame_id: Robot_1/base_link
+        parent_frame_id: world
+    '2':
+        pose: KUKA_14/pose
+  #      pose2d: Robot_2/ground_pose
+  #      child_frame_id: Robot_2/base_link
+        parent_frame_id: world
+    '3':
+        pose: KUKA_7_object_1/pose
+  #      pose2d: Robot_2/ground_pose
+  #      child_frame_id: Robot_2/base_link
+        parent_frame_id: world
+    '4':
+        pose: KUKA_7_object_2/pose
+  #      pose2d: Robot_2/ground_pose
+  #      child_frame_id: Robot_2/base_link
+        parent_frame_id: world
+    '5':
+        pose: KUKA_14_object_1/pose
+  #      pose2d: Robot_2/ground_pose
+  #      child_frame_id: Robot_2/base_link
+        parent_frame_id: world
+    '6':
+        pose: KUKA_14_object_2/pose
+  #      pose2d: Robot_2/ground_pose
+  #      child_frame_id: Robot_2/base_link
+        parent_frame_id: world
+    '7':
+        pose: center/pose
+  #      pose2d: Robot_2/ground_pose
+  #      child_frame_id: Robot_2/base_link
+        parent_frame_id: world
+
+    '9':
+        pose: KUKA14_target_1/pose
+  #      pose2d: Robot_2/ground_pose
+  #      child_frame_id: Robot_2/base_link
+        parent_frame_id: world
+
+    '8':
+        pose: KUKA7_target_1/pose
+  #      pose2d: Robot_2/ground_pose
+  #      child_frame_id: Robot_2/base_link
+        parent_frame_id: world
+    
+    '12':
+        pose: KUKA14_target_2/pose
+  #      pose2d: Robot_2/ground_pose
+  #      child_frame_id: Robot_2/base_link
+        parent_frame_id: world
+
+    '10':
+        pose: KUKA7_target_2/pose
+  #      pose2d: Robot_2/ground_pose
+  #      child_frame_id: Robot_2/base_link
+        parent_frame_id: world
+# Configuration options at EPFL
+optitrack_config:
+        multicast_address: 239.255.42.99

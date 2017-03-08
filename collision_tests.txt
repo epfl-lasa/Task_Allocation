@@ -1,0 +1,25 @@
+Commands for Collision Avoidance Tests:
+
+------------ FENDER TEST ------------
+* Bring up Simulation
+roslaunch kuka_lwr_bringup bimanual_simulation.launch --screen
+
+* Launch Visualization
+rosrun rqt_gui rqt_gui --perspective-file /home/nbfigueroa/dev/catkin_ws/src/IJRR//kuka-rviz-simulation/kuka_lwr_bringup/rqt_config/rqt_gui_bimanual.perspective
+
+* Run Testing Script
+./bin/robot_simulator --config packages/simple_example_two_kuka/Scenario
+
+
+
+
+------ JOINT COLLISION AVOIDANCE -----
+
+* Bring up Simulation
+roslaunch kuka_lwr_bringup bimanual_collision_test.launch --screen
+
+* Launch Visualization
+rosrun rqt_gui rqt_gui --perspective-file /home/nbfigueroa/dev/catkin_ws/src/IJRR//kuka-rviz-simulation/kuka_lwr_bringup/rqt_config/rqt_gui_bimanual.perspective
+
+* Run Testing Script
+./bin/robot_simulator --config packages/simple_example_two_kuka/test
