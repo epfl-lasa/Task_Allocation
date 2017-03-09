@@ -196,7 +196,7 @@ MatrixXd PermGenerator(int n, int k)
 	MatrixXd handle(factorial(n)/factorial(n-k),k);
     std::vector<int> d(n);
     std::iota(d.begin(),d.end(),1);
-    cout << "These are the Possible Permutations: " << endl;
+    cout << "These are the Possible Permutations for (n,k) = (" << n << "," << k << ") : " << endl;
     int repeat = factorial(n-k);
     int counter=0;
     do

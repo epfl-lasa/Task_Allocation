@@ -36,8 +36,11 @@ double maxPos[3] = {0.0,  1.00, 1.0};
 
 const int N_coordination_allocation_paramerets=2;
 
+const double VALUATION_THRESHOLD = 1;
 
 const int Max_Grabbing_state=4;
+
+const double OBJ_MAX_PREDICTIONTIME = 100;
 
 struct S_Robot_ds {
 	bool Workspace_model_is_set_;
@@ -63,6 +66,11 @@ struct S_Robot_ds {
 	double		DDtau_;		//Derivative of Coordination allocation
 	MatrixXd	Probability_of_catching_;
 	double 		M[N_coordination_allocation_paramerets];
+
+
+	int 		n_grippers; // number of grippers on this robot, typically 1
+	double 		force; // force of the robot
+	bool		is_assigned; // is the robot assigned to a task?
 };
 
 
@@ -71,7 +79,7 @@ struct S_object {
 	bool First_Object_state_is_set_;
 	bool Grabbing_state_is_set_[Max_Grabbing_state];
 	ENUM_State_of_prediction Object_motion_;
-	const double	MAX_PREDICTIONTIME_=100; // patrick
+	double	MAX_PREDICTIONTIME_; // patrick changed, remove const
 	int N_grabbing_pos_; 				 // Number of the grabbing positions
 	VectorXd X_O_First_; 				// The State of the object with respect to the world frame
 	VectorXd X_O_;		 				// The State of the object with respect to the world frame
@@ -88,8 +96,10 @@ struct S_object {
 	int 		index_row;
 	int 		index_column;
 
-	double 		weight;
-	double		value;
+	double 		weight; // weight of the object, aka force required to lift it
+	double		value; // value of the object
+
+	S_Coalition coalition; // coalition that is assigned to this robot
 
 };
 
@@ -109,7 +119,18 @@ struct S_Virtual_object {
 };
 
 
+struct S_Coalition {
+	int n_robots;   // number of robots
+	int* robots_id; // IDs of the robots so we can adress them later
 
+	int n_grippers; // available grippers
+
+	double value; // task value
+
+
+	int n_grippers_req; // required grippers
+	double force; // required force
+};
 
 
 class task_allocation
@@ -120,19 +141,11 @@ public:
 	void 		Initialize_robot(int index,int Num_LPV_Com, const char  *path_A_LPV, const char  *path_prior_LPV,const char  *path_mu_LPV,const char  *path_sigma_LPV
 						  ,int Num_GMM_Com, int Num_GMM_state, const char  *path_prior_GMM,const char  *path_mu_GMM,const char  *path_sigma_GMM, const char *path_threshold,Vector3d X_Base);
 
-	void 		Initialize_motion_predication_only(int N_robots, int N_grabbing_pos, double dt, int N_state,ENUM_State_of_prediction Object_motion=Straight);
-	void 		Initialize_the_virtual_object();
+
 	void 		Initialize_multiple_objects(int N_robots, int N_objects, S_object* Objs_, double dt, int N_state, MatrixXd A_V,ENUM_State_of_prediction Object_motion); // patrick
 	void 		Set_the_initial_robot_state(int index,Vector3d X);
 	void 		Set_the_robot_state(int index,VectorXd X);
 	void 		Set_the_robot_first_primitive_desired_position(int index,VectorXd X,VectorXd DX);
-	void 		Set_the_object_state(VectorXd X,VectorXd DX);
-	void 		Set_the_object_state_for_prediction(VectorXd X,VectorXd X_filtered, double time);
-	void 		Set_the_grabbing_state(int index,VectorXd X_G,VectorXd X_O );
-	void 		Set_the_grabbing_state(int index,VectorXd X_G);
-	void 		Set_index_of_grabbing_posititon_(int index_of_robot,int indext_of_grabbing_pos);
-	void 		Set_pos_of_grabbing_posititon_for_object_(bool catching_pos_is_found,double likelihood, Vector3d X_I_C);
-	void 		Set_index_of_grabbing_posititon_(int index_of_robot, int index_of_grabbing, Vector3d X_I_C);
 
 	bool 		Get_prediction_state();
 	bool 		Get_catching_state();
@@ -151,7 +164,7 @@ public:
 	void		predict_the_objects_position(); // patrick
 	void 		Update();
 
-	double 		robot_evaluate_task(int i_robot, int i_object);
+	double 		robot_evaluate_task(int i_robot, int i_object, int frame);
 	void		allocate(); // patrick
 private:
 
@@ -182,6 +195,7 @@ private:
 	S_object*			Objects_; // patrick
 	S_Virtual_object	Vobject_;
 
+	int 				N_frames_;
 
 	double				handle_exp_old;
 

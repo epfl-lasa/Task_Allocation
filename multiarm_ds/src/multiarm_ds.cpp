@@ -27,6 +27,9 @@ void multiarm_ds::Initialize(int N_robots,int N_grabbing_pos, double dt, int N_s
 	 * the dimension  of the state
 	 * and the gain matrix of the virtual object   */
 
+
+
+
 	if (N_grabbing_pos>N_grabbing_pos)
 	{
 		cout<<"Number of the grabbing positions is more than the available robots."<<endl;
@@ -122,6 +125,9 @@ void multiarm_ds::Initialize(int N_robots,int N_grabbing_pos, double dt, int N_s
 	Object_.predict_->resetTrajectoryEstimation();
 	The_catching_pos_is_found=false;
 	Object_.Max_liklihood=0;
+
+//	PermGenerator(5,2);
+//	PermGenerator(5,1);
 }
 void multiarm_ds::Initialize_motion_predication_only(int N_robots,int N_grabbing_pos, double dt, int N_state,ENUM_State_of_prediction Object_motion)
 {
