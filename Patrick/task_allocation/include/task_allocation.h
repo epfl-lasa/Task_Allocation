@@ -37,10 +37,29 @@ double maxPos[3] = {0.0,  1.00, 1.0};
 const int N_coordination_allocation_paramerets=2;
 
 const double VALUATION_THRESHOLD = 1;
+const int MAX_COALITION_SIZE = 3;
+
 
 const int Max_Grabbing_state=4;
 
 const double OBJ_MAX_PREDICTIONTIME = 100;
+
+
+struct S_Coalition {
+	int n_robots;   // number of robots
+	int* robots_id; // IDs of the robots so we can adress them later
+
+	int n_grippers; // available grippers
+
+	double* values; // tasks values
+	double coalitional_value;
+
+
+	int n_grippers_req; // required grippers
+	double force; // required force
+};
+
+
 
 struct S_Robot_ds {
 	bool Workspace_model_is_set_;
@@ -74,36 +93,6 @@ struct S_Robot_ds {
 };
 
 
-struct S_object {
-	bool Object_state_is_set_;
-	bool First_Object_state_is_set_;
-	bool Grabbing_state_is_set_[Max_Grabbing_state];
-	ENUM_State_of_prediction Object_motion_;
-	double	MAX_PREDICTIONTIME_; // patrick changed, remove const
-	int N_grabbing_pos_; 				 // Number of the grabbing positions
-	VectorXd X_O_First_; 				// The State of the object with respect to the world frame
-	VectorXd X_O_;		 				// The State of the object with respect to the world frame
-	VectorXd X_O_INTERCEPT_;			// The State of the object with respect to the intercept point
-	VectorXd X_I_C_;		 			// The State of the desired intercept point with respect to the world frame
-	VectorXd DX_O_;						// The D-State of the object with respect to the world frame
-	VectorXd X_O_G_[Max_Grabbing_state];// The State of the grabbing positions with respect to the state of the object
-	TrajectoryEstimation *predict_;
-	MatrixXd	P_O_prediction_;
-	MatrixXd	P_O_G_prediction_[Max_Grabbing_state];
-	MatrixXd	order_of_grabbing_;
-	MatrixXd	prob_order_of_grabbing_;
-	double		Max_liklihood;
-	int 		index_row;
-	int 		index_column;
-
-	double 		weight; // weight of the object, aka force required to lift it
-	double		value; // value of the object
-
-	S_Coalition coalition; // coalition that is assigned to this robot
-
-};
-
-
 struct S_Virtual_object {
 	bool Grabbing_state_is_set[Max_Grabbing_state];
 	int N_grabbing_pos;
@@ -116,20 +105,6 @@ struct S_Virtual_object {
 	double gamma_;									//Coordination parameter
 	double Dgamma_;									//Derivative of Coordination parameter
 	double tau_sum_;								//sum of Coordination allocation parameter
-};
-
-
-struct S_Coalition {
-	int n_robots;   // number of robots
-	int* robots_id; // IDs of the robots so we can adress them later
-
-	int n_grippers; // available grippers
-
-	double value; // task value
-
-
-	int n_grippers_req; // required grippers
-	double force; // required force
 };
 
 
@@ -164,6 +139,7 @@ public:
 	void		predict_the_objects_position(); // patrick
 	void 		Update();
 
+	double 		coalition_evaluate_task(int coal_size, int coalition_id, int object);
 	double 		robot_evaluate_task(int i_robot, int i_object, int frame);
 	void		allocate(); // patrick
 private:
@@ -195,7 +171,10 @@ private:
 	S_object*			Objects_; // patrick
 	S_Virtual_object	Vobject_;
 
-	int 				N_frames_;
+	int 				N_frames_; // patrick
+
+	S_Coalition**		Coalitions_; // patrick set of all possible coalitions, many will be of value 0
+
 
 	double				handle_exp_old;
 

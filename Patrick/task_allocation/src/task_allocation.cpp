@@ -32,6 +32,39 @@ void task_allocation::Initialize_multiple_objects(int N_robots, int N_objects, S
 		Objects_[i] = Objects[i];
 	}
 
+	// initialize the robots.
+
+
+
+	// initialize coalitions
+	// allocate a large double array that holds all possible coalitions... Might duck up here
+	// Robots have not yet been initialized at this point btw...
+	Coalitions_ = new S_Coalition*[MAX_COALITION_SIZE];
+	for(int i = 0; i < MAX_COALITION_SIZE; i++)
+	{
+		MatrixXd coals = PermGenerator(N_robots_, i);
+		int n_coals = coals.rows();
+		Coalitions_[i] = new S_Coalition[n_coals];
+
+		for(int j = 0; j < n_coals; j++)
+		{
+			// init coalition with size and set force, grippers and value to 0
+			Coalitions_[i][j].n_robots = i;
+			Coalitions_[i][j].robots_id = new int[Coalitions_[i][j].n_robots];
+			Coalitions_[i][j].force = 0;
+			Coalitions_[i][j].n_grippers = 0;
+			Coalitions_[i][j].coalitional_value = 0;
+
+			// note all robot ids in the coalition and sum the grippers and force.
+			for(int k = 0; k < i; k++)
+			{
+				Coalitions_[i][j].robots_id[k] = coals(j,k);
+				Coalitions_[i][j].force += Robots_[Coalitions_[i][j].robots_id[k]].force;
+				Coalitions_[i][j].n_grippers += Robots_[Coalitions_[i][j].robots_id[k]].n_grippers;
+			}
+		}
+	}
+
 
 	// not sure what this is for
 	A_V_.resize(N_state_,N_state_);				A_V_.setZero();
@@ -60,6 +93,30 @@ void task_allocation::Initialize_multiple_objects(int N_robots, int N_objects, S
 
 }
 
+double task_allocation::coalition_evaluate_task(int coal_size, int coalition_id, int object)
+{
+
+	double evaluation = 0;
+	// if coalition can't do the task due to not enough grippers, set to 0.
+	// Bold move: if coalition has too many grippers, set to 0.
+	if(Coalitions_[coal_size][coalition_id].n_grippers != Objects_[object].N_grabbing_pos_)
+	{
+		evaluation = 0;
+	}
+	/*else
+	{
+		for(int i = 0; i < coal_size; i++)
+		{
+			evaluation += robot_evaluate_task(Coalitions_[coal_size][coalition_id].robots_id[i], object, 0);
+		}
+	}*/
+
+	else
+	{
+		evaluation = Objects_[object].value - (Coalitions_[coal_size][coalition_id].force - Objects_[object].weight); // + Objects_[object].weight
+	}
+	return evaluation;
+}
 
 void task_allocation::Initialize(int N_robots,int N_grabbing_pos, double dt, int N_state, MatrixXd A_V,ENUM_State_of_prediction Object_motion)
 {
@@ -338,7 +395,7 @@ double task_allocation::robot_evaluate_task(int i_robot, int i_object, int frame
 		if(delta_robot_norm < VALUATION_THRESHOLD) // if out of reach, then we value at 0
 		{
 			VectorXd delta_conveyor = Conveyor_end - Objects_[i_object].P_O_prediction_.row(frame);
-			value = 20.0*delta_robot.norm() + 200.0/min(delta_conveyor.norm(), 0.0001) ; // patrick, min is ugly way to avoid dividing by 0
+			value = 20.0*delta_robot.norm();// + 200.0/min(delta_conveyor.norm(), 0.0001) ; // patrick, min is ugly way to avoid dividing by 0
 		}
 	}
 
@@ -364,7 +421,7 @@ void task_allocation::allocate()
 
 	for(int j = 0; j < N_objects_; j++)
 	{
-		Objects_[j].coalition.value = 0;
+		Objects_[j].coalition.coalitional_value = 0;
 		Objects_[j].coalition.force = 0;
 		Objects_[j].coalition.n_grippers = 0;
 		Objects_[j].coalition.n_robots = 0;
@@ -373,7 +430,47 @@ void task_allocation::allocate()
 
 
 
+	for(int i = 0; i < MAX_COALITION_SIZE; i++)
+	{
+		// this is a sub-optimal way of getting the number of coalitions of this dimension
+		MatrixXd coals = PermGenerator(N_robots_, MAX_COALITION_SIZE);
+		int n_coals = coals.rows();
+		for(int j = 0; j < n_coals; j++)
+		{
+			// free the previously allocated memory, this allows to handle object removal
+			if(Coalitions_[i][j].values != NULL)
+			{
+				delete Coalitions_[i][j].values;
+				Coalitions_[i][j].values = NULL;
+			}
 
+			Coalitions_[i][j].values = new double[N_objects_];
+
+			// evaluate all tasks for this coalition and find best value
+			double best_value = 0;
+			double temp_value = 0;
+			double best_index = 0;
+			for(int k = 0; k < N_objects_; k++)
+			{
+				temp_value = Coalitions_[i][j].values[k] = coalition_evaluate_task(i,j,k);
+				if(temp_value > best_value)
+				{
+					best_index = k;
+					best_value = temp_value;
+				}
+			}
+
+			// best value is found, if it's non-zero we have the coalitional value
+			Coalitions_[i][j].coalitional_value = (best_value > 0)? best_value : 0;
+
+		}
+	}
+
+
+
+
+
+/*
 	// compute all valuations
 	double robot_valuations[N_objects_][N_robots_]; // could be declared somewhere else, to avoid allocating all the time
 
@@ -388,7 +485,7 @@ void task_allocation::allocate()
 
 
 	// for each object that requires coalition, make them. This doesn't seem to work.
-/*	for(int j = 0; j < N_objects_; j++)
+	for(int j = 0; j < N_objects_; j++)
 	{
 		if(Objects_[j].N_grabbing_pos_ > 1)
 		{
