@@ -24,6 +24,12 @@
 #include <math.h>
 #include  <omp.h>
 
+
+#include "Robot.h"
+#include "Object.h"
+#include "Coalition.h"
+
+
 enum ENUM_State{Com_Stop,Com_Break, Com_Safe};
 
 enum ENUM_State_Orie{Not_Follow,Per_Follow};
@@ -45,52 +51,8 @@ const int Max_Grabbing_state=4;
 const double OBJ_MAX_PREDICTIONTIME = 100;
 
 
-struct S_Coalition {
-	int n_robots;   // number of robots
-	int* robots_id; // IDs of the robots so we can adress them later
-
-	int n_grippers; // available grippers
-
-	double* values; // tasks values
-	double coalitional_value;
 
 
-	int n_grippers_req; // required grippers
-	double force; // required force
-};
-
-
-
-struct S_Robot_ds {
-	bool Workspace_model_is_set_;
-	bool the_state_is_set_;
-	bool the_LPV_is_set_;
-	bool the_desired_state_is_set_;
-	int 		index_of_grabbing_posititon_;
-	GMM 		Workspace_model_;
-	VectorXd 	X_Base_; 			//Position of the base of the robot with respect to the world frame
-	Vector3d 	X_Initial_pose_; 	// Initial position of the end-effector of the robot with respect to the world frame
-	LPV			Dynamic_;
-	VectorXd 	ATX_;		//To simplify the calculations!
-	VectorXd 	X_; 					//State of the robot in the world frame
-	VectorXd 	X_INTERCEPT_; 			//State of the robot in the world frame
-	VectorXd 	DX_;
-	VectorXd 	X_I_C_;		// Desired intercept point of the i th robot
-	VectorXd 	X_F_P_;		// First primitive desired state
-	VectorXd 	DX_F_P_;	// First primitive desired D-state
-	VectorXd 	X_d_;		//The desired state of the robot
-	VectorXd 	DX_d_;		//The derivative of the desired state of the robot
-	double 		tau_;		//Coordination allocation
-	double		Dtau_;		//Derivative of Coordination allocation
-	double		DDtau_;		//Derivative of Coordination allocation
-	MatrixXd	Probability_of_catching_;
-	double 		M[N_coordination_allocation_paramerets];
-
-
-	int 		n_grippers; // number of grippers on this robot, typically 1
-	double 		force; // force of the robot
-	bool		is_assigned; // is the robot assigned to a task?
-};
 
 
 struct S_Virtual_object {
@@ -118,16 +80,14 @@ public:
 
 
 	void 		Initialize_multiple_objects(int N_robots, int N_objects, S_object* Objs_, double dt, int N_state, MatrixXd A_V,ENUM_State_of_prediction Object_motion); // patrick
-	void 		Set_the_initial_robot_state(int index,Vector3d X);
-	void 		Set_the_robot_state(int index,VectorXd X);
-	void 		Set_the_robot_first_primitive_desired_position(int index,VectorXd X,VectorXd DX);
+
 
 	bool 		Get_prediction_state();
 	bool 		Get_catching_state();
 	void 		Get_Virtual_state(VectorXd & X);
 	void 		Get_the_grabbing_state(int index, VectorXd& X);
-	void 		Get_the_coordination_allocation(int index, double& x);
-	void 		Get_the_coordination_parameter(double& x);
+
+
 /*	void 		Get_the_desired_intercept_state(int index, VectorXd& X);*/
 	void 		Get_the_robot_state(int index, VectorXd& X);
 	void 		Get_predict_the_object_position(int index, MatrixXd& X);
@@ -156,24 +116,24 @@ private:
 	void	calculate_u();
 
 	bool				The_catching_pos_is_found;
-	int 				N_robots_;
-	int 				N_state_;
-	int 				N_objects_; // patrick
-	double 				dt_;
+	int 				N_robots;
+	int 				N_state;
+	int 				N_objects; // patrick
+	double 				dt;
 
-	VectorXd		 	X_V_;
-	VectorXd 			DX_V_;
+	VectorXd		 	X_V;
+	VectorXd 			DX_V;
 
-	MatrixXd 			A_V_;
+	MatrixXd 			A_V;
 
-	S_Robot_ds 			*Robots_;
-	S_object 			Object_;
-	S_object*			Objects_; // patrick
-	S_Virtual_object	Vobject_;
+	S_Robot_ds 			*Robots;
+	S_object 			Object;
+	S_object*			Objects; // patrick
+	S_Virtual_object	Vobject;
 
-	int 				N_frames_; // patrick
+	int 				N_frames; // patrick
 
-	S_Coalition**		Coalitions_; // patrick set of all possible coalitions, many will be of value 0
+	Coalition**		Coalitions; // patrick set of all possible coalitions, many will be of value 0
 
 
 	double				handle_exp_old;

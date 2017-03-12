@@ -600,14 +600,7 @@ bool task_allocation::Get_catching_state()
 {
 	return The_catching_pos_is_found;
 }
-void task_allocation::Get_the_coordination_allocation(int index, double& x)
-{
-	x=Robots_[index].tau_;
-}
-void task_allocation::Get_the_coordination_parameter(double& x)
-{
-	x=Vobject_.gamma_;
-}
+
 void task_allocation::Get_predict_the_object_position(int index, MatrixXd& X)
 {
 	//X.resize(Object_.P_O_G_prediction_[index].rows(),Object_.P_O_G_prediction_[index].cols());
