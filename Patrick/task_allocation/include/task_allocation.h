@@ -14,6 +14,10 @@
  * Public License for more details
  */
 
+#ifndef TASK_ALLOCATION_H
+#define TASK_ALLOCATION_H
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "eigen3/Eigen/Dense"
@@ -25,16 +29,16 @@
 #include  <omp.h>
 
 
-#include "Robot.h"
 #include "Object.h"
 #include "Coalition.h"
+#include "Robot_agent.h"
 
 
 enum ENUM_State{Com_Stop,Com_Break, Com_Safe};
 
 enum ENUM_State_Orie{Not_Follow,Per_Follow};
 
-enum ENUM_State_of_prediction{Ballistic,Straight};
+//enum ENUM_State_of_prediction{Ballistic,Straight};
 
 using namespace Eigen;
 double minPos[3] = {-0.5, -1.00, 0.3};
@@ -46,7 +50,7 @@ const double VALUATION_THRESHOLD = 1;
 const int MAX_COALITION_SIZE = 3;
 
 
-const int Max_Grabbing_state=4;
+//const int Max_Grabbing_state=4;
 
 const double OBJ_MAX_PREDICTIONTIME = 100;
 
@@ -74,12 +78,12 @@ class task_allocation
 {
 public:
 
-	void 		Initialize(int N_robots, int N_grabbing_pos, double dt, int N_state, MatrixXd A_V,ENUM_State_of_prediction Object_motion=Straight);
-	void 		Initialize_robot(int index,int Num_LPV_Com, const char  *path_A_LPV, const char  *path_prior_LPV,const char  *path_mu_LPV,const char  *path_sigma_LPV
-						  ,int Num_GMM_Com, int Num_GMM_state, const char  *path_prior_GMM,const char  *path_mu_GMM,const char  *path_sigma_GMM, const char *path_threshold,Vector3d X_Base);
+//	void 		Initialize(int N_robots, int N_grabbing_pos, double dt, int N_state, MatrixXd A_V,ENUM_State_of_prediction Object_motion=Straight);
+//	void 		Initialize_robot(int index,int Num_LPV_Com, const char  *path_A_LPV, const char  *path_prior_LPV,const char  *path_mu_LPV,const char  *path_sigma_LPV
+//						  ,int Num_GMM_Com, int Num_GMM_state, const char  *path_prior_GMM,const char  *path_mu_GMM,const char  *path_sigma_GMM, const char *path_threshold,Vector3d X_Base);
 
 
-	void 		Initialize_multiple_objects(int N_robots, int N_objects, S_object* Objs_, double dt, int N_state, MatrixXd A_V,ENUM_State_of_prediction Object_motion); // patrick
+	//void 		Initialize_multiple_objects(int N_robots, int N_objects, S_object* Objs_, double dt, int N_state, MatrixXd A_V,ENUM_State_of_prediction Object_motion); // patrick
 
 
 	bool 		Get_prediction_state();
@@ -126,14 +130,14 @@ private:
 
 	MatrixXd 			A_V;
 
-	S_Robot_ds 			*Robots;
-	S_object 			Object;
-	S_object*			Objects; // patrick
+//	S_Robot_ds 			*Robots;
+//	S_object 			Object;
+//	S_object*			Objects; // patrick
 	S_Virtual_object	Vobject;
 
 	int 				N_frames; // patrick
 
-	Coalition**		Coalitions; // patrick set of all possible coalitions, many will be of value 0
+//	Coalition**		Coalitions; // patrick set of all possible coalitions, many will be of value 0
 
 
 	double				handle_exp_old;
@@ -180,3 +184,6 @@ MatrixXd PermGenerator(int n, int k)
 template <typename T> int sgn(T val) {
     return (T(0) < val) - (val < T(0));
 }
+
+
+#endif

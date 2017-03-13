@@ -13,6 +13,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
  * Public License for more details
  */
+#ifndef LPV_H
+#define LPV_H
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -108,3 +111,4 @@ private:
 };
 
 
+#endif

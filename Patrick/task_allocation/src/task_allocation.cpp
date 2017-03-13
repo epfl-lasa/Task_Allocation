@@ -19,6 +19,7 @@
 
 
 // patrick
+/*
 void task_allocation::Initialize_multiple_objects(int N_robots, int N_objects, S_object* Objects, double dt, int N_state, MatrixXd A_V,ENUM_State_of_prediction Object_motion)
 {
 	N_robots_ = N_robots;
@@ -110,7 +111,7 @@ double task_allocation::coalition_evaluate_task(int coal_size, int coalition_id,
 			evaluation += robot_evaluate_task(Coalitions_[coal_size][coalition_id].robots_id[i], object, 0);
 		}
 	}*/
-
+/*
 	else
 	{
 		evaluation = Objects_[object].value - (Coalitions_[coal_size][coalition_id].force - Objects_[object].weight); // + Objects_[object].weight
@@ -125,7 +126,7 @@ void task_allocation::Initialize(int N_robots,int N_grabbing_pos, double dt, int
 	 * sample time (dt)
 	 * the dimension  of the state
 	 * and the gain matrix of the virtual object   */
-
+/*
 	if (N_grabbing_pos>N_grabbing_pos)
 	{
 		cout<<"Number of the grabbing positions is more than the available robots."<<endl;
@@ -241,7 +242,7 @@ void task_allocation::Initialize_robot(int index,int Num_LPV_Com, const char  *p
 	 * path_sigma_GMM is the number of the states of the robot's workspace model
 	 * X_Base is the position of the base of the robot*/
 
-
+/*
 
 	if (index>N_robots_-1)
 	{
@@ -287,7 +288,7 @@ void task_allocation::Set_the_robot_state(int index,VectorXd X)
 {
 	/* Setting the current state of the  index th robot
 	 * X is the state of the end-effector with respect to the world-frame
-	 * 								*/
+	 * 								*//*
 	if ((Robots_[index].X_.rows()!=X.rows()))
 	{
 		cout<<"The state dimension of "<<index<<"th robot is wrong."<<endl;
@@ -309,7 +310,7 @@ void task_allocation::Set_the_initial_robot_state(int index,Vector3d X)
 	/* Setting the initial state of the  index th robot
 	 * X is the state of the end-effector with respect to the world-frame
 	 * 								*/
-
+/*
 	Robots_[index].X_Initial_pose_=X;
 	cout<<"The  initial position of "<<index<<"th robot is:"<<endl<<Robots_[index].X_Initial_pose_<<endl;
 }
@@ -322,7 +323,7 @@ void task_allocation::Set_the_robot_first_primitive_desired_position(int index,V
 	 * X is the desired state of the end-effector with respect to the world-frame
 	 * DX is the D-desired state of the end-effector
 	 * 	DOES NOT NEED TO CALL AT EACH UPDATE LOOP		*/
-
+/*
 	if ((Robots_[index].X_F_P_.rows()!=X.rows())||(Robots_[index].DX_F_P_.rows()!=DX.rows()))
 	{
 		cout<<"The dimension of the desired state of "<<index<<"th robot is wrong."<<endl;
@@ -537,11 +538,11 @@ void task_allocation::allocate()
 		}
 	}*/
 
-}
+//}
 
 
 
-
+/*
 
 void task_allocation::Update()
 {
@@ -572,7 +573,7 @@ void task_allocation::Update()
 					+A_V_*(Vobject_.X_V_INTERCEPT_-Vobject_.gamma_*Object_.X_O_INTERCEPT_)
 					+Vobject_.U_sum_)/(1+Vobject_.tau_sum_);*/
 
-
+/*
 		calculate_robot_next_state();
 
 
@@ -613,20 +614,20 @@ void task_allocation::Get_the_robot_state(int index, VectorXd& X)
 	 *
 	 * X is the desired state of the robot	*/
 
-	X=Robots_[index].X_;
+/*	X=Robots_[index].X_;
 }
 void task_allocation::Get_Virtual_state(VectorXd & X)
 {
 	/* Getting the current state of the virtual object
 	 * X is the state of the virtual object	*/
-
+/*
 	X=Vobject_.X_V_;
 }
 void task_allocation::Get_the_grabbing_state(int index, VectorXd & X)
 {
 	/* Getting the current state of index th grabbing position on the virtual object with respect to the world frame
 	 * X is the state of the virtual object	*/
-
+/*
 	X=Vobject_.X_V_G_[index]+Vobject_.X_V_;
 }
 bool task_allocation::Get_pos_of_grabbing_posititon_for_object_(double& likelihood, Vector3d& X_I_C)
@@ -634,7 +635,7 @@ bool task_allocation::Get_pos_of_grabbing_posititon_for_object_(double& likeliho
 	/* Getting the desired grabbing position of the virtual object
 	 * X_I_C is the desired grabbing position in world frame
 	 * likelihood is the related to change to grab!	*/
-	if (The_catching_pos_is_found)
+/*	if (The_catching_pos_is_found)
 	{
 		X_I_C=Object_.X_I_C_.block(0,0,3,1);
 		likelihood=Object_.Max_liklihood;
@@ -647,7 +648,7 @@ void task_allocation::Get_index_of_grabbing_posititon_(int index_of_robot, int& 
 	/* Getting the desired grabbing position of the object for index_of_robot th robot with respect to the world frame
 	 * X_I_C is the desired grabbing position in world frame
 	 * index_of_grabbing the index of the desired grabbing position	*/
-
+/*
 
 	if (The_catching_pos_is_found)
 	{
@@ -683,7 +684,7 @@ void task_allocation::Get_index_of_grabbing_posititon_(int index_of_robot, int& 
 
 
 
-
+/*
 
 
 void task_allocation::ERROR()
@@ -735,4 +736,4 @@ bool task_allocation::everythingisreceived()
 	}
 
 	return flag;
-}
+}*/
