@@ -16,7 +16,7 @@
 #include "LPV.h"
 #include "TrajectoryEstimation.h"
 #include <math.h>
-#include  <omp.h>
+#include <omp.h>
 
 
 #include "Object.h"
@@ -33,7 +33,7 @@ public:
 	~Coalition();
 	int get_n_robots();
 	int get_n_grippers();
-	int add_robot(Robot* bot);
+	int add_robot(Robot_agent* bot);
 	int add_task(Object* Task);
 	double get_force();
 	double get_coalitional_value();

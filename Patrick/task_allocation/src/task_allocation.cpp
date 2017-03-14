@@ -15,7 +15,94 @@
  */
 
 
-#include "task_allocation.h"
+#include "../include/task_allocation.h"
+
+
+
+Task_allocation::Task_allocation()
+{
+
+}
+
+Task_allocation::Task_allocation(double dt_, int n_state_, int max_n_bots_, int max_n_tasks_, MatrixXd A_V_, ENUM_State_of_prediction Object_motion)
+{
+	if(max_n_bots_ < 1)
+	{
+		cout << "less than 1 robot for initialization, n_bots = " << max_n_bots_ <<  endl;
+	}
+	max_n_robots = max_n_bots_;
+
+	Robots = new Robot_agent[max_n_robots];
+
+
+
+	if(max_n_tasks_ < 1)
+	{
+		cout << "less than 1 task for initialization, n_tasks = " << max_n_tasks_ << endl;
+	}
+
+	max_n_objects = max_n_tasks_;
+	Objects = new Object[n_objects];
+
+
+	init_coalitions();
+
+
+	dt = dt_;
+	n_state = n_state_;
+	A_V = A_V_;
+
+	Prediction_model = Object_motion;
+	catching_pos_is_found = false;
+	handle_exp_old = 0;
+}
+
+
+Task_allocation::~Task_allocation()
+{
+	if(Robots != NULL)
+		delete Robots;
+	if(Objects != NULL)
+		delete Objects;
+
+}
+
+
+
+void Task_allocation::init_coalitions()
+{
+	Coalitions = NULL;
+}
+
+
+int Task_allocation::add_robot(Robot_agent bot)
+{
+	if(n_robots < max_n_robots)
+	{
+		Robots[n_robots] = bot;
+		n_robots++;
+	}
+	else
+	{
+		cout << "error, trying to add a robot but max robots is reached. n_robots " << n_robots << " max_n_robots " << max_n_robots << endl;
+	}
+	return n_robots;
+}
+
+
+int Task_allocation::add_task(Object task)
+{
+	if(n_objects < max_n_objects)
+	{
+		Objects[n_objects] = task;
+		n_objects++;
+	}
+	else
+	{
+		cout << "error, trying to add an object but max objects is reached. n_objects " << n_objects << " max_n_objects " << max_n_objects << endl;
+	}
+	return n_objects;
+}
 
 
 // patrick

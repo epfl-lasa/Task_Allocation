@@ -366,6 +366,7 @@ void multiarm_ds::Set_the_object_state_for_prediction(VectorXd X,VectorXd X_filt
 	 * X is the state of the object with respect to the world-frame
 	 * DX is the  derivative of the state of the object		*/
 
+	cout << "set new prediction" << endl;
 	if ((X_filtered.rows()!=3))
 	{
 		cout<<"The dimension of the state of the object is wrong"<<endl;

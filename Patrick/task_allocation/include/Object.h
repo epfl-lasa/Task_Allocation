@@ -11,41 +11,53 @@
 #include <math.h>
 #include  <omp.h>
 
-enum ENUM_State_of_prediction{Ballistic,Straight};
+enum class Object_prediction_type{Ballistic,Straight};
 
-const int Max_Grabbing_state = 4;
-
-const double dt = 0.1; // this is used for the trajectory estimation, not too sure what to do with it...
 
 class Object {
 
 public:
 
-	Object();
-	Object(int N_state, VectorXd X, VectorXd DX, double max_time, VectorXd grabbing_states[], int n_grabbing_states, double weight, double value, ENUM_State_of_prediction Object_motion );
+	Object(int n_state_=3);
+	//Object(int n_state_);
+	Object(int N_state, VectorXd X, VectorXd DX, double max_time, VectorXd grabbing_states[], int n_grabbing_states, double weight, double value, Object_prediction_type Object_motion=Object_prediction_type::Straight );
+	~Object();
 
 	void predict_motion();
 
 	// setters
 	void set_max_pred_time(double time);
 	void set_state(VectorXd X, VectorXd DX);
+	void set_prediction_state(VectorXd X,VectorXd X_filtered, double time);
 
 
 	// getters
+	VectorXd get_X_O();
+	VectorXd get_DX_O();
 	bool get_state_set();
 	bool get_first_state_set();
 	bool get_grabbing_state_set(int i);
+	MatrixXd get_P_O_prediction();
+	MatrixXd get_P_O_G_prediction(int index);
 	double get_value();
 	double get_weight();
 
 private:
+
+	const static int Max_Grabbing_state = 4;
+
+	const double dt = 0.1; // this is used for the trajectory estimation, not too sure what to do with it...
+
+	const double minPos[3] = {-0.5, -1.00, 0.3};
+	const double maxPos[3] = {0.0,  1.00, 1.0};
+
 
 	int n_state;
 
 	bool state_is_set;
 	bool first_state_is_set;
 	bool grabbing_state_is_set[Max_Grabbing_state];
-	ENUM_State_of_prediction motion_type;
+	Object_prediction_type motion_type;
 	double	max_pred_time; // patrick changed, remove const
 	int n_grabbing_pos; 				 // Number of the grabbing positions
 	VectorXd X_O_First; 				// The State of the object with respect to the world frame

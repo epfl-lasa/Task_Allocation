@@ -709,6 +709,7 @@ RobotInterface::Status Bi_manual_scenario::RobotStart(){
 		ros::spinOnce();
 	}
 
+
 	for (int i=0;i<N_robots;i++)
 	{
 		Desired_JointPos[i]=JointPos[i];
@@ -717,6 +718,33 @@ RobotInterface::Status Bi_manual_scenario::RobotStart(){
 	cout<<"JointPos_right"<<endl;cout<<JointPos[1]<<endl;
 
 	Topic_initialization();
+
+// patrick below
+
+
+	VectorXd X;	X.resize(3); X.setZero();//X = {1, 2, 3};
+	VectorXd DX; DX.resize(3); DX.setOnes();// DX = {3,2,1};
+	double max_time = 5.1;
+	VectorXd grabbing_states[1];
+	grabbing_states[0].resize(3); grabbing_states[0].setOnes();//grabbing_states[0] = {5,5,5};
+	cout << "I'm about to make an Object" << endl;
+	Object test(3, X, DX, max_time, grabbing_states, 1, 0.8, 130.0);
+
+	test.set_prediction_state(test.get_X_O(),test.get_X_O(), 0.1);
+
+	test.set_prediction_state(test.get_X_O(),test.get_X_O(), 0.1);
+
+
+	test.predict_motion();
+	cout << "object state " << endl << test.get_X_O() << endl;
+	cout << "object Dstate " << endl << test.get_DX_O() << endl;
+
+	cout << "P_O_Prediction" << endl <<  test.get_P_O_prediction() << endl;
+
+	cout << "P_O_G prediction" << endl << test.get_P_O_G_prediction(0) << endl;
+
+// end patrick    */
+
 	return STATUS_OK;
 }    
 RobotInterface::Status Bi_manual_scenario::RobotStop(){

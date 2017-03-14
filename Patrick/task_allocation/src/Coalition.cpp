@@ -68,7 +68,7 @@ Coalition::~Coalition()
 		delete Tasks;
 }
 
-int Coalition::add_robot(Robot* bot)
+int Coalition::add_robot(Robot_agent* bot)
 {
 	// todo if needed
 	return 0;

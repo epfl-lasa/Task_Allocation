@@ -21,6 +21,9 @@
 
 using namespace Eigen;
 
+//double minPos[3] = {-0.5, -1.00, 0.3};
+//double maxPos[3] = {0.0,  1.00, 1.0};
+
 class Robot_agent {
 
 public:
@@ -39,6 +42,12 @@ public:
 	int get_n_grippers();
 	double get_force();
 
+	bool init_robot(VectorXd base, Vector3d X_init, VectorXd X, VectorXd ATX_, LPV Dynamic, GMM Workspace, int grippers, double force);
+	void set_base(Vector3d X);
+	void set_LPV(LPV model);
+	void set_ATX(VectorXd ATX_);
+	void set_grippers(int n);
+	void set_force(double force);
 	void set_initial_state(Vector3d X);
 	void set_state(VectorXd X);
 	void set_first_primitive_desired_position(VectorXd X, VectorXd DX);
@@ -50,7 +59,7 @@ private:
 	bool desired_state_is_set;
 	int 		index_of_grabbing_position;
 	GMM 		Workspace_model;
-	VectorXd 	X_Base; 			//Position of the base of the robot with respect to the world frame
+	VectorXd 	X_base; 			//Position of the base of the robot with respect to the world frame
 	Vector3d 	X_initial_pose; 	// Initial position of the end-effector of the robot with respect to the world frame
 	LPV			Dynamic;
 	VectorXd 	ATX;		//To simplify the calculations!
@@ -67,7 +76,7 @@ private:
 	double		DDtau;		//Derivative of Coordination allocation
 	MatrixXd	Probability_of_catching;
 	double*		M;
-
+	double 		gamma;
 
 	int 		n_grippers; // number of grippers on this robot, typically 1
 	double 		force; // force of the robot

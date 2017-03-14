@@ -34,17 +34,17 @@
 #include "Robot_agent.h"
 
 
-enum ENUM_State{Com_Stop,Com_Break, Com_Safe};
+//enum ENUM_State{Com_Stop,Com_Break, Com_Safe};
 
-enum ENUM_State_Orie{Not_Follow,Per_Follow};
+//enum ENUM_State_Orie{Not_Follow,Per_Follow};
 
 //enum ENUM_State_of_prediction{Ballistic,Straight};
 
 using namespace Eigen;
-double minPos[3] = {-0.5, -1.00, 0.3};
-double maxPos[3] = {0.0,  1.00, 1.0};
+//double minPos[3] = {-0.5, -1.00, 0.3};
+//double maxPos[3] = {0.0,  1.00, 1.0};
 
-const int N_coordination_allocation_paramerets=2;
+//const int N_coordination_allocation_paramerets=2;
 
 const double VALUATION_THRESHOLD = 1;
 const int MAX_COALITION_SIZE = 3;
@@ -57,7 +57,7 @@ const double OBJ_MAX_PREDICTIONTIME = 100;
 
 
 
-
+/*
 
 struct S_Virtual_object {
 	bool Grabbing_state_is_set[Max_Grabbing_state];
@@ -72,12 +72,14 @@ struct S_Virtual_object {
 	double Dgamma_;									//Derivative of Coordination parameter
 	double tau_sum_;								//sum of Coordination allocation parameter
 };
+*/
 
-
-class task_allocation
+class Task_allocation
 {
 public:
-
+	Task_allocation();
+	Task_allocation(double dt, int n_state, int max_n_bots, int max_n_tasks, MatrixXd A_V,Object_prediction_type Object_motion=Object_prediction_type::Straight);
+	~Task_allocation();
 //	void 		Initialize(int N_robots, int N_grabbing_pos, double dt, int N_state, MatrixXd A_V,ENUM_State_of_prediction Object_motion=Straight);
 //	void 		Initialize_robot(int index,int Num_LPV_Com, const char  *path_A_LPV, const char  *path_prior_LPV,const char  *path_mu_LPV,const char  *path_sigma_LPV
 //						  ,int Num_GMM_Com, int Num_GMM_state, const char  *path_prior_GMM,const char  *path_mu_GMM,const char  *path_sigma_GMM, const char *path_threshold,Vector3d X_Base);
@@ -85,6 +87,9 @@ public:
 
 	//void 		Initialize_multiple_objects(int N_robots, int N_objects, S_object* Objs_, double dt, int N_state, MatrixXd A_V,ENUM_State_of_prediction Object_motion); // patrick
 
+
+	int			add_robot(Robot_agent bot);
+	int 		add_task(Object task);
 
 	bool 		Get_prediction_state();
 	bool 		Get_catching_state();
@@ -106,6 +111,8 @@ public:
 	double 		coalition_evaluate_task(int coal_size, int coalition_id, int object);
 	double 		robot_evaluate_task(int i_robot, int i_object, int frame);
 	void		allocate(); // patrick
+
+
 private:
 
 	void 	ERROR();
@@ -118,12 +125,24 @@ private:
 	void	CalculateCatchingprobability(int nFrame,int i_robot,int i_object);
 	void 	calculate_ATX();
 	void	calculate_u();
+	void	init_coalitions();
 
-	bool				The_catching_pos_is_found;
-	int 				N_robots;
-	int 				N_state;
-	int 				N_objects; // patrick
+	Object_prediction_type Prediction_model;
+
+	bool				catching_pos_is_found;
+
+	int 				max_n_robots;
+	int 				n_robots;
+	Robot_agent*		Robots;
+	int 				n_state;
+
+	int 				max_n_objects;
+	int 				n_objects; // patrick
+	Object*				Objects;
 	double 				dt;
+
+	Coalition** 		Coalitions;
+
 
 	VectorXd		 	X_V;
 	VectorXd 			DX_V;
@@ -133,9 +152,9 @@ private:
 //	S_Robot_ds 			*Robots;
 //	S_object 			Object;
 //	S_object*			Objects; // patrick
-	S_Virtual_object	Vobject;
+//	S_Virtual_object	Vobject;
 
-	int 				N_frames; // patrick
+	int 				n_frames; // patrick
 
 //	Coalition**		Coalitions; // patrick set of all possible coalitions, many will be of value 0
 
@@ -147,7 +166,7 @@ private:
 };
 
 
-
+/*
 
 int factorial(int n)
 {
@@ -185,5 +204,5 @@ template <typename T> int sgn(T val) {
     return (T(0) < val) - (val < T(0));
 }
 
-
+*/
 #endif

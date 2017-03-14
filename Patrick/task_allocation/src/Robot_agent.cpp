@@ -199,3 +199,47 @@ double Robot_agent::get_force()
 {
 	return force;
 }
+
+
+bool Robot_agent::init_robot(VectorXd base, Vector3d X_init, VectorXd X, VectorXd ATX_, LPV Dynamic, GMM Workspace, int grippers, double force)
+{
+
+	set_base(base);
+	set_LPV(Dynamic);
+	set_ATX(ATX_);
+	set_grippers(grippers);
+	set_force(force);
+	set_initial_state(X_init);
+	set_state(X);
+
+	return true;
+}
+
+
+void Robot_agent::set_base(Vector3d X)
+{
+	X_base = X;
+}
+
+void Robot_agent::set_LPV(LPV model)
+{
+	Dynamic = model;
+}
+
+void Robot_agent::set_ATX(VectorXd ATX_)
+{
+	ATX = ATX_;
+}
+
+void Robot_agent::set_grippers(int n)
+{
+	n_grippers = n;
+}
+
+void Robot_agent::set_force(double force_)
+{
+	force = force_;
+}
+
+
+

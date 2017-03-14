@@ -31,6 +31,7 @@
 #include "std_msgs/Float64MultiArray.h"
 #include "commands.h"
 
+#include "../../../Patrick/task_allocation/include/task_allocation.h"
 
 const int KUKA_DOF=7;
 int IK_CONSTRAINTS=9;
