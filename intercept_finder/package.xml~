@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <package>
-  <name>task_allocation</name>
+  <name>intercept_finder</name>
   <version>0.0.0</version>
-  <description>The task_allocation package</description>
+  <description>The intercept_finder package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="patrick@todo.todo">sina</maintainer>
+  <maintainer email="sina@todo.todo">sina</maintainer>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->
@@ -19,7 +19,7 @@
   <!-- Url tags are optional, but mutiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/bimanual_ds</url> -->
+  <!-- <url type="website">http://wiki.ros.org/intercept_finder</url> -->
 
 
   <!-- Author tags are optional, mutiple are allowed, one per tag -->
@@ -42,11 +42,25 @@
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>std_msgs</build_depend>
-
   <run_depend>roscpp</run_depend>
   <run_depend>std_msgs</run_depend>
 
-  <build_depend>motion_prediction</build_depend>
-    <run_depend>motion_prediction</run_depend>
-<export> <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -Wl,-rpath,${prefix}/lib -ltask_allocation "/> </export>
+  <build_depend>task_alloon</build_depend>
+  <run_depend>task_allocn</run_depend>
+
+  <build_depend>multiarm_ds</build_depend>
+  <run_depend>multiarm_ds</run_depend>
+
+  <build_depend>tf</build_depend>
+  <run_depend>tf</run_depend>
+
+  
+
+
+  
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+
+  </export>
 </package>

@@ -9,7 +9,6 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   multiarm_ds
   tf
-  task_allocation
 )
 
 

@@ -366,7 +366,7 @@ void multiarm_ds::Set_the_object_state_for_prediction(VectorXd X,VectorXd X_filt
 	 * X is the state of the object with respect to the world-frame
 	 * DX is the  derivative of the state of the object		*/
 
-	cout << "set new prediction" << endl;
+//	cout << "set new prediction" << endl;
 	if ((X_filtered.rows()!=3))
 	{
 		cout<<"The dimension of the state of the object is wrong"<<endl;
@@ -949,6 +949,10 @@ void multiarm_ds::Get_index_of_grabbing_posititon_(int index_of_robot, int& inde
 
 }
 
+MatrixXd multiarm_ds::Get_P_O_Prediction()
+{
+	return Object_.P_O_prediction_;
+}
 
 /*void multiarm_ds::Get_the_desired_intercept_state(int index, VectorXd & X)
 {

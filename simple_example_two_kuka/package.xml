@@ -39,10 +39,12 @@
   <!-- Use test_depend for packages you need only for testing: -->
   <!--   <test_depend>gtest</test_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>multiarm_ds</build_depend>
+  <build_depend>#task_allocation</build_depend>
+<build_depend>multiarm_ds</build_depend>
 <build_depend>mathlib</build_depend>
   <build_depend>robotlib</build_depend>
-  <run_depend>multiarm_ds</run_depend>
+  <run_depend>#task_allocation</run_depend>
+<run_depend>multiarm_ds</run_depend>
 <run_depend>mathlib</run_depend>
   <run_depend>robotlib</run_depend>
 
@@ -71,9 +73,9 @@
   <build_depend>motion_generators</build_depend>
     <run_depend>motion_generators</run_depend>
 
-  <build_depend>task_allocation</build_depend>
+ <!-- <build_depend>task_allocation</build_depend>
     <run_depend>task_allocation</run_depend>
-    
+    -->
 
 
   <!-- The export tag contains other, unspecified, tags -->

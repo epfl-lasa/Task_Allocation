@@ -70,6 +70,9 @@
 
   <build_depend>motion_generators</build_depend>
     <run_depend>motion_generators</run_depend>
+
+  <build_depend>task_allocation</build_depend>
+    <run_depend>task_allocation</run_depend>
     
 
 

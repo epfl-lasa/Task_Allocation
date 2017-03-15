@@ -12,8 +12,6 @@
 
 
 
-
-
 void chatterCallback_ObjectPosition_raw(const geometry_msgs::Pose & msg)
 {
 	P_object_raw(0)=msg.position.x;
@@ -126,6 +124,7 @@ void chatterCallback_Command(const std_msgs::Int64& msg)
 			Motion_G->Set_the_initial_robot_state(i,X_base_v);
 		}
 		Motion_G->Set_the_object_state_for_prediction(P_object_raw,P_object_filtered,ros::Time::now().toSec());
+
 		Object_State_raw.setZero();
 		Object_State_raw.block(0,0,3,1)=P_object_raw;
 		for(int i=0;i<N_grabbing;i++)
@@ -160,6 +159,21 @@ void chatterCallback_Command(const std_msgs::Int64& msg)
 
 
 int main(int argc, char **argv) {
+
+	// patrick below
+
+
+		VectorXd X_p;	X_p.resize(3); X_p.setZero();//X = {1, 2, 3};
+		VectorXd DX_p; DX_p.resize(3); DX_p.setOnes();// DX = {3,2,1};
+		double max_time_p = 5.1;
+		VectorXd grabbing_states_p[1];
+		grabbing_states_p[0].resize(3); grabbing_states_p[0].setOnes();//grabbing_states[0] = {5,5,5};
+		cout << "I'm about to make an Object" << endl;
+		Object test(3, X_p, DX_p, max_time_p, grabbing_states_p, 1, 0.8, 130.0);
+		cout << "made the object" << endl;
+		cout << test << endl;
+
+
 	// Communication service with robot module
 
 	mCommand=COMMAND_NONE;
@@ -201,14 +215,24 @@ int main(int argc, char **argv) {
 		case COMMAND_INITIAL:
 			break;
 		case COMMAND_JOB:
+
 			Motion_G= new multiarm_ds();
 			break;
 		case COMMAND_Grab:
 			Motion_G->Set_the_object_state_for_prediction(P_object_filtered,P_object_filtered,ros::Time::now().toSec()-initial_time);
-	//		Motion_G->Set_the_object_state_for_prediction(P_object_raw,P_object_raw,ros::Time::now().toSec()-initial_time);
+			test.set_prediction_state(P_object_filtered,P_object_filtered,ros::Time::now().toSec()-initial_time); // patrick
+	//		cout << "object test X_O" <<  test.get_X_O() << endl;
+			Motion_G->Set_the_object_state_for_prediction(P_object_raw,P_object_raw,ros::Time::now().toSec()-initial_time);
 			if (Motion_G->Get_prediction_state())
 			{
 				Motion_G->predict_the_object_position();
+				test.predict_motion(); // patrick
+
+
+			//	cout << "Motion G" << endl <<  Motion_G->Get_P_O_Prediction() << endl << endl << endl;
+				//cout << "Object " << endl << test.get_P_O_prediction() << endl << endl << endl;
+
+
 				for (int i=0; i<N_grabbing;i++)
 				{
 					Motion_G->Get_predict_the_object_position(i,predicted_object[i]);

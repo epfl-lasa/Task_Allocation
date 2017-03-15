@@ -1,3 +1,6 @@
+#ifndef FINDER_H
+#define FINDER_H
+
 #include "PATH.h"
 #include <thread>
 #include "ros/ros.h"
@@ -13,6 +16,7 @@
 #include <cmath>
 #include <cfloat>
 
+#include "Object.h"
 
 using namespace Eigen;
 
@@ -138,3 +142,5 @@ void reset_the_bool()
 		Position_of_the_object_recieved[i]=false;
 	}
 }
+
+#endif

@@ -10,7 +10,7 @@
 #include "TrajectoryEstimation.h"
 #include <math.h>
 #include  <omp.h>
-
+#include <string>
 enum class Object_prediction_type{Ballistic,Straight};
 
 
@@ -21,6 +21,7 @@ public:
 	Object(int n_state_=3);
 	//Object(int n_state_);
 	Object(int N_state, VectorXd X, VectorXd DX, double max_time, VectorXd grabbing_states[], int n_grabbing_states, double weight, double value, Object_prediction_type Object_motion=Object_prediction_type::Straight );
+	Object();
 	~Object();
 
 	void predict_motion();
@@ -41,6 +42,9 @@ public:
 	MatrixXd get_P_O_G_prediction(int index);
 	double get_value();
 	double get_weight();
+
+
+	friend std::ostream& operator<< (std::ostream& stream, const Object& Object);
 
 private:
 
@@ -84,6 +88,10 @@ private:
 };
 
 
+inline void printVector(string name, VectorXd vec)
+{
+	cout << name << endl << vec << endl;
+}
 
 
 #endif

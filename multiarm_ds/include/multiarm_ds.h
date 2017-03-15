@@ -146,6 +146,8 @@ public:
 	void 		predict_the_object_position();
 	void 		Update();
 
+	MatrixXd   	Get_P_O_Prediction();
+
 private:
 
 	void 	ERROR();

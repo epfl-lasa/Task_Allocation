@@ -1,6 +1,9 @@
 #include "Object.h"
 
+Object::Object()
+{
 
+}
 Object::Object(int n_state_)
 {
 	n_state = n_state_;
@@ -11,8 +14,7 @@ Object::Object(int n_state_)
 
 Object::Object(int N_state_, VectorXd X_, VectorXd DX_, double max_time_, VectorXd grabbing_states_[], int n_grabbing_states_, double weight_, double value_, Object_prediction_type Object_motion )
 {
-
-	cout << "I'm making an Object" << endl;
+//	cout << "I'm making an Object" << endl;
 	n_state = N_state_;
 
 
@@ -21,22 +23,28 @@ Object::Object(int N_state_, VectorXd X_, VectorXd DX_, double max_time_, Vector
 
 
 
+//	cout << "made X, DX and n_state" << endl;
 	max_pred_time = max_time_;
 	n_grabbing_pos = n_grabbing_states_;
 	for(int i = 0; i < n_grabbing_pos; i++)
 	{
-		X_O_G[i].resizeLike(grabbing_states_[i]); X_O_G[i].setZero(); X_O_G[i] = grabbing_states_[i];
+		//X_O_G[i].resizeLike(grabbing_states_[i]); X_O_G[i].setZero();
+		X_O_G[i] = grabbing_states_[i];
 	}
 
 	weight = weight_;
 	value = value_;
 
+//	cout << "made X_O_G, max pred time, weight and value " << endl;
 	P_O_prediction.resize((int)floor(max_pred_time/(dt))+1,3); P_O_prediction.setZero();
 	for(int i = 0; i < n_grabbing_pos; i++)
 	{
 		P_O_G_prediction[i].resize((int)floor(max_pred_time/(dt))+1,3); P_O_G_prediction[i].setZero();
 
 	}
+
+//	cout << "made the P_O_ and P_O prediction" << endl;
+
 
 	double gravity[3];gravity[0]=0;gravity[1]=0;
 
@@ -50,8 +58,10 @@ Object::Object(int N_state_, VectorXd X_, VectorXd DX_, double max_time_, Vector
 		gravity[2]=0;
 	}
 
+//	cout << "made gravity " << endl;
 	predict = new TrajectoryEstimation(gravity, dt,30,10);
 
+//	cout << "made trajectory estimation" << endl;
 	state_is_set = true;
 	first_state_is_set = true;
 
@@ -59,6 +69,7 @@ Object::Object(int N_state_, VectorXd X_, VectorXd DX_, double max_time_, Vector
 	index_row = 0;
 	max_liklihood = 0;
 	n_frames = -1;
+//	cout << "done making object" << endl;
 }
 
 Object::~Object()
@@ -78,8 +89,9 @@ void Object::predict_motion()
 
 		if 	(n_frames == -1)
 		{
+
 			// no prediction for some reason
-			cout << "no prediction available" << endl;
+		//	cout << "no prediction available" << endl;
 		}
 		else
 		{
@@ -213,3 +225,45 @@ VectorXd Object::get_DX_O()
 {
 	return DX_O;
 }
+
+
+
+std::ostream& operator <<(std::ostream& stream, const Object& o)
+{
+	cout << "******PRINTING AN OBJECT******" << endl;
+	cout << "max_grabbing_state " << o.Max_Grabbing_state << endl;
+	cout << "dt " << o.dt << endl;
+	for(int i = 0; i < 3; i++)
+	{
+		cout << "minPos i " << i << " value " << o.minPos[i] << endl;
+	}
+	for(int i = 0; i < 3; i++)
+	{
+		cout << "maxPos i " << i << " value " << o.maxPos[i] << endl;
+	}
+
+	cout << "n_state " << o.n_state << endl;
+
+	cout << "state is set " << o.state_is_set << endl;
+	cout << "first state is set " << o.first_state_is_set << endl;
+
+	for(int i = 0; i < o.Max_Grabbing_state; i++)
+		cout << "grabbing_state_is_set i = " << i << " value  " << o.grabbing_state_is_set[i] << endl;
+
+	cout << "max pred time " << o.max_pred_time << endl;
+
+	cout << "n grabbing pos " << o.n_grabbing_pos << endl;
+
+	printVector("X_O_First", o.X_O_First);
+	printVector("X_O", o.X_O);
+	printVector("X_O_INTERCEPT", o.X_O_INTERCEPT);
+	printVector("X_I_C", o.X_I_C);
+	printVector("DX_O", o.DX_O);
+
+	cout << "weight " << o.weight << endl;
+	cout << "value " << o.value << endl;
+
+	cout << "******DONE PRINTING AN OBJECT******" << endl;
+}
+
+
