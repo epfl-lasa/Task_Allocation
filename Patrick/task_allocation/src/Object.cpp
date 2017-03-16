@@ -4,14 +4,69 @@ Object::Object()
 {
 
 }
-Object::Object(int n_state_)
+/*Object::Object(int n_state_)
 {
 	n_state = n_state_;
 	cout << "I'm making an Object" << endl;
 
 	//cout << Ballistic_patrick << " " << Straight_patrick << endl;
-}
+}*/
+Object::Object( const Object &o) // copy construct
+{
+	cout << "something called the copy constructor" << endl;
 
+	n_state = o.n_state;
+	state_is_set = o.state_is_set;
+	first_state_is_set = o.first_state_is_set;
+
+	for(int i = 0; i < max_grabbing_state; i++)
+	{
+		grabbing_state_is_set[i] = o.grabbing_state_is_set[i];
+		X_O_G[i] = o.X_O_G[i];
+	}
+
+	motion_type = o.motion_type;
+	max_pred_time = o.max_pred_time;
+	n_grabbing_pos = o.n_grabbing_pos;
+	X_O_First = o.X_O_First;
+	X_O = o.X_O;
+	X_O_INTERCEPT = o.X_O_INTERCEPT;
+	X_I_C = o.X_I_C;
+	DX_O = o.DX_O;
+
+
+	double gravity[3];gravity[0]=0;gravity[1]=0;
+	if (motion_type == Object_prediction_type::Ballistic)
+	{
+		gravity[2]=9.81;
+	}
+	else
+	{
+		gravity[2]=0;
+	}
+	predict = new TrajectoryEstimation(gravity, dt,30,10); // DANGEROUS HERE.
+
+	n_frames = o.n_frames;
+	P_O_prediction = o.P_O_prediction;
+	for(int i = 0; i < max_grabbing_state; i++)
+	{
+		P_O_G_prediction[i] = o.P_O_G_prediction[i];
+	}
+
+	order_of_grabbing = o.order_of_grabbing;
+	prob_order_of_grabbing = o.prob_order_of_grabbing;
+
+	weight = o.weight;
+	value = o.value;
+
+	max_liklihood = 0;
+	index_row = 0;
+	index_column = 0;
+
+	cout << o << endl;
+	cout << *this << endl;
+
+}
 Object::Object(int N_state_, VectorXd X_, VectorXd DX_, double max_time_, VectorXd grabbing_states_[], int n_grabbing_states_, double weight_, double value_, Object_prediction_type Object_motion )
 {
 //	cout << "I'm making an Object" << endl;
@@ -22,14 +77,20 @@ Object::Object(int N_state_, VectorXd X_, VectorXd DX_, double max_time_, Vector
 	DX_O.resizeLike(DX_); DX_O.setZero(); DX_O = DX_;
 
 
+	for(int i = 0; i < max_grabbing_state; i++)
+		grabbing_state_is_set[i] = false;
 
 //	cout << "made X, DX and n_state" << endl;
 	max_pred_time = max_time_;
+	if(n_grabbing_states_ > max_grabbing_state)
+		cout << "error, n grabbing bigger than max grabbing" << endl;
+
 	n_grabbing_pos = n_grabbing_states_;
 	for(int i = 0; i < n_grabbing_pos; i++)
 	{
 		//X_O_G[i].resizeLike(grabbing_states_[i]); X_O_G[i].setZero();
 		X_O_G[i] = grabbing_states_[i];
+		grabbing_state_is_set[i] = true;
 	}
 
 	weight = weight_;
@@ -231,7 +292,7 @@ VectorXd Object::get_DX_O()
 std::ostream& operator <<(std::ostream& stream, const Object& o)
 {
 	cout << "******PRINTING AN OBJECT******" << endl;
-	cout << "max_grabbing_state " << o.Max_Grabbing_state << endl;
+	cout << "max_grabbing_state " << o.max_grabbing_state << endl;
 	cout << "dt " << o.dt << endl;
 	for(int i = 0; i < 3; i++)
 	{
@@ -247,7 +308,7 @@ std::ostream& operator <<(std::ostream& stream, const Object& o)
 	cout << "state is set " << o.state_is_set << endl;
 	cout << "first state is set " << o.first_state_is_set << endl;
 
-	for(int i = 0; i < o.Max_Grabbing_state; i++)
+	for(int i = 0; i < o.max_grabbing_state; i++)
 		cout << "grabbing_state_is_set i = " << i << " value  " << o.grabbing_state_is_set[i] << endl;
 
 	cout << "max pred time " << o.max_pred_time << endl;

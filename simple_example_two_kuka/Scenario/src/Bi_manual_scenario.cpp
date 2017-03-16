@@ -479,6 +479,11 @@ void Bi_manual_scenario::initKinematics(int index)
 			6,3,addTwochar(Commom_path,"/IIWA_workspace_Model_prior").c_str(),addTwochar(Commom_path,"/IIWA_workspace_Model_mu").c_str(),addTwochar(Commom_path,"/IIWA_workspace_Model_Sigma").c_str(),addTwochar(Commom_path,"/IIWA_workspace_Model_Threshold").c_str(),X_base);
 
 
+ // patrick below
+//	Robot_agent Bot()
+
+
+// */
 
 	End_State[index].resize(6);		End_State[index].setZero();
 	DEnd_State[index].resize(6);	DEnd_State[index].setZero();
@@ -697,6 +702,11 @@ RobotInterface::Status Bi_manual_scenario::RobotInit(){
 	AddConsoleCommand("init");
 	AddConsoleCommand("job");
 	AddConsoleCommand("catch");
+
+
+
+
+
 	return STATUS_OK;
 }
 RobotInterface::Status Bi_manual_scenario::RobotFree(){
@@ -773,6 +783,7 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdate(){
 			Motion_G->Set_the_object_state(Object_State_raw,DObject_State);
 
 
+
 			for(int i=0;i<N_grabbing;i++)
 			{
 				Object_Grabbing_State[i].block(0,0,3,1)=P_G_On_object[i];
@@ -783,6 +794,29 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdate(){
 			{
 				Motion_G->Set_the_grabbing_state(i,Object_Grabbing_State[i],Object_State_raw);
 			}
+
+			// patrick
+			// Object(int N_state, VectorXd X, VectorXd DX, double max_time, VectorXd grabbing_states[],
+			// 					int n_grabbing_states, double weight, double value, Object_prediction_type Object_motion=Object_prediction_type::Straight );
+			cout << "some patrick stuff coming" << endl;
+			prepare_task_allocator();
+			VectorXd X_O_G[N_grabbing];
+			for(int i = 0; i < N_grabbing; i++)
+			{
+				X_O_G[i] = Object_Grabbing_State[i] - Object_State_raw;
+			}
+			cout << "made the vectors and prepared task allocator " << endl;
+			double weight = 102;
+			double value = 0.1;
+			Object task0(3,Object_State_raw,DObject_State, 100, Object_Grabbing_State, 2, weight, value);
+			cout << task0 << endl;
+			cout << "made a task " << endl;
+			cout << "this should be a 1 ";
+			cout << Task_allocator->get_1() << endl;
+			Task_allocator->add_task(task0);
+			cout << "added task" << endl;
+
+			// end patrick */
 
 			Motion_G->Initialize_the_virtual_object();
 			Motion_G->Update();
@@ -1017,7 +1051,36 @@ int Bi_manual_scenario::RespondToConsoleCommand(const string cmd, const vector<s
 }
 
 
+// patrick below
+void Bi_manual_scenario::prepare_task_allocator()
+{
+	double dt = 0.1;
+	int n_state = 3;
+//	double dt, int n_state, int max_n_bots, int max_n_tasks, MatrixXd A_V,Object_prediction_type Object_motion=Object_prediction_type::Straight
+	Task_allocator = new Task_allocation(dt, n_state, N_robots, 1, A_V);
 
+	/*Robot_agent Bot;
+	for(int i = 0; i < N_robots; i++)
+	{
+		Task_allocator.add_robot(Bot);
+//		Bot = new Robot_agent(GMM model, VectorXd base, Vector3d initial, LPV dyn_mod, VectorXd ATX_,
+	//			VectorXd X_, VectorXd X_intercept_, VectorXd DX_, VectorXd X_I_C_, VectorXd X_F_P_,
+		//		VectorXd DX_F_P_, VectorXd X_d_, VectorXd DX_d_, double tau_, double Dtau_, double DDtau_, MatrixXd Prob_of_catching_, int n_grippers_, double force);
+	}
+*/
+//	Object Object;
+//	for(int i = 0; i < 1; i++)
+//	{
+//		Task_allocator.add_task(Object);
+//	}
+}
+
+void Bi_manual_scenario::add_robots_task_allocator()
+{
+
+}
+
+// end patrick
 extern "C"{
 // These two "C" functions manage the creation and destruction of the class
 Bi_manual_scenario* create(){return new Bi_manual_scenario();}

@@ -160,7 +160,7 @@ void chatterCallback_Command(const std_msgs::Int64& msg)
 
 int main(int argc, char **argv) {
 
-	// patrick below
+/*	// patrick below
 
 
 		VectorXd X_p;	X_p.resize(3); X_p.setZero();//X = {1, 2, 3};
@@ -173,6 +173,7 @@ int main(int argc, char **argv) {
 		cout << "made the object" << endl;
 		cout << test << endl;
 
+//     */
 
 	// Communication service with robot module
 
@@ -220,13 +221,13 @@ int main(int argc, char **argv) {
 			break;
 		case COMMAND_Grab:
 			Motion_G->Set_the_object_state_for_prediction(P_object_filtered,P_object_filtered,ros::Time::now().toSec()-initial_time);
-			test.set_prediction_state(P_object_filtered,P_object_filtered,ros::Time::now().toSec()-initial_time); // patrick
+		//	test.set_prediction_state(P_object_filtered,P_object_filtered,ros::Time::now().toSec()-initial_time); // patrick
 	//		cout << "object test X_O" <<  test.get_X_O() << endl;
 			Motion_G->Set_the_object_state_for_prediction(P_object_raw,P_object_raw,ros::Time::now().toSec()-initial_time);
 			if (Motion_G->Get_prediction_state())
 			{
 				Motion_G->predict_the_object_position();
-				test.predict_motion(); // patrick
+	//			test.predict_motion(); // patrick
 
 
 			//	cout << "Motion G" << endl <<  Motion_G->Get_P_O_Prediction() << endl << endl << endl;

@@ -27,7 +27,7 @@
 #include "TrajectoryEstimation.h"
 #include <math.h>
 #include  <omp.h>
-
+#include <vector>
 
 #include "Object.h"
 #include "Coalition.h"
@@ -41,6 +41,7 @@
 //enum ENUM_State_of_prediction{Ballistic,Straight};
 
 using namespace Eigen;
+//using namespace std;
 //double minPos[3] = {-0.5, -1.00, 0.3};
 //double maxPos[3] = {0.0,  1.00, 1.0};
 
@@ -49,7 +50,7 @@ using namespace Eigen;
 const double VALUATION_THRESHOLD = 1;
 const int MAX_COALITION_SIZE = 3;
 
-
+const int MAX_TASKS = 6;
 //const int Max_Grabbing_state=4;
 
 const double OBJ_MAX_PREDICTIONTIME = 100;
@@ -88,8 +89,8 @@ public:
 	//void 		Initialize_multiple_objects(int N_robots, int N_objects, S_object* Objs_, double dt, int N_state, MatrixXd A_V,ENUM_State_of_prediction Object_motion); // patrick
 
 
-	int			add_robot(Robot_agent bot);
-	int 		add_task(Object task);
+	//int			add_robot(Robot_agent bot);
+	int 		add_task(Object Object);
 
 	bool 		Get_prediction_state();
 	bool 		Get_catching_state();
@@ -104,6 +105,7 @@ public:
 	bool 		Get_pos_of_grabbing_posititon_for_object_(double& likelihood, Vector3d& X_I_C);
 
 
+	bool		set_object_state(int i, VectorXd X, VectorXd DX);
 	void 		predict_the_object_position();
 	void		predict_the_objects_position(); // patrick
 	void 		Update();
@@ -112,6 +114,7 @@ public:
 	double 		robot_evaluate_task(int i_robot, int i_object, int frame);
 	void		allocate(); // patrick
 
+	int			get_1();
 
 private:
 
@@ -131,21 +134,19 @@ private:
 
 	bool				catching_pos_is_found;
 
+	int 				n_state;
 	int 				max_n_robots;
 	int 				n_robots;
-	Robot_agent*		Robots;
-	int 				n_state;
+//	Robot_agent*		Robots;
+
 
 	int 				max_n_objects;
 	int 				n_objects; // patrick
-	Object*				Objects;
+//	Object*				Objects;
+	std::vector<Object>		Objects;
 	double 				dt;
 
 	Coalition** 		Coalitions;
-
-
-	VectorXd		 	X_V;
-	VectorXd 			DX_V;
 
 	MatrixXd 			A_V;
 
@@ -155,13 +156,6 @@ private:
 //	S_Virtual_object	Vobject;
 
 	int 				n_frames; // patrick
-
-//	Coalition**		Coalitions; // patrick set of all possible coalitions, many will be of value 0
-
-
-	double				handle_exp_old;
-
-
 
 };
 

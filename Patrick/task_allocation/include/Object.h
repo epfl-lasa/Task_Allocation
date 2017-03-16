@@ -18,10 +18,12 @@ class Object {
 
 public:
 
-	Object(int n_state_=3);
+	Object();
+//	Object(int n_state_=3);
 	//Object(int n_state_);
 	Object(int N_state, VectorXd X, VectorXd DX, double max_time, VectorXd grabbing_states[], int n_grabbing_states, double weight, double value, Object_prediction_type Object_motion=Object_prediction_type::Straight );
-	Object();
+
+	Object( const Object &o); // copy construct
 	~Object();
 
 	void predict_motion();
@@ -48,7 +50,7 @@ public:
 
 private:
 
-	const static int Max_Grabbing_state = 4;
+	const static int max_grabbing_state = 4;
 
 	const double dt = 0.1; // this is used for the trajectory estimation, not too sure what to do with it...
 
@@ -60,7 +62,7 @@ private:
 
 	bool state_is_set;
 	bool first_state_is_set;
-	bool grabbing_state_is_set[Max_Grabbing_state];
+	bool grabbing_state_is_set[max_grabbing_state];
 	Object_prediction_type motion_type;
 	double	max_pred_time; // patrick changed, remove const
 	int n_grabbing_pos; 				 // Number of the grabbing positions
@@ -69,12 +71,12 @@ private:
 	VectorXd X_O_INTERCEPT;			// The State of the object with respect to the intercept point
 	VectorXd X_I_C;		 			// The State of the desired intercept point with respect to the world frame
 	VectorXd DX_O;						// The D-State of the object with respect to the world frame
-	VectorXd X_O_G[Max_Grabbing_state];// The State of the grabbing positions with respect to the state of the object
+	VectorXd X_O_G[max_grabbing_state];// The State of the grabbing positions with respect to the state of the object
 	TrajectoryEstimation *predict;
 
 	int n_frames;
 	MatrixXd	P_O_prediction;
-	MatrixXd	P_O_G_prediction[Max_Grabbing_state];
+	MatrixXd	P_O_G_prediction[max_grabbing_state];
 	MatrixXd	order_of_grabbing;
 	MatrixXd	prob_order_of_grabbing;
 	double		max_liklihood; // prob useless for me

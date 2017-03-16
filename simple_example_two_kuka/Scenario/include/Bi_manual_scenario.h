@@ -31,6 +31,7 @@
 #include "std_msgs/Float64MultiArray.h"
 #include "commands.h"
 
+#include "task_allocation.h"
 
 
 const int KUKA_DOF=7;
@@ -105,7 +106,8 @@ private :
 
 
 
-
+	void						prepare_task_allocator();
+	void						add_robots_task_allocator();
 
 
 	bool						flag_init[2];
@@ -255,6 +257,7 @@ private :
 
 
 
+	Task_allocation* Task_allocator;
 
 };
 

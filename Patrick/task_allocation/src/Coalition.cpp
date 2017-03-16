@@ -44,12 +44,12 @@ Coalition::Coalition(int n_bots, Robot_agent** Robots_, int n_tasks_, Object** T
 		Robots[i] = Robots_[i];
 	}
 
-	Tasks = new Object*[n_tasks];
+/*	Tasks = new Object*[n_tasks];
 	for(int i = 0; i < n_tasks; i++)
 	{
 		Tasks[i] = Tasks_[i];
 	}
-
+*/
 	// compute force and number of grippers.
 	for(int i = 0; i < n_robots; i++)
 	{
