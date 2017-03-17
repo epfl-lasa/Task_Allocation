@@ -89,7 +89,7 @@ public:
 	//void 		Initialize_multiple_objects(int N_robots, int N_objects, S_object* Objs_, double dt, int N_state, MatrixXd A_V,ENUM_State_of_prediction Object_motion); // patrick
 
 
-	//int			add_robot(Robot_agent bot);
+	int			add_robot(Robot_agent bot);
 	int 		add_task(Object Object);
 
 	bool 		Get_prediction_state();
@@ -97,6 +97,8 @@ public:
 	void 		Get_Virtual_state(VectorXd & X);
 	void 		Get_the_grabbing_state(int index, VectorXd& X);
 
+	VectorXd	get_object_state(int i);
+	void 		predict_motion();
 
 /*	void 		Get_the_desired_intercept_state(int index, VectorXd& X);*/
 	void 		Get_the_robot_state(int index, VectorXd& X);
@@ -115,6 +117,7 @@ public:
 	void		allocate(); // patrick
 
 	int			get_1();
+	void		init_coalitions();
 
 private:
 
@@ -128,7 +131,9 @@ private:
 	void	CalculateCatchingprobability(int nFrame,int i_robot,int i_object);
 	void 	calculate_ATX();
 	void	calculate_u();
-	void	init_coalitions();
+	int 	factorial(int n);
+
+	MatrixXd PermGenerator(int n, int k);
 
 	Object_prediction_type Prediction_model;
 
@@ -137,6 +142,7 @@ private:
 	int 				n_state;
 	int 				max_n_robots;
 	int 				n_robots;
+	std::vector<Robot_agent> Robots;
 //	Robot_agent*		Robots;
 
 
@@ -146,7 +152,7 @@ private:
 	std::vector<Object>		Objects;
 	double 				dt;
 
-	Coalition** 		Coalitions;
+	std::vector< std::vector<Coalition> > 		Coalitions;
 
 	MatrixXd 			A_V;
 
@@ -162,41 +168,7 @@ private:
 
 /*
 
-int factorial(int n)
-{
-    if(n > 1)
-        return n * factorial(n - 1);
-    else
-        return 1;
-}
-MatrixXd PermGenerator(int n, int k)
-{
-	MatrixXd handle(factorial(n)/factorial(n-k),k);
-    std::vector<int> d(n);
-    std::iota(d.begin(),d.end(),1);
-    cout << "These are the Possible Permutations: " << endl;
-    int repeat = factorial(n-k);
-    int counter=0;
-    do
-    {
-        for (int i = 0; i < k; i++)
-        {
-        	handle(counter,i)=d[i]-1;
-        }
-        counter=counter+1;
-        for (int i=1; i!=repeat; ++i)
-        {
-            next_permutation(d.begin(),d.end());
-        }
-    } while (next_permutation(d.begin(),d.end()));
 
-    cout<<handle<<endl;
-
-    return handle;
-}
-template <typename T> int sgn(T val) {
-    return (T(0) < val) - (val < T(0));
-}
 
 */
 #endif

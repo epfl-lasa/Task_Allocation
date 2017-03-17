@@ -35,8 +35,8 @@ Task_allocation::Task_allocation(double dt_, int n_state_, int max_n_bots_, int 
 
 	n_robots = 0;
 //	Robots = new Robot_agent[max_n_robots];
-
-
+	Robots.reserve((unsigned long)(max_n_robots));
+	Robots.clear();
 
 	if(max_n_tasks_ < 1)
 	{
@@ -47,7 +47,7 @@ Task_allocation::Task_allocation(double dt_, int n_state_, int max_n_bots_, int 
 	n_objects = 0;
 	//Objects = new Object[n_objects];
 
-	Objects.reserve(20); // this shouldn't be needed
+	Objects.reserve((unsigned long)(max_n_objects)); // this shouldn't be needed
 	Objects.clear();
 	//init_coalitions();
 
@@ -61,19 +61,83 @@ Task_allocation::Task_allocation(double dt_, int n_state_, int max_n_bots_, int 
 	catching_pos_is_found = false;
 }
 
+VectorXd Task_allocation::get_object_state(int i)
+{
+	VectorXd empty_vec;
+	empty_vec.resize(n_state);
+	empty_vec.setConstant(-1);
+	if(i >= 0 && i < max_n_objects)
+		return Objects[i].get_X_O();
+	else
+		return empty_vec;
+}
 
+
+void Task_allocation::predict_motion()
+{
+
+	for(int i = 0; i < n_objects; i++)
+	{
+		//cout << "predicting object " << i << endl;
+		Objects[i].dumb_predict_motion();
+		//cout << "predicted object " << i << endl;
+	}
+}
 
 void Task_allocation::init_coalitions()
 {
-	Coalitions = NULL;
+/*	Coalitions_ = new S_Coalition*[MAX_COALITION_SIZE];
+		for(int i = 0; i < MAX_COALITION_SIZE; i++)
+		{
+			MatrixXd coals = PermGenerator(N_robots_, i);
+			int n_coals = coals.rows();
+			Coalitions_[i] = new S_Coalition[n_coals];
+
+			*/
+	cout << "first reserve" << endl;
+	Coalitions.reserve(MAX_COALITION_SIZE);
+	Coalitions.clear();
+
+	// the first level of indices is the coalition size
+	for(int i = 0; i < MAX_COALITION_SIZE; i++)
+	{
+		cout << "inner loop reserve number " << i << endl;
+		unsigned long int number_of_coalitions = 10;
+		MatrixXd perm = PermGenerator(n_robots,i);
+		cout << "Permutation matrix " << endl << perm << endl;
+		number_of_coalitions = perm.rows();
+
+		Coalitions.push_back( std::vector<Coalition>() );
+		Coalitions[i].reserve(number_of_coalitions);
+		Coalitions[i].clear();
+
+		// the 2nd level is the ID of the coalition within that size
+		for(int j = 0; j < number_of_coalitions; j++)
+		{
+			cout << "trying to push back a coalition " << endl;
+
+			// make the coalition
+			Coalition test;
+			for(int k = 0; k < i; k++) // add all robots that should be in this coalition.
+			{
+				test.add_robot(&(Robots[perm(j,k)]));
+			}
+			for(int k = 0; k < n_objects; k++)
+			{
+				test.add_task(&(Objects[k]));
+			}
+			Coalitions[i].push_back(test);
+			cout << "Coalition i j " << i << " " << j << endl << Coalitions[i][j] << endl;
+		}
+	}
 }
 
-/*
+
 int Task_allocation::add_robot(Robot_agent bot)
 {
 	if(n_robots < max_n_robots)
 	{
-		Robots[n_robots] = bot;
+		Robots.push_back(bot);
 		n_robots++;
 	}
 	else
@@ -81,7 +145,7 @@ int Task_allocation::add_robot(Robot_agent bot)
 		cout << "error, trying to add a robot but max robots is reached. n_robots " << n_robots << " max_n_robots " << max_n_robots << endl;
 	}
 	return n_robots;
-}*/
+}
 
 int Task_allocation::get_1()
 {
@@ -117,6 +181,47 @@ bool Task_allocation::set_object_state(int i, VectorXd X, VectorXd DX)
 
 	return false;
 }
+
+
+
+int Task_allocation::factorial(int n)
+{
+    if(n > 1)
+        return n * factorial(n - 1);
+    else
+        return 1;
+}
+MatrixXd Task_allocation::PermGenerator(int n, int k)
+{
+	MatrixXd handle(factorial(n)/factorial(n-k),k);
+    std::vector<int> d(n);
+    std::iota(d.begin(),d.end(),1);
+    cout << "These are the Possible Permutations: " << endl;
+    int repeat = factorial(n-k);
+    int counter=0;
+    do
+    {
+        for (int i = 0; i < k; i++)
+        {
+        	handle(counter,i)=d[i]-1;
+        }
+        counter=counter+1;
+        for (int i=1; i!=repeat; ++i)
+        {
+            next_permutation(d.begin(),d.end());
+        }
+    } while (next_permutation(d.begin(),d.end()));
+
+    cout<<handle<<endl;
+
+    return handle;
+}
+template <typename T> int sgn(T val) {
+    return (T(0) < val) - (val < T(0));
+}
+
+
+
 
 
 // patrick

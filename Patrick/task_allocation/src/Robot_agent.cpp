@@ -16,6 +16,34 @@ Robot_agent::Robot_agent()
 
 }
 
+Robot_agent::Robot_agent(int Num_LPV_Com, const char *path_A_LPV, const char *path_prior_LPV,const char *path_mu_LPV, const char *path_sigma_LPV,
+				int Num_GMM_Com, int Num_GMM_state, const char *path_prior_GMM, const char *path_mu_GMM, const char *path_sigma_GMM,
+				const char *path_threshold, Vector3d X_Base)
+{
+
+
+	int n_state = 6;
+
+	Workspace_model.initialize(Num_GMM_Com,Num_GMM_state);
+	//Dynamic.initialize(Num_LPV_Com,n_state);
+
+	Workspace_model.initialize_GMM(path_prior_GMM,path_mu_GMM,path_sigma_GMM,path_threshold);
+	//Dynamic.initialize_theta(path_prior_LPV,path_mu_LPV,path_sigma_LPV);
+	//Dynamic.initialize_A(path_A_LPV);
+	X_base = X_Base;
+
+
+
+	workspace_model_is_set = true;
+	//LPV_is_set = true;
+	//tau = 0.0001;
+	//Dtau = 0;
+
+
+}
+
+
+
 Robot_agent::Robot_agent(GMM model, VectorXd base, Vector3d initial, LPV dyn_mod, VectorXd ATX_,
 			VectorXd X_, VectorXd X_intercept_, VectorXd DX_, VectorXd X_I_C_, VectorXd X_F_P_,
 			VectorXd DX_F_P_, VectorXd X_d_, VectorXd DX_d_, double tau_, double Dtau_, double DDtau_,
@@ -58,44 +86,44 @@ Robot_agent::Robot_agent(GMM model, VectorXd base, Vector3d initial, LPV dyn_mod
 
 	X_base = base;
 	X_initial_pose = initial;
-	Dynamic = dyn_mod;
-	LPV_is_set = true;
+//	Dynamic = dyn_mod;
+//	LPV_is_set = true;
 
-	ATX = ATX_;
+//	ATX = ATX_;
 	X = X_;
-	X_intercept = X_intercept_;
-	DX = DX_;
-	state_is_set = true;
-	X_I_C = X_I_C_;
-	X_F_P = X_F_P_;
-	DX_F_P = DX_F_P_;
+//	X_intercept = X_intercept_;
+//	DX = DX_;
+//	state_is_set = true;
+//	X_I_C = X_I_C_;
+//	X_F_P = X_F_P_;
+//	DX_F_P = DX_F_P_;
 
 
-	X_d = X_d_;
-	DX_d = DX_d_;
-	desired_state_is_set = true;
+//	X_d = X_d_;
+//	DX_d = DX_d_;
+//	desired_state_is_set = true;
 
-	tau = 0;
-	Dtau = 0;
-	DDtau = 0;
-	Probability_of_catching = Prob_of_catching_;
+//	tau = 0;
+//	Dtau = 0;
+//	DDtau = 0;
+//	Probability_of_catching = Prob_of_catching_;
 
 	n_grippers = n_grippers_;
 	force = force_;
-	is_assigned = false;
+//	is_assigned = false;
 
-	index_of_grabbing_position = 0;
+//	index_of_grabbing_position = 0;
 
-	M = NULL;
+//	M = NULL;
 }
 
 Robot_agent::~Robot_agent()
 {
-	if(M != NULL)
-		delete M;
+//	if(M != NULL)
+//		delete M;
 }
 
-
+/*
 bool Robot_agent::get_state_set()
 {
 	return state_is_set;
@@ -110,7 +138,7 @@ bool Robot_agent::get_desired_state_set()
 {
 	return desired_state_is_set;
 }
-
+*/
 void Robot_agent::get_state(VectorXd& X_)
 {
 	X_ = X;
@@ -121,7 +149,7 @@ bool Robot_agent::get_workspace_set()
 {
 	return workspace_model_is_set;
 }
-
+/*
 void Robot_agent::get_coordination_allocation(int index, double& x)
 {
 	x=tau;
@@ -131,21 +159,21 @@ void Robot_agent::get_coordination_parameter(double& x)
 {
 	x=gamma;
 }
+*/
 
 
 
-
-
-
+/*
+//	 * X is the state of the end-effector with respect to the world-frame
 void Robot_agent::set_initial_state(Vector3d X_)
 {
-	/*
-		 * X is the state of the end-effector with respect to the world-frame
-		 * 								*/
+
+
+
 		X_initial_pose = X;
 		cout<<"The  initial position of robot is:"<<endl<< X_initial_pose<<endl;
 }
-
+*/
 void Robot_agent::set_state(VectorXd X_)
 {
 	/* Setting the current state
@@ -158,17 +186,18 @@ void Robot_agent::set_state(VectorXd X_)
 		cout<<"The dimension of robot is "<<X.rows()<<endl;
 //		ERROR();
 	}
-	if (state_is_set == true)
+/*	if (state_is_set == true)
 	{
 		cout<<"States of robot is already  set."<<endl;
 //		ERROR();
 	}
+*/
 
 	X = X_;
-	state_is_set = true;
+//	state_is_set = true;
 }
 
-
+/*
 void Robot_agent::set_first_primitive_desired_position(VectorXd X_, VectorXd DX_)
 {
 	/* Setting the desired state of the first primitive of the  index th robot
@@ -176,7 +205,7 @@ void Robot_agent::set_first_primitive_desired_position(VectorXd X_, VectorXd DX_
 		 * DX is the D-desired state of the end-effector
 		 * 	DOES NOT NEED TO CALL AT EACH UPDATE LOOP		*/
 
-		if ((X_F_P.rows() != X_.rows()) || (DX_F_P.rows() != DX_.rows()))
+/*		if ((X_F_P.rows() != X_.rows()) || (DX_F_P.rows() != DX_.rows()))
 		{
 			cout<<"The dimension of the desired state of robot is wrong."<<endl;
 			cout<<"The dimension of X is "<<X_.rows()<<" and "<<DX_.rows()<<endl;
@@ -189,7 +218,7 @@ void Robot_agent::set_first_primitive_desired_position(VectorXd X_, VectorXd DX_
 		DX_F_P = DX_;
 		desired_state_is_set = true;
 }
-
+*/
 int Robot_agent::get_n_grippers()
 {
 	return n_grippers;
@@ -205,11 +234,11 @@ bool Robot_agent::init_robot(VectorXd base, Vector3d X_init, VectorXd X, VectorX
 {
 
 	set_base(base);
-	set_LPV(Dynamic);
-	set_ATX(ATX_);
+//	set_LPV(Dynamic);
+//	set_ATX(ATX_);
 	set_grippers(grippers);
 	set_force(force);
-	set_initial_state(X_init);
+//	set_initial_state(X_init);
 	set_state(X);
 
 	return true;
@@ -221,6 +250,7 @@ void Robot_agent::set_base(Vector3d X)
 	X_base = X;
 }
 
+/*
 void Robot_agent::set_LPV(LPV model)
 {
 	Dynamic = model;
@@ -229,7 +259,7 @@ void Robot_agent::set_LPV(LPV model)
 void Robot_agent::set_ATX(VectorXd ATX_)
 {
 	ATX = ATX_;
-}
+}*/
 
 void Robot_agent::set_grippers(int n)
 {

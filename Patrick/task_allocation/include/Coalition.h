@@ -17,7 +17,7 @@
 #include "TrajectoryEstimation.h"
 #include <math.h>
 #include <omp.h>
-
+#include <vector>
 
 #include "Object.h"
 #include "Robot_agent.h"
@@ -41,15 +41,21 @@ public:
 	double evaluate_task(Object task);
 	double compute_coalitional_value();
 
+	friend std::ostream& operator<< (std::ostream& stream, const Coalition& Object);
+
 private:
+	const static int max_n_robots = 12;
 	int n_robots;   // number of robots
-	Robot_agent** Robots; // robots
+	std::vector<Robot_agent*> Robots;
+	//Robot_agent** Robots; // robots
 
 	int n_grippers; // available grippers
 	double force; // available force
 
-	Object** Tasks; // tasks
-	int n_tasks;
+//	Object** Tasks; // tasks
+	const static int max_n_objects = 12;
+	std::vector<Object*> Objects;
+	int n_objects;
 	double coalitional_value;
 
 

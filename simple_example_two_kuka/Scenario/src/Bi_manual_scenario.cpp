@@ -479,11 +479,6 @@ void Bi_manual_scenario::initKinematics(int index)
 			6,3,addTwochar(Commom_path,"/IIWA_workspace_Model_prior").c_str(),addTwochar(Commom_path,"/IIWA_workspace_Model_mu").c_str(),addTwochar(Commom_path,"/IIWA_workspace_Model_Sigma").c_str(),addTwochar(Commom_path,"/IIWA_workspace_Model_Threshold").c_str(),X_base);
 
 
- // patrick below
-//	Robot_agent Bot()
-
-
-// */
 
 	End_State[index].resize(6);		End_State[index].setZero();
 	DEnd_State[index].resize(6);	DEnd_State[index].setZero();
@@ -795,26 +790,12 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdate(){
 				Motion_G->Set_the_grabbing_state(i,Object_Grabbing_State[i],Object_State_raw);
 			}
 
+
 			// patrick
-			// Object(int N_state, VectorXd X, VectorXd DX, double max_time, VectorXd grabbing_states[],
-			// 					int n_grabbing_states, double weight, double value, Object_prediction_type Object_motion=Object_prediction_type::Straight );
+
 			cout << "some patrick stuff coming" << endl;
 			prepare_task_allocator();
-			VectorXd X_O_G[N_grabbing];
-			for(int i = 0; i < N_grabbing; i++)
-			{
-				X_O_G[i] = Object_Grabbing_State[i] - Object_State_raw;
-			}
-			cout << "made the vectors and prepared task allocator " << endl;
-			double weight = 102;
-			double value = 0.1;
-			Object task0(3,Object_State_raw,DObject_State, 100, Object_Grabbing_State, 2, weight, value);
-			cout << task0 << endl;
-			cout << "made a task " << endl;
-			cout << "this should be a 1 ";
-			cout << Task_allocator->get_1() << endl;
-			Task_allocator->add_task(task0);
-			cout << "added task" << endl;
+
 
 			// end patrick */
 
@@ -890,6 +871,23 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 
 		Motion_G->Update();
 
+
+	// patrick
+
+		/*	VectorXd ZeroVec(6);
+				ZeroVec.resize(6);
+				ZeroVec.setZero();
+
+				VectorXd oneVec(6);
+				oneVec.resize(6);
+				oneVec.setConstant(1);*/
+
+		Task_allocator->set_object_state(0, Object_State, DObject_State);
+
+		Task_allocator->predict_motion();
+		//cout << Task_allocator->get_object_state(0);
+
+	// end patrick */
 
 		for(int i=0;i<N_robots;i++)
 		{
@@ -1055,29 +1053,58 @@ int Bi_manual_scenario::RespondToConsoleCommand(const string cmd, const vector<s
 void Bi_manual_scenario::prepare_task_allocator()
 {
 	double dt = 0.1;
-	int n_state = 3;
+	int n_state = 6;
 //	double dt, int n_state, int max_n_bots, int max_n_tasks, MatrixXd A_V,Object_prediction_type Object_motion=Object_prediction_type::Straight
 	Task_allocator = new Task_allocation(dt, n_state, N_robots, 1, A_V);
 
-	/*Robot_agent Bot;
-	for(int i = 0; i < N_robots; i++)
+
+	// adding object(s)
+	add_objects_task_allocator();
+
+	//adding robot(s)
+
+	add_robots_task_allocator();
+
+
+	cout << "init coalitions " << endl;
+
+	Task_allocator->init_coalitions();
+
+}
+
+void Bi_manual_scenario::add_objects_task_allocator()
+{
+	VectorXd X_O_G[N_grabbing];
+	for(int i = 0; i < N_grabbing; i++)
 	{
-		Task_allocator.add_robot(Bot);
-//		Bot = new Robot_agent(GMM model, VectorXd base, Vector3d initial, LPV dyn_mod, VectorXd ATX_,
-	//			VectorXd X_, VectorXd X_intercept_, VectorXd DX_, VectorXd X_I_C_, VectorXd X_F_P_,
-		//		VectorXd DX_F_P_, VectorXd X_d_, VectorXd DX_d_, double tau_, double Dtau_, double DDtau_, MatrixXd Prob_of_catching_, int n_grippers_, double force);
+		X_O_G[i] = Object_Grabbing_State[i] - Object_State_raw;
 	}
-*/
-//	Object Object;
-//	for(int i = 0; i < 1; i++)
-//	{
-//		Task_allocator.add_task(Object);
-//	}
+	cout << "made the vectors and prepared task allocator " << endl;
+	double weight = 102;
+	double value = 0.1;
+	Object task0(Object_State_raw.size(),Object_State_raw,DObject_State, 100, Object_Grabbing_State, 2, weight, value);
+	cout << task0 << endl;
+	cout << "made a task " << endl;
+	Task_allocator->add_task(task0);
+	cout << "added task" << endl;
 }
 
 void Bi_manual_scenario::add_robots_task_allocator()
 {
 
+	for(int i = 0; i < N_robots; i++)
+	{
+		cout << "making robot" << endl;
+		Robot_agent Bot(1,addTwochar(Commom_path,"/A_Matrix").c_str(), addTwochar(Commom_path,"/Priors").c_str(),
+						addTwochar(Commom_path,"/Mu").c_str(), addTwochar(Commom_path,"/Sigma").c_str(),
+						6, 3, addTwochar(Commom_path,"/IIWA_workspace_Model_prior").c_str(),
+						addTwochar(Commom_path,"/IIWA_workspace_Model_mu").c_str(),
+						addTwochar(Commom_path,"/IIWA_workspace_Model_Sigma").c_str(),
+						addTwochar(Commom_path,"/IIWA_workspace_Model_Threshold").c_str(),Vector3d());
+		cout << "made robot " << endl;
+		Task_allocator->add_robot(Bot);
+		cout << "robot added" << endl;
+	}
 }
 
 // end patrick
