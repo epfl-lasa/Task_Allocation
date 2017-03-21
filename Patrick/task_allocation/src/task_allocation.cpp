@@ -85,16 +85,12 @@ void Task_allocation::predict_motion()
 void Task_allocation::init_coalitions()
 {
 
-//		cout << "init coalitions " << endl;
-//	cout << "first reserve" << endl;
+
 	Coalitions.reserve(MAX_COALITION_SIZE); // coalitions of 0 robots are pointless, so if max = 3, we want 3 arrays.
 	Coalitions.clear();
-//	cout << "reserved space" << endl;
 	// the first level of indices is the coalition size
-//	cout << "I'm gonna loop for so many times " << min(MAX_COALITION_SIZE, n_robots) << endl;
 	for(int i = 0; i < min(MAX_COALITION_SIZE, n_robots); i++)
 	{
-	//	cout << "inner loop reserve number " << i << endl;
 		unsigned long int number_of_coalitions = 10;
 		MatrixXd perm = PermGenerator(n_robots,i+1); // i+1 because in array 0 we store the coalitions of size 1(ie singletons)
 
@@ -128,10 +124,8 @@ void Task_allocation::init_coalitions()
 			}
 		}
 
-	//	cout << "have to remove rows " ;
 		for(int j = 0; j < n_dupes; j++)
 		{
-	//		cout << to_remove[j] << " " ;
 			removeRow(perm, to_remove[j]);
 		}
 
@@ -140,29 +134,22 @@ void Task_allocation::init_coalitions()
 
 		Coalitions.push_back( std::vector<Coalition>() );
 		Coalitions[i].reserve(number_of_coalitions);
-//		cout << "reserved 2nd dimension for coalitions, gonna loop this many times " << number_of_coalitions << endl;
+
 		// the 2nd level is the ID of the coalition within that size
 		for(int j = 0; j < number_of_coalitions; j++)
 		{
-	//		cout << "trying to push back a coalition " << endl;
-
 
 			// make the coalition
-	//		cout << "making empty coalition " << j << endl;
 			Coalition test;
-		//	cout << "created empty coalition " << endl;
 			for(int k = 0; k < i+1; k++) // add all robots that should be in this coalition.
 			{
 				test.add_robot(&(Robots[perm(j,k)]));
 			}
-	//		cout << "added robots to empty coalition" << endl;
 			for(int k = 0; k < n_objects; k++)
 			{
 				test.add_task(&(Objects[k]));
 			}
-			cout << "added objects to empty coalition" << endl;
-	//		Coalitions[i].push_back(test);
-			cout << "did my push back" << endl;
+			Coalitions[i].push_back(test);
 //			cout << "Coalition of size " << i+1 << " number " << j << endl << Coalitions[i][j] << endl;
 		}
 	}
@@ -229,6 +216,12 @@ void Task_allocation::allocate()
 {
 	int n_steps = 5;
 
+	active_coalitions.clear();
+	unallocated_robots.clear();
+/*	for(const auto& rob : Robots)
+	{
+		unallocated_robots.push_back(&rob);
+	}*/
 	// all these are not constant references, we risk changing them here. In some cases we want to change it though.
 	// (when computing coalitional value, we want to change the coalitional value in it)
 	for(auto& row : Coalitions)

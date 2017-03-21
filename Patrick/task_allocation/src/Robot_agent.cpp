@@ -43,6 +43,7 @@ Robot_agent::Robot_agent(int Num_LPV_Com, const char *path_A_LPV, const char *pa
 	n_grippers = grip;
 	force = force_;
 
+	assignment = -1;
 }
 
 
@@ -98,6 +99,13 @@ Robot_agent::~Robot_agent()
 //		delete M;
 }
 */
+
+
+int Robot_agent::get_assignment()
+{
+	return assignment;
+}
+
 
 void Robot_agent::get_state(VectorXd& X_)
 {

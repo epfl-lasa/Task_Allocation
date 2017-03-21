@@ -87,7 +87,7 @@ private:
 	int 				max_n_robots;
 	int 				n_robots;
 	std::vector<Robot_agent> Robots;
-
+	std::vector<Robot_agent*> unallocated_robots;
 
 	int 				max_n_objects;
 	int 				n_objects; // patrick
@@ -96,7 +96,7 @@ private:
 	double 				dt;
 
 	std::vector< std::vector<Coalition> > 		Coalitions;
-
+	std::vector<Coalition*> active_coalitions;
 	int 				n_frames; // patrick
 
 };
