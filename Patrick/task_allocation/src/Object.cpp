@@ -13,7 +13,7 @@ Object::Object()
 }*/
 Object::Object( const Object &o) // copy construct
 {
-	cout << "something called the copy constructor" << endl;
+	//cout << "something called the copy constructor" << endl;
 
 	n_state = o.n_state;
 	//state_is_set = o.state_is_set;
@@ -67,11 +67,11 @@ Object::Object( const Object &o) // copy construct
 //	cout << *this << endl;
 
 }
-Object::Object(int N_state_, VectorXd X_, VectorXd DX_, double max_time_, VectorXd grabbing_states_[], int n_grabbing_states_, double weight_, double value_, Object_prediction_type Object_motion )
+Object::Object(int N_state_, VectorXd X_, VectorXd DX_, double max_time_, VectorXd grabbing_states_[], int n_grabbing_states_, double weight_, double value_, int id_, Object_prediction_type Object_motion )
 {
 //	cout << "I'm making an Object" << endl;
 	n_state = N_state_;
-
+//	id = id_;
 
 	X_O.resizeLike(X_); X_O.setZero(); X_O = X_;
 	DX_O.resizeLike(DX_); DX_O.setZero(); DX_O = DX_;
@@ -133,12 +133,13 @@ Object::Object(int N_state_, VectorXd X_, VectorXd DX_, double max_time_, Vector
 //	cout << "done making object" << endl;
 }
 
+/*
 Object::~Object()
 {
 //	if(predict != NULL)
 //		delete predict;
 }
-
+*/
 
 
 void Object::predict_motion()
@@ -275,17 +276,16 @@ void Object::set_prediction_state(VectorXd X,VectorXd X_filtered, double time)
 }
 
 // getters
-/*
-bool Object::get_state_set()
-{
-	return true;
-//	return state_is_set;
-}
-*/
+
 
 bool Object::get_first_state_set()
 {
 	return first_state_is_set;
+}
+
+int Object::get_n_grippers()
+{
+	return n_grabbing_pos;
 }
 
 // defaults to false if index out of range

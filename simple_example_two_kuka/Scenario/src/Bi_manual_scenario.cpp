@@ -795,7 +795,7 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdate(){
 
 			cout << "some patrick stuff coming" << endl;
 			prepare_task_allocator();
-
+			cout << *Task_allocator << endl;
 
 			// end patrick */
 
@@ -1066,44 +1066,50 @@ void Bi_manual_scenario::prepare_task_allocator()
 	add_robots_task_allocator();
 
 
-	cout << "init coalitions " << endl;
+//	cout << "init coalitions " << endl;
 
+	// make coalitions
 	Task_allocator->init_coalitions();
+	cout << "done init coalitions" << endl;
 
 }
 
 void Bi_manual_scenario::add_objects_task_allocator()
 {
+	cout << "adding objects" << endl;
 	VectorXd X_O_G[N_grabbing];
 	for(int i = 0; i < N_grabbing; i++)
 	{
 		X_O_G[i] = Object_Grabbing_State[i] - Object_State_raw;
 	}
-	cout << "made the vectors and prepared task allocator " << endl;
+//	cout << "made the vectors and prepared task allocator " << endl;
 	double weight = 102;
 	double value = 0.1;
-	Object task0(Object_State_raw.size(),Object_State_raw,DObject_State, 100, Object_Grabbing_State, 2, weight, value);
-	cout << task0 << endl;
-	cout << "made a task " << endl;
+	Object task0(Object_State_raw.size(),Object_State_raw,DObject_State, 100, Object_Grabbing_State, 2, weight, value, 0);
+//	cout << task0 << endl;
+//	cout << "made a task " << endl;
 	Task_allocator->add_task(task0);
-	cout << "added task" << endl;
+//	cout << "added task" << endl;
 }
 
 void Bi_manual_scenario::add_robots_task_allocator()
 {
 
+	cout << "adding robots" << endl;
+	double force = 5;
+	int grippers = 1;
 	for(int i = 0; i < N_robots; i++)
 	{
-		cout << "making robot" << endl;
+//		cout << "making robot" << endl;
 		Robot_agent Bot(1,addTwochar(Commom_path,"/A_Matrix").c_str(), addTwochar(Commom_path,"/Priors").c_str(),
 						addTwochar(Commom_path,"/Mu").c_str(), addTwochar(Commom_path,"/Sigma").c_str(),
 						6, 3, addTwochar(Commom_path,"/IIWA_workspace_Model_prior").c_str(),
 						addTwochar(Commom_path,"/IIWA_workspace_Model_mu").c_str(),
 						addTwochar(Commom_path,"/IIWA_workspace_Model_Sigma").c_str(),
-						addTwochar(Commom_path,"/IIWA_workspace_Model_Threshold").c_str(),Vector3d());
-		cout << "made robot " << endl;
+						addTwochar(Commom_path,"/IIWA_workspace_Model_Threshold").c_str(),Vector3d(), i, grippers, force);
+//		cout << "made robot " << endl;
 		Task_allocator->add_robot(Bot);
-		cout << "robot added" << endl;
+//		cout << "robot added" << endl;
 	}
 }
 

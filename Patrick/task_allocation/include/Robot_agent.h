@@ -32,10 +32,11 @@ public:
 			VectorXd X_, VectorXd X_intercept_, VectorXd DX_, VectorXd X_I_C_, VectorXd X_F_P_,
 			VectorXd DX_F_P_, VectorXd X_d_, VectorXd DX_d_, double tau_, double Dtau_, double DDtau_, MatrixXd Prob_of_catching_, int n_grippers_, double force);
 	Robot_agent(int Num_LPV_Com, const char  *path_A_LPV, const char  *path_prior_LPV,const char  *path_mu_LPV,const char  *path_sigma_LPV, int Num_GMM_Com,
-					int Num_GMM_state, const char  *path_prior_GMM,const char  *path_mu_GMM,const char  *path_sigma_GMM, const char *path_threshold,Vector3d X_Base);
+					int Num_GMM_state, const char  *path_prior_GMM,const char  *path_mu_GMM,const char  *path_sigma_GMM, const char *path_threshold,Vector3d X_Base, int ID, int grip, double force);
 
 
-	~Robot_agent();
+//	~Robot_agent();
+	int	get_id();
 	bool get_workspace_set();
 	bool get_state_set();
 //	bool get_LPV_set();
@@ -56,6 +57,7 @@ public:
 	void set_state(VectorXd X);
 //	void set_first_primitive_desired_position(VectorXd X, VectorXd DX);
 
+	friend std::ostream& operator <<(std::ostream& stream, const Robot_agent& o);
 private:
 	bool workspace_model_is_set;
 //	bool state_is_set;
@@ -82,6 +84,7 @@ private:
 //	double*		M;
 //	double 		gamma;
 
+	int 		id;
 	int 		n_grippers; // number of grippers on this robot, typically 1
 	double 		force; // force of the robot
 //	bool		is_assigned; // is the robot assigned to a task?

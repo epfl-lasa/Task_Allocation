@@ -19,12 +19,10 @@ class Object {
 public:
 
 	Object();
-//	Object(int n_state_=3);
-	//Object(int n_state_);
-	Object(int N_state, VectorXd X, VectorXd DX, double max_time, VectorXd grabbing_states[], int n_grabbing_states, double weight, double value, Object_prediction_type Object_motion=Object_prediction_type::Straight );
+	Object(int N_state, VectorXd X, VectorXd DX, double max_time, VectorXd grabbing_states[], int n_grabbing_states, double weight, double value, int id_, Object_prediction_type Object_motion=Object_prediction_type::Straight );
 
 	Object( const Object &o); // copy construct
-	~Object();
+//	~Object();
 
 	void predict_motion();
 	void dumb_predict_motion();
@@ -45,6 +43,7 @@ public:
 	MatrixXd get_P_O_G_prediction(int index);
 	double get_value();
 	double get_weight();
+	int	get_n_grippers();
 
 
 	friend std::ostream& operator<< (std::ostream& stream, const Object& Object);
@@ -58,6 +57,7 @@ private:
 	const double minPos[3] = {-0.5, -1.00, 0.3};
 	const double maxPos[3] = {0.0,  1.00, 1.0};
 
+//	int id;
 
 	int n_state;
 
