@@ -4,13 +4,7 @@ Object::Object()
 {
 
 }
-/*Object::Object(int n_state_)
-{
-	n_state = n_state_;
-	cout << "I'm making an Object" << endl;
 
-	//cout << Ballistic_patrick << " " << Straight_patrick << endl;
-}*/
 Object::Object( const Object &o) // copy construct
 {
 	//cout << "something called the copy constructor" << endl;
@@ -34,7 +28,7 @@ Object::Object( const Object &o) // copy construct
 //	X_I_C = o.X_I_C;
 	DX_O = o.DX_O;
 
-
+	is_assigned = o.is_assigned;
 /*	double gravity[3];gravity[0]=0;gravity[1]=0;
 	if (motion_type == Object_prediction_type::Ballistic)
 	{
@@ -71,16 +65,12 @@ Object::Object(int N_state_, VectorXd X_, VectorXd DX_, double max_time_, Vector
 {
 //	cout << "I'm making an Object" << endl;
 	n_state = N_state_;
-//	id = id_;
+	id = id_;
 
 	X_O.resizeLike(X_); X_O.setZero(); X_O = X_;
 	DX_O.resizeLike(DX_); DX_O.setZero(); DX_O = DX_;
 
 
-//	for(int i = 0; i < max_grabbing_state; i++)
-//		grabbing_state_is_set[i] = false;
-
-//	cout << "made X, DX and n_state" << endl;
 	max_pred_time = max_time_;
 	if(n_grabbing_states_ > max_grabbing_state)
 		cout << "error, n grabbing bigger than max grabbing" << endl;
@@ -88,15 +78,12 @@ Object::Object(int N_state_, VectorXd X_, VectorXd DX_, double max_time_, Vector
 	n_grabbing_pos = n_grabbing_states_;
 	for(int i = 0; i < n_grabbing_pos; i++)
 	{
-		//X_O_G[i].resizeLike(grabbing_states_[i]); X_O_G[i].setZero();
 		X_O_G[i] = grabbing_states_[i];
-//		grabbing_state_is_set[i] = true;
 	}
 
 	weight = weight_;
 	value = value_;
 
-//	cout << "made X_O_G, max pred time, weight and value " << endl;
 	P_O_prediction.resize((int)floor(max_pred_time/(dt))+1,3); P_O_prediction.setZero();
 	for(int i = 0; i < n_grabbing_pos; i++)
 	{
@@ -104,43 +91,23 @@ Object::Object(int N_state_, VectorXd X_, VectorXd DX_, double max_time_, Vector
 
 	}
 
-//	cout << "made the P_O_ and P_O prediction" << endl;
 
 
 	double gravity[3];gravity[0]=0;gravity[1]=0;
 
 	motion_type = Object_motion;
-/*	if (motion_type == Object_prediction_type::Ballistic)
-	{
-		gravity[2]=9.81;
-	}
-	else
-	{
-		gravity[2]=0;
-	}
-*/
-//	cout << "made gravity " << endl;
-//	predict = new TrajectoryEstimation(gravity, dt,30,10);
 
-//	cout << "made trajectory estimation" << endl;
-//	state_is_set = true;
 	first_state_is_set = true;
 
-//	index_column = 0;
-//	index_row = 0;
-//	max_liklihood = 0;
+	is_assigned = false;
 	n_frames = -1;
-//	cout << "done making object" << endl;
+
 }
 
-/*
-Object::~Object()
+void Object::set_assigned()
 {
-//	if(predict != NULL)
-//		delete predict;
+	is_assigned = true;
 }
-*/
-
 
 void Object::predict_motion()
 {

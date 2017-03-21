@@ -30,14 +30,21 @@ class Coalition {
 public:
 	Coalition();
 
-	int get_n_robots();
-	int get_n_grippers();
+	void set_id(int);
+	void assign();
 	int add_robot(Robot_agent* bot);
 	int add_task(Object* Task);
-	double get_force();
-	double get_coalitional_value();
 
-	double compute_coalitional_value();
+	void print_pointer();
+	int get_n_robots();
+	int get_n_grippers();
+	int get_id();
+	double get_force();
+	double get_value();
+	double get_cost();
+	double get_weight();
+
+	double compute_value(); // updates value, cost and weight
 
 	friend std::ostream& operator<< (std::ostream& stream, const Coalition& Object);
 
@@ -45,6 +52,7 @@ private:
 
 	bool is_feasible(Object& obj);
 
+	int id;
 
 	const static int max_n_robots = 12;
 	int n_robots;   // number of robots
@@ -56,11 +64,11 @@ private:
 	const static int max_n_objects = 12;
 	std::vector<Object*> Objects;
 	std::vector<double> obj_values;
-	int assigned_obj;
+	int des_obj; // desired object for this coalition
 	int n_objects;
-	double coalitional_value;
-
-
+	double value;
+	double cost;
+	double weight;
 
 };
 

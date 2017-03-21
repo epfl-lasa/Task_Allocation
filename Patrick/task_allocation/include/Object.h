@@ -31,7 +31,7 @@ public:
 	void set_max_pred_time(double time);
 	void set_state(VectorXd X, VectorXd DX);
 	void set_prediction_state(VectorXd X,VectorXd X_filtered, double time);
-
+	void set_assigned();
 
 	// getters
 	VectorXd get_X_O();
@@ -57,32 +57,28 @@ private:
 	const double minPos[3] = {-0.5, -1.00, 0.3};
 	const double maxPos[3] = {0.0,  1.00, 1.0};
 
-//	int id;
+	int id;
+
+	bool is_assigned;
 
 	int n_state;
 
-//	bool state_is_set;
 	bool first_state_is_set;
-//	bool grabbing_state_is_set[max_grabbing_state];
+
 	Object_prediction_type motion_type;
 	double	max_pred_time; // patrick changed, remove const
 	int n_grabbing_pos; 				 // Number of the grabbing positions
 	VectorXd X_O_First; 				// The State of the object with respect to the world frame
 	VectorXd X_O;		 				// The State of the object with respect to the world frame
-//	VectorXd X_O_INTERCEPT;			// The State of the object with respect to the intercept point
-//	VectorXd X_I_C;		 			// The State of the desired intercept point with respect to the world frame
+
 	VectorXd DX_O;						// The D-State of the object with respect to the world frame
 	VectorXd X_O_G[max_grabbing_state];// The State of the grabbing positions with respect to the state of the object
-//	TrajectoryEstimation *predict;
+
 
 	int n_frames;
 	MatrixXd	P_O_prediction;
 	MatrixXd	P_O_G_prediction[max_grabbing_state];
-//	MatrixXd	order_of_grabbing;
-//	MatrixXd	prob_order_of_grabbing;
-//	double		max_liklihood; // prob useless for me
-//	int 		index_row; // prob useless for me
-//	int 		index_column; // prob useless for me
+
 
 	double 		weight; // weight of the object, aka force required to lift it
 	double		value; // value of the object

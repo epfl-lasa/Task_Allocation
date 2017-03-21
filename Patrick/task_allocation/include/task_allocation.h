@@ -64,7 +64,8 @@ public:
 	double 		coalition_evaluate_task(int coal_size, int coalition_id, int object);
 	double 		robot_evaluate_task(int i_robot, int i_object, int frame);
 	void		allocate(); // patrick
-	void		init_coalitions();
+	void		build_coalitions(); //this makes "Coalitions" to hold all coalitions with the currently unallocated robots
+	void		clear_coalitions(); //this resets the coalitions, resets the unallocated robots and active coalitions
 
 	friend std::ostream& operator<< (std::ostream& stream, const Task_allocation& Object);
 
@@ -96,7 +97,7 @@ private:
 	double 				dt;
 
 	std::vector< std::vector<Coalition> > 		Coalitions;
-	std::vector<Coalition*> active_coalitions;
+	std::vector<Coalition> active_coalitions;
 	int 				n_frames; // patrick
 
 };

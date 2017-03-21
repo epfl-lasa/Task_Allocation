@@ -47,7 +47,6 @@ Robot_agent::Robot_agent(int Num_LPV_Com, const char *path_A_LPV, const char *pa
 }
 
 
-
 Robot_agent::Robot_agent(GMM model, VectorXd base, Vector3d initial, LPV dyn_mod, VectorXd ATX_,
 			VectorXd X_, VectorXd X_intercept_, VectorXd DX_, VectorXd X_I_C_, VectorXd X_F_P_,
 			VectorXd DX_F_P_, VectorXd X_d_, VectorXd DX_d_, double tau_, double Dtau_, double DDtau_,
@@ -92,14 +91,10 @@ Robot_agent::Robot_agent(GMM model, VectorXd base, Vector3d initial, LPV dyn_mod
 }
 
 
-/*
-Robot_agent::~Robot_agent()
+void Robot_agent::set_assignment(int assignment_)
 {
-//	if(M != NULL)
-//		delete M;
+	assignment = assignment_;
 }
-*/
-
 
 int Robot_agent::get_assignment()
 {

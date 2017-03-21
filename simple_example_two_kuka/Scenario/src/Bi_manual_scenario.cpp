@@ -1068,9 +1068,11 @@ void Bi_manual_scenario::prepare_task_allocator()
 
 //	cout << "init coalitions " << endl;
 
+	Task_allocator->clear_coalitions();
+
 	// make coalitions
-	Task_allocator->init_coalitions();
-	cout << "done init coalitions" << endl;
+	Task_allocator->build_coalitions();
+//	cout << "done building coalitions" << endl;
 
 }
 

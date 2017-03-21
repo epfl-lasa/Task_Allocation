@@ -16,9 +16,9 @@ Coalition::Coalition()
 	n_objects = 0;
 //	Objects.reserve(max_n_objects);
 //	obj_values.reserve(max_n_objects);
-	assigned_obj = -1;
+	des_obj = -1;
 
-	coalitional_value = -1;
+	value = -1;
 	force = 0;
 	n_grippers = 0;
 
@@ -30,6 +30,31 @@ Coalition::~Coalition()
 
 }
 */
+
+void Coalition::assign()
+{
+	for(const auto& rob : Robots)
+	{
+		rob->set_assignment(des_obj);
+	}
+	Objects[des_obj]->set_assigned();
+}
+
+void Coalition::print_pointer()
+{
+	cout << this;
+}
+
+
+void Coalition::set_id(int id_)
+{
+	id = id_;
+}
+
+int Coalition::get_id()
+{
+	return id;
+}
 
 int Coalition::add_robot(Robot_agent* bot)
 {
@@ -73,14 +98,26 @@ double Coalition::get_force()
 	return force;
 }
 
-double Coalition::get_coalitional_value()
+double Coalition::get_value()
 {
-	return coalitional_value;
+	return value;
 }
 
-double Coalition::compute_coalitional_value()
+double Coalition::get_cost()
 {
-	for(auto& obj : Objects)
+	return cost;
+}
+
+double Coalition::get_weight()
+{
+	return weight;
+}
+
+// TODO
+// this should compute coal value, cost and weight. It should also set the task it wants to do (the one leading to lowest weight).
+double Coalition::compute_value()
+{
+/*	for(auto& obj : Objects)
 	{
 		// check if the object can be done by this coalition
 		if(is_feasible(*obj))
@@ -89,9 +126,17 @@ double Coalition::compute_coalitional_value()
 		}
 		else
 			coalitional_value = 0;
-	}
-	return coalitional_value;
+	}*/
+
+	if(value != 0)
+		cost = 1/value;
+
+	weight = value/n_robots;
+	return value;
 }
+
+
+
 
 bool Coalition::is_feasible(Object& obj)
 {
@@ -116,7 +161,7 @@ std::ostream& operator <<(std::ostream& stream, const Coalition& o)
 	cout << "n grippers " << o.n_grippers << endl;
 	cout << "force " << o.force << endl;
 	cout << "objects available " << o.n_objects << endl;
-	cout << "coalitional value " << o.coalitional_value << endl;
+	cout << "coalitional value " << o.value << endl;
 	cout << "task I want to do " << endl ;
 /*	if(o.Assigned_obj != NULL)
 		cout << o.Assigned_obj->get_id();

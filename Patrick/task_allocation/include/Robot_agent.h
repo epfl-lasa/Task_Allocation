@@ -38,6 +38,7 @@ public:
 //	~Robot_agent();
 	int	get_id();
 	int get_assignment();
+	void set_assignment(int);
 	bool get_workspace_set();
 	bool get_state_set();
 	void get_state(VectorXd& X);
