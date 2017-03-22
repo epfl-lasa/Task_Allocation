@@ -171,14 +171,18 @@ void Task_allocation::build_coalitions()
 	}
 
 
-	// some tests on pointers and addresses and stuff in this part. This is just to confirm something
-/*	int lowest_weight = 100000;
-	int temp_weight = lowest_weight;
+	// some tests on pointers and addresses and stuff in this part. This is just to confirm something*	int lowest_weight = 100000;
+/*	double lowest_weight = 100000;
+	double temp_weight = lowest_weight;
 	Coalition* low_coal = NULL;
+	int i = 0;
+	int j = 0;
 	for(auto& row : Coalitions)
 	{
+
 		for(auto& coal : row)
 		{
+
 			temp_weight = coal.get_weight();
 			if(temp_weight < lowest_weight)
 			{
@@ -186,8 +190,12 @@ void Task_allocation::build_coalitions()
 				low_coal = &(coal);
 				cout << "comparing the 2 pointers " << low_coal << " " ;
 				coal.print_pointer();
+				cout << " and accessing with i j we get ";
+				((Coalitions.at(i)).at(j)).print_pointer();
 			}
+			j++;
 		}
+		i++;
 	}
 */
 
