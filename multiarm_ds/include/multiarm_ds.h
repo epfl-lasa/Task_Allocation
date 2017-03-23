@@ -14,6 +14,18 @@
  * Public License for more details
  */
 
+
+
+/* TODO
+ *
+ * Rewrite using the classes for the robots and objects...
+ *
+ */
+
+
+#ifndef MULTIARM_DS_H
+#define MULTIARM_DS_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "eigen3/Eigen/Dense"
@@ -221,3 +233,5 @@ MatrixXd PermGenerator(int n, int k)
 template <typename T> int sgn(T val) {
     return (T(0) < val) - (val < T(0));
 }
+
+#endif

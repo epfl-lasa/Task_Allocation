@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>Task_allocation</name>
+  <name>task_allocation</name>
   <version>0.0.0</version>
   <description>The task_allocation package</description>
 
@@ -48,5 +48,8 @@
 
   <build_depend>motion_prediction</build_depend>
     <run_depend>motion_prediction</run_depend>
-<export> <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -Wl,-rpath,${prefix}/lib -lmultiarm_ds "/> </export>
+
+  <build_depend>multiarm_ds</build_depend>
+    <run_depend>motion_prediction</run_depend>
+<export> <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -Wl,-rpath,${prefix}/lib -ltask_allocation "/> </export>
 </package>

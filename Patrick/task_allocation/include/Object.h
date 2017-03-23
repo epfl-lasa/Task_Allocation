@@ -1,3 +1,10 @@
+/* TODO
+ *
+ * add the functions from multiarm_ds that handle objects in here
+ */
+
+
+
 #ifndef OBJECT_H
 #define OBJECT_H
 
@@ -34,17 +41,17 @@ public:
 	void set_assigned();
 
 	// getters
-	VectorXd get_X_O();
-	VectorXd get_DX_O();
+	VectorXd get_X_O() const;
+	VectorXd get_DX_O() const;
 //	bool get_state_set();
-	bool get_first_state_set();
-	bool get_grabbing_state_set(int i);
-	MatrixXd get_P_O_prediction();
-	MatrixXd get_P_O_G_prediction(int index);
-	double get_value();
-	double get_weight();
-	int	get_n_grippers();
-
+	bool get_first_state_set() const;
+	bool get_grabbing_state_set(int i) const;
+	MatrixXd get_P_O_prediction() const;
+	MatrixXd get_P_O_G_prediction(int index) const;
+	double get_value() const;
+	double get_weight() const;
+	int	get_n_grippers() const;
+	bool get_assignment() const;
 
 	friend std::ostream& operator<< (std::ostream& stream, const Object& Object);
 

@@ -96,19 +96,19 @@ void Robot_agent::set_assignment(int assignment_)
 	assignment = assignment_;
 }
 
-int Robot_agent::get_assignment()
+int Robot_agent::get_assignment() const
 {
 	return assignment;
 }
 
 
-void Robot_agent::get_state(VectorXd& X_)
+void Robot_agent::get_state(VectorXd& X_) const
 {
 	X_ = X;
 }
 
 
-bool Robot_agent::get_workspace_set()
+bool Robot_agent::get_workspace_set() const
 {
 	return workspace_model_is_set;
 }
@@ -138,17 +138,17 @@ void Robot_agent::set_state(VectorXd X_)
 }
 
 
-int Robot_agent::get_n_grippers()
+int Robot_agent::get_n_grippers() const
 {
 	return n_grippers;
 }
 
-double Robot_agent::get_force()
+double Robot_agent::get_force() const
 {
 	return force;
 }
 
-int Robot_agent::get_id()
+int Robot_agent::get_id() const
 {
 	return id;
 }

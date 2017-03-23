@@ -14,6 +14,18 @@
  * Public License for more details
  */
 
+
+
+/* TODO
+ *
+ *
+ * Make sure the indices of the robots between this object and the multiarm_ds are the same
+ * Modify the algorithm to only allow one coalition of more than 1 robot
+ * Send the coordination parameters to the multiarm_ds
+ * Send the intercept point for the robots with a single item
+ */
+
+
 #ifndef TASK_ALLOCATION_H
 #define TASK_ALLOCATION_H
 
@@ -29,7 +41,7 @@
 #include <omp.h>
 #include <vector>
 #include "Coalition.h"
-
+#include "multiarm_ds.h"
 
 using namespace Eigen;
 
@@ -50,7 +62,7 @@ class Task_allocation
 {
 public:
 	Task_allocation();
-	Task_allocation(double dt, int n_state, int max_n_bots, int max_n_tasks, MatrixXd A_V,Object_prediction_type Object_motion=Object_prediction_type::Straight);
+	Task_allocation(double dt, int n_state, int max_n_bots, int max_n_tasks, MatrixXd A_V, multiarm_ds* DS_, Object_prediction_type Object_motion=Object_prediction_type::Straight);
 	~Task_allocation();
 
 	int			add_robot(Robot_agent bot);
@@ -60,12 +72,12 @@ public:
 	VectorXd	get_object_state(int i);
 	void 		predict_motion();
 	void 		Update();
-
+	void	build_coalitions(); //this makes "Coalitions" to hold all coalitions with the currently unallocated robots
+	void	clear_coalitions(); //this resets the coalitions, resets the unallocated robots and active coalitions
 	double 		coalition_evaluate_task(int coal_size, int coalition_id, int object);
 	double 		robot_evaluate_task(int i_robot, int i_object, int frame);
 	void		allocate(); // patrick
-	void		build_coalitions(); //this makes "Coalitions" to hold all coalitions with the currently unallocated robots
-	void		clear_coalitions(); //this resets the coalitions, resets the unallocated robots and active coalitions
+
 
 	friend std::ostream& operator<< (std::ostream& stream, const Task_allocation& Object);
 
@@ -73,8 +85,8 @@ private:
 
 	void 	ERROR();
 	void	restart_everything();
+	void	evaluate_coalitions();
 
-	bool	everythingisreceived();
 	void	assign_the_robots();
 	int 	factorial(int n);
 
@@ -99,6 +111,8 @@ private:
 	std::vector< std::vector<Coalition> > 		Coalitions;
 	std::vector<Coalition> active_coalitions;
 	int 				n_frames; // patrick
+
+	multiarm_ds* 	Multi_ds;
 
 };
 

@@ -1055,7 +1055,7 @@ void Bi_manual_scenario::prepare_task_allocator()
 	double dt = 0.1;
 	int n_state = 6;
 //	double dt, int n_state, int max_n_bots, int max_n_tasks, MatrixXd A_V,Object_prediction_type Object_motion=Object_prediction_type::Straight
-	Task_allocator = new Task_allocation(dt, n_state, N_robots, 1, A_V);
+	Task_allocator = new Task_allocation(dt, n_state, N_robots, 1, A_V, Motion_G);
 
 
 	// adding object(s)

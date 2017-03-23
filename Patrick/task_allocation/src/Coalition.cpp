@@ -31,6 +31,20 @@ Coalition::~Coalition()
 }
 */
 
+int Coalition::get_object_id()
+{
+	return des_obj;
+}
+
+std::vector<int>  Coalition::get_robots_id()
+{
+	std::vector<int> ids;
+	for(const auto& rob : Robots)
+	{
+		ids.push_back(rob->get_id());
+	}
+	return ids;
+}
 void Coalition::assign()
 {
 	for(const auto& rob : Robots)

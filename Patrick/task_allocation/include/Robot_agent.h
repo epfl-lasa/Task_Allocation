@@ -5,6 +5,12 @@
  *      Author: Patrick
  */
 
+
+/* TODO
+ * add the functions from multiarm_ds that handle robots in here
+ */
+
+
 #ifndef ROBOT_AGENT_H_
 #define ROBOT_AGENT_H_
 
@@ -36,14 +42,14 @@ public:
 
 
 //	~Robot_agent();
-	int	get_id();
-	int get_assignment();
+	int	get_id() const;
+	int get_assignment() const;
 	void set_assignment(int);
-	bool get_workspace_set();
-	bool get_state_set();
-	void get_state(VectorXd& X);
-	int get_n_grippers();
-	double get_force();
+	bool get_workspace_set() const;
+	bool get_state_set() const;
+	void get_state(VectorXd& X) const;
+	int get_n_grippers() const;
+	double get_force() const;
 
 	bool init_robot(VectorXd base, Vector3d X_init, VectorXd X, VectorXd ATX_, LPV Dynamic, GMM Workspace, int grippers, double force);
 	void set_base(Vector3d X);

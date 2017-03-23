@@ -24,7 +24,7 @@ Task_allocation::Task_allocation()
 	n_objects = 0;
 }
 
-Task_allocation::Task_allocation(double dt_, int n_state_, int max_n_bots_, int max_n_tasks_, MatrixXd A_V_, Object_prediction_type Object_motion)
+Task_allocation::Task_allocation(double dt_, int n_state_, int max_n_bots_, int max_n_tasks_, MatrixXd A_V_, multiarm_ds* DS_, Object_prediction_type Object_motion)
 {
 	if(max_n_bots_ < 1)
 	{
@@ -36,6 +36,9 @@ Task_allocation::Task_allocation(double dt_, int n_state_, int max_n_bots_, int 
 //	Robots = new Robot_agent[max_n_robots];
 //	Robots.reserve((unsigned long)(max_n_robots));
 	Robots.clear();
+
+
+	Multi_ds = DS_;
 
 	if(max_n_tasks_ < 1)
 	{
@@ -103,9 +106,26 @@ void Task_allocation::build_coalitions()
 
 //	Coalitions.reserve(MAX_COALITION_SIZE);
 	Coalitions.clear();
+	unallocated_robots.clear();
+
+
+// ****** look for unallocated robots
+	for(auto& rob : Robots)
+	{
+		if(rob.get_assignment() ==  -1)
+		{
+			unallocated_robots.push_back(&rob);
+		}
+	}
+
+
+// ****** make all the possible coalitions
+
 	int n_bots = unallocated_robots.size();
 	for(int i = 0; i < min(MAX_COALITION_SIZE, n_bots); i++)
 	{
+
+		// ************* make the matrix with all permutations of the available robots
 		unsigned long int number_of_coalitions = 10;
 		MatrixXd perm = PermGenerator(n_bots,i+1); // i+1 because in array 0 we store the coalitions of size 1(ie singletons)
 
@@ -162,7 +182,8 @@ void Task_allocation::build_coalitions()
 			}
 			for(int k = 0; k < n_objects; k++)
 			{
-				test.add_task(&(Objects[k]));
+				if(Objects[k].get_assignment() == false)
+					test.add_task(&(Objects[k]));
 			}
 			test.set_id(i*min(MAX_COALITION_SIZE, n_bots)+j);
 			Coalitions[i].push_back(test);
@@ -329,58 +350,86 @@ void Task_allocation::allocate()
 {
 	int n_steps = 5;
 
+	// **************** reset everything
+
+
+
 	// we are beginning, there's no active coalition, all robots are unallocated
+
+	//reset_coalitions();
 	active_coalitions.clear();
 	unallocated_robots.clear();
 	for(auto& rob : Robots)
 	{
-		unallocated_robots.push_back(&(rob));
+		if(rob.get_assignment() == -1)
+			unallocated_robots.push_back(&(rob));
 	}
 
-	std::vector<double> coal_values;
-	coal_values.reserve(n_robots*n_robots); // this is just to preallocate and hopefully win some time.
-	coal_values.clear(); // might not be needed
 
-	// all these are not constant references, we risk changing them here. In some cases we want to change it though.
-	// (when computing coalitional value, we want to change the coalitional value in it)
-	for(auto& row : Coalitions)
+	for(int i = 0; i < n_objects; i++) // the boundary should be something else....
 	{
-		for(auto& coal : row)
-		{
-			coal_values.push_back(coal.compute_value()); // not yet implemented, just empty
-		}
-	}
+		// *************** build the coalitions
+		build_coalitions();
 
-	// now we have all coalitional values.
 
-	// look for smallest coalitional weight
-	int lowest_weight = 100000;
-	int temp_weight = lowest_weight;
-	Coalition* low_coal = NULL;
-	for(auto& row : Coalitions)
-	{
-		for(auto& coal : row)
+
+
+		// ************** evaluate the coalitions
+		evaluate_coalitions();
+		std::vector<double> coal_values;
+		coal_values.reserve(n_robots*n_robots); // this is just to preallocate and hopefully win some time.
+		coal_values.clear(); // might not be needed
+
+
+		// all these are not constant references, we risk changing them here. In some cases we want to change it though.
+		// (when computing coalitional value, we want to change the coalitional value in it)
+		for(auto& row : Coalitions)
 		{
-			temp_weight = coal.get_weight();
-			if(temp_weight < lowest_weight)
+			for(auto& coal : row)
 			{
-				lowest_weight = temp_weight;
-				low_coal = &(coal);
-	//			cout << "comparing the 2 pointers " << low_coal << " " << coal.print_pointer() << endl;
+				coal_values.push_back(coal.compute_value()); // not yet implemented, just empty
 			}
 		}
+
+		// now we have all coalitional values.
+
+		// **************** look for smallest coalitional weight
+		int lowest_weight = 100000;
+		int temp_weight = lowest_weight;
+		Coalition* low_coal = NULL;
+		for(auto& row : Coalitions)
+		{
+			for(auto& coal : row)
+			{
+				temp_weight = coal.get_weight();
+				if(temp_weight < lowest_weight)
+				{
+					lowest_weight = temp_weight;
+					low_coal = &(coal);
+		//			cout << "comparing the 2 pointers " << low_coal << " " << coal.print_pointer() << endl;
+				}
+			}
+		}
+
+
+		// *******************
+		// add the corresponding coalition to the active coalitions
+		// remove the robots from that coalition from the unallocated robots
+		// remove the task from the available tasks
+		// set the assigned task in this coalition
+		// set the assignment (target task) of the robots in this coalition
+
+		active_coalitions.push_back(*low_coal);
+		low_coal->assign();
+
 	}
-
-	// add the corresponding coalition to the active coalitions
-	// remove the robots from that coalition from the unallocated robots
-	// remove the task from the available tasks
-	// set the assigned task in this coalition
-	// set the assignment (target task) of the robots in this coalition
-
-	active_coalitions.push_back(*low_coal);
 
 }
 
+void Task_allocation::evaluate_coalitions()
+{
+
+}
 
 int Task_allocation::factorial(int n)
 {
@@ -414,9 +463,11 @@ MatrixXd Task_allocation::PermGenerator(int n, int k)
 
     return handle;
 }
-template <typename T> int sgn(T val) {
+
+
+/*template <typename T> int sgn(T val) {
     return (T(0) < val) - (val < T(0));
-}
+}*/
 
 
 

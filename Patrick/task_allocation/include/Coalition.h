@@ -39,6 +39,8 @@ public:
 	int get_n_robots();
 	int get_n_grippers();
 	int get_id();
+	std::vector<int> get_robots_id();
+	int get_object_id();
 	double get_force();
 	double get_value();
 	double get_cost();

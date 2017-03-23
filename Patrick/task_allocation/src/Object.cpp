@@ -245,18 +245,18 @@ void Object::set_prediction_state(VectorXd X,VectorXd X_filtered, double time)
 // getters
 
 
-bool Object::get_first_state_set()
+bool Object::get_first_state_set() const
 {
 	return first_state_is_set;
 }
 
-int Object::get_n_grippers()
+int Object::get_n_grippers() const
 {
 	return n_grabbing_pos;
 }
 
 // defaults to false if index out of range
-bool Object::get_grabbing_state_set(int i)
+bool Object::get_grabbing_state_set(int i) const
 {
 //	if(i >= 0 && i < n_grabbing_pos)
 //		return grabbing_state_is_set[i];
@@ -264,34 +264,34 @@ bool Object::get_grabbing_state_set(int i)
 	return false;
 }
 
-double Object::get_value()
+double Object::get_value() const
 {
 	return value;
 }
 
-double Object::get_weight()
+double Object::get_weight() const
 {
 	return weight;
 }
 
-MatrixXd Object::get_P_O_prediction()
+MatrixXd Object::get_P_O_prediction() const
 {
 	return P_O_prediction;
 }
 
-MatrixXd Object::get_P_O_G_prediction(int index)
+MatrixXd Object::get_P_O_G_prediction(int index) const
 {
 	if(index > 0 && index < n_grabbing_pos)
 		return P_O_G_prediction[index];
 	return P_O_G_prediction[0];
 }
 
-VectorXd Object::get_X_O()
+VectorXd Object::get_X_O() const
 {
 	return X_O;
 }
 
-VectorXd Object::get_DX_O()
+VectorXd Object::get_DX_O() const
 {
 	return DX_O;
 }

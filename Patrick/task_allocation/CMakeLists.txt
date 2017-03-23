@@ -7,6 +7,7 @@ project(task_allocation)
 find_package(catkin REQUIRED COMPONENTS
  roscpp
  motion_prediction
+ multiarm_ds
 )
 
 find_package(OpenMP REQUIRED)
@@ -106,7 +107,7 @@ set(CMAKE_CXX_FLAGS "-std=c++11")
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES task_allocation
-  CATKIN_DEPENDS roscpp  motion_prediction
+  CATKIN_DEPENDS roscpp  motion_prediction multiarm_ds
 )
 
 ###########
