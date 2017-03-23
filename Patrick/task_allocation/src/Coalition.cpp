@@ -18,7 +18,9 @@ Coalition::Coalition()
 //	obj_values.reserve(max_n_objects);
 	des_obj = -1;
 
-	value = -1;
+	value = 0;
+	weight = 0;
+	cost = 0;
 	force = 0;
 	n_grippers = 0;
 
@@ -131,21 +133,34 @@ double Coalition::get_weight()
 // this should compute coal value, cost and weight. It should also set the task it wants to do (the one leading to lowest weight).
 double Coalition::compute_value()
 {
-/*	for(auto& obj : Objects)
+
+	weight = 100000;
+	value = 1000000;
+	cost = 1000000;
+	double temp_weight = 10000;
+	double temp_value = 100000;
+	// check for each object
+	for(auto& obj : Objects)
 	{
 		// check if the object can be done by this coalition
+
 		if(is_feasible(*obj))
 		{
+			temp_value = obj->get_value();
+			temp_weight = 1/(temp_value*n_robots);
+			if(temp_weight < weight)
+			{
+				value = temp_value;
+				weight = temp_weight;
+				cost = 1/value;
+				des_obj = obj->get_id();
+			}
 
+	//		cout << "computed value, the object I want is " << obj->get_id() << endl;
 		}
-		else
-			coalitional_value = 0;
-	}*/
+	}
 
-	if(value != 0)
-		cost = 1/value;
 
-	weight = value/n_robots;
 	return value;
 }
 
@@ -155,8 +170,9 @@ double Coalition::compute_value()
 bool Coalition::is_feasible(Object& obj)
 {
 	bool feasible = false;
-
-	if(n_grippers >= obj.get_n_grippers())
+//	cout << "n grippers " << n_grippers << " required " << obj.get_n_grippers() << endl;
+//	cout << "force " << force << " required " << obj.get_weight() << endl;
+	if(n_grippers == obj.get_n_grippers())
 		if(force >= obj.get_weight())
 			feasible = true;
 
@@ -176,7 +192,9 @@ std::ostream& operator <<(std::ostream& stream, const Coalition& o)
 	cout << "force " << o.force << endl;
 	cout << "objects available " << o.n_objects << endl;
 	cout << "coalitional value " << o.value << endl;
-	cout << "task I want to do " << endl ;
+	cout << "coalitional cost " << o.cost << endl;
+	cout << "coalitional weight " << o.weight << endl;
+	cout << "task I want to do " << o.des_obj << endl;
 /*	if(o.Assigned_obj != NULL)
 		cout << o.Assigned_obj->get_id();
 	else

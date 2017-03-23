@@ -194,6 +194,7 @@ std::ostream& operator <<(std::ostream& stream, const Robot_agent& o)
 	cout << "X " << endl << o.X << endl;
 	cout << "n grippers " << o.n_grippers << endl;
 	cout << "force " << o.force << endl;
+	cout << "assigned to task " << o.assignment << endl;
 
 }
 

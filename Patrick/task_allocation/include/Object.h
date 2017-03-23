@@ -1,6 +1,9 @@
 /* TODO
  *
  * add the functions from multiarm_ds that handle objects in here
+ *
+ * When something is modified in this file (eg a variable added), remember to update the copy constructor.
+ * Copy constructor seems required because of the VectorXd[] things
  */
 
 
@@ -43,6 +46,7 @@ public:
 	// getters
 	VectorXd get_X_O() const;
 	VectorXd get_DX_O() const;
+	int get_id() const;
 //	bool get_state_set();
 	bool get_first_state_set() const;
 	bool get_grabbing_state_set(int i) const;

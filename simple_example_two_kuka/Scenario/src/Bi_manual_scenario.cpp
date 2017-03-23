@@ -797,6 +797,10 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdate(){
 			prepare_task_allocator();
 			cout << *Task_allocator << endl;
 
+			cout << "trying to allocate" << endl;
+			Task_allocator->allocate();
+			cout << "done allocating" << endl;
+			cout << *Task_allocator << endl;
 			// end patrick */
 
 			Motion_G->Initialize_the_virtual_object();
@@ -885,6 +889,8 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 		Task_allocator->set_object_state(0, Object_State, DObject_State);
 
 		Task_allocator->predict_motion();
+
+
 		//cout << Task_allocator->get_object_state(0);
 
 	// end patrick */
@@ -1055,7 +1061,7 @@ void Bi_manual_scenario::prepare_task_allocator()
 	double dt = 0.1;
 	int n_state = 6;
 //	double dt, int n_state, int max_n_bots, int max_n_tasks, MatrixXd A_V,Object_prediction_type Object_motion=Object_prediction_type::Straight
-	Task_allocator = new Task_allocation(dt, n_state, N_robots, 1, A_V, Motion_G);
+	Task_allocator = new Task_allocation(dt, n_state, 3, 5, A_V, Motion_G);
 
 
 	// adding object(s)
@@ -1071,7 +1077,7 @@ void Bi_manual_scenario::prepare_task_allocator()
 	Task_allocator->clear_coalitions();
 
 	// make coalitions
-	Task_allocator->build_coalitions();
+//	Task_allocator->build_coalitions();
 //	cout << "done building coalitions" << endl;
 
 }
@@ -1085,12 +1091,18 @@ void Bi_manual_scenario::add_objects_task_allocator()
 		X_O_G[i] = Object_Grabbing_State[i] - Object_State_raw;
 	}
 //	cout << "made the vectors and prepared task allocator " << endl;
-	double weight = 102;
+	double weight = 3.14;
 	double value = 0.1;
+	VectorXd single_grab[1];
+	single_grab[0] = Object_State_raw;
 	Object task0(Object_State_raw.size(),Object_State_raw,DObject_State, 100, Object_Grabbing_State, 2, weight, value, 0);
+	Object task1(Object_State_raw.size(),Object_State_raw,DObject_State, 100, single_grab, 1, weight*0.3, value*0.3, 1);
+	Object task2(Object_State_raw.size(),Object_State_raw,DObject_State, 100, single_grab, 1, weight*0.3, value*0.3, 2);
 //	cout << task0 << endl;
 //	cout << "made a task " << endl;
 	Task_allocator->add_task(task0);
+	Task_allocator->add_task(task1);
+	Task_allocator->add_task(task2);
 //	cout << "added task" << endl;
 }
 
@@ -1100,7 +1112,7 @@ void Bi_manual_scenario::add_robots_task_allocator()
 	cout << "adding robots" << endl;
 	double force = 5;
 	int grippers = 1;
-	for(int i = 0; i < N_robots; i++)
+	for(int i = 0; i < 3; i++)
 	{
 //		cout << "making robot" << endl;
 		Robot_agent Bot(1,addTwochar(Commom_path,"/A_Matrix").c_str(), addTwochar(Commom_path,"/Priors").c_str(),

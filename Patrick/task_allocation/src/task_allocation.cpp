@@ -108,7 +108,7 @@ void Task_allocation::build_coalitions()
 	Coalitions.clear();
 	unallocated_robots.clear();
 
-
+cout << "build_coalitions: building unallocated_robots ...";
 // ****** look for unallocated robots
 	for(auto& rob : Robots)
 	{
@@ -117,10 +117,10 @@ void Task_allocation::build_coalitions()
 			unallocated_robots.push_back(&rob);
 		}
 	}
-
+cout << "... done" << endl;
 
 // ****** make all the possible coalitions
-
+cout << "build_coalitions: making the coalitions ..." << endl;
 	int n_bots = unallocated_robots.size();
 	for(int i = 0; i < min(MAX_COALITION_SIZE, n_bots); i++)
 	{
@@ -137,20 +137,29 @@ void Task_allocation::build_coalitions()
 		for(int j = 0; j < n_rows; j++)
 			to_remove[j] = -1;
 
+		cout << "build_coalitions: finding dupes ...";
 		// remove the duplicates, as the order does not matter in our case
 		for(int u = 0; u < n_rows-1; u++)
 		{
-			dupe = false;
+
 			for(int j = u+1; j < n_rows; j++)
 			{
+				dupe = false;
+
+				check_dupe(perm.row(u), perm.row(j));
 				for(int k = 0; k < n_cols-1; k++)
 				{
 					for(int t = k+1; t < n_cols; t++)
 					{
 						if(perm(u,k) == perm(j,t))
+						{
+							cout << "found dupe at u k j t " << u << " " << k << " " << j << " " << t << endl;
 							dupe = true;
+						}
+
 					}
 				}
+
 				if(dupe == true)
 				{
 					to_remove[n_dupes] = j;
@@ -158,13 +167,22 @@ void Task_allocation::build_coalitions()
 				}
 			}
 		}
+		cout << " done " << endl;
+		cout << "perm matrix for i = " << i << " and n_bots = " << n_bots << endl << perm << endl;
 
+		cout << "rows to remove..." << endl;
+		for(int j = 0; j < n_dupes; j++)
+		{
+			cout << j << " ";
+		}
+		cout << endl;
+		cout << "build_coalitions: removing dupes ...";
 		for(int j = 0; j < n_dupes; j++)
 		{
 			removeRow(perm, to_remove[j]);
 		}
 
-
+		cout << "done " << endl;
 		number_of_coalitions = perm.rows();
 
 		Coalitions.push_back( std::vector<Coalition>() );
@@ -322,7 +340,6 @@ int Task_allocation::add_task(Object task)
 //	cout << "Task allocation, trying to add an object" << endl;
 	if(n_objects < max_n_objects)
 	{
-		//Objects[n_objects] = task;
 		Objects.push_back(task);
 		n_objects++;
 	}
@@ -359,23 +376,25 @@ void Task_allocation::allocate()
 	//reset_coalitions();
 	active_coalitions.clear();
 	unallocated_robots.clear();
-	for(auto& rob : Robots)
-	{
-		if(rob.get_assignment() == -1)
-			unallocated_robots.push_back(&(rob));
-	}
-
 
 	for(int i = 0; i < n_objects; i++) // the boundary should be something else....
 	{
 		// *************** build the coalitions
+		cout << "building coalitions" << endl;
 		build_coalitions();
+		cout << "done building coalitions" << endl;
 
-
+		if(unallocated_robots.size() < 1)
+		{
+			cout << "all robots have been allocated" << endl;
+			break;
+		}
 
 
 		// ************** evaluate the coalitions
+		cout << "evaluating coalitions" << endl;
 		evaluate_coalitions();
+
 		std::vector<double> coal_values;
 		coal_values.reserve(n_robots*n_robots); // this is just to preallocate and hopefully win some time.
 		coal_values.clear(); // might not be needed
@@ -390,10 +409,11 @@ void Task_allocation::allocate()
 				coal_values.push_back(coal.compute_value()); // not yet implemented, just empty
 			}
 		}
-
+		cout << "done evaluating coalitions" << endl;
 		// now we have all coalitional values.
 
 		// **************** look for smallest coalitional weight
+		cout << "looking for best coalition" << endl;
 		int lowest_weight = 100000;
 		int temp_weight = lowest_weight;
 		Coalition* low_coal = NULL;
@@ -402,7 +422,7 @@ void Task_allocation::allocate()
 			for(auto& coal : row)
 			{
 				temp_weight = coal.get_weight();
-				if(temp_weight < lowest_weight)
+				if(0 < temp_weight && temp_weight < lowest_weight)
 				{
 					lowest_weight = temp_weight;
 					low_coal = &(coal);
@@ -412,6 +432,12 @@ void Task_allocation::allocate()
 		}
 
 
+
+		if(low_coal != NULL)
+		{
+			cout << "found best coalition" << endl;
+	//		cout << *low_coal << endl;
+
 		// *******************
 		// add the corresponding coalition to the active coalitions
 		// remove the robots from that coalition from the unallocated robots
@@ -419,9 +445,11 @@ void Task_allocation::allocate()
 		// set the assigned task in this coalition
 		// set the assignment (target task) of the robots in this coalition
 
-		active_coalitions.push_back(*low_coal);
-		low_coal->assign();
-
+			active_coalitions.push_back(*low_coal);
+			low_coal->assign();
+		}
+		else
+			cout << "didn't find best coalition" << endl;
 	}
 
 }
@@ -464,7 +492,23 @@ MatrixXd Task_allocation::PermGenerator(int n, int k)
     return handle;
 }
 
+void Task_allocation::check_dupe(VectorXd rowA, VectorXd rowB)
+{
+	int dupe = 0;
+	std::vector<bool> found_items;
+	for(int i = 0; i < rowA.cols(); i++)
+	{
+		for(int j = i; j < rowA.cols(); j++)
+		{
+			if(rowA(i) == rowA(j))
+				found_items.push_back(true);
+		}
+	}
 
+	cout << "checking for dupe " << endl << rowA << endl << rowB << endl;
+	cout << "similarity level: " << found_items.size() << endl;
+
+}
 /*template <typename T> int sgn(T val) {
     return (T(0) < val) - (val < T(0));
 }*/
@@ -503,17 +547,25 @@ std::ostream& operator<< (std::ostream& stream, const Task_allocation& o)
 
 	// print the coalitions. Isn't C++11 amazing?
 	cout << "printing all coalitions" << endl;
-	 for (const auto& inner : o.Coalitions)
-	 {
-	      for (const auto& item : inner)
-	      {
-	    	  cout << endl << "***** BEGIN OF COALITION  *****" << endl;
-	          cout << item << endl;
-	          cout << endl << "***** END OF COALITION  *****" << endl;
-	      }
+	for (const auto& inner : o.Coalitions)
+	{
+	  for (const auto& item : inner)
+	  {
+		  cout << endl << "***** BEGIN OF COALITION  *****" << endl;
+		  cout << item << endl;
+		  cout << endl << "***** END OF COALITION  *****" << endl;
 	  }
+	}
 
 
+	cout << "printing active coalitions" << endl;
+
+	for(const auto& coal : o.active_coalitions)
+	{
+		cout << endl << "***** BEGIN OF COALITION  *****" << endl;
+		cout << coal << endl;
+		cout << endl << "***** END OF COALITION  *****" << endl;
+	}
 	cout << endl << "**************** END OF TASK ALLOCATION ****************" << endl;
 }
 

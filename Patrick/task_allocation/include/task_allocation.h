@@ -86,7 +86,7 @@ private:
 	void 	ERROR();
 	void	restart_everything();
 	void	evaluate_coalitions();
-
+	void 	check_dupe(VectorXd rowA, VectorXd rowB);
 	void	assign_the_robots();
 	int 	factorial(int n);
 

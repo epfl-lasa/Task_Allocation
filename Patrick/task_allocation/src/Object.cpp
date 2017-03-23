@@ -19,6 +19,7 @@ Object::Object( const Object &o) // copy construct
 		X_O_G[i] = o.X_O_G[i];
 	}
 
+	id = o.id;
 	motion_type = o.motion_type;
 	max_pred_time = o.max_pred_time;
 	n_grabbing_pos = o.n_grabbing_pos;
@@ -61,6 +62,9 @@ Object::Object( const Object &o) // copy construct
 //	cout << *this << endl;
 
 }
+
+
+
 Object::Object(int N_state_, VectorXd X_, VectorXd DX_, double max_time_, VectorXd grabbing_states_[], int n_grabbing_states_, double weight_, double value_, int id_, Object_prediction_type Object_motion )
 {
 //	cout << "I'm making an Object" << endl;
@@ -243,7 +247,10 @@ void Object::set_prediction_state(VectorXd X,VectorXd X_filtered, double time)
 }
 
 // getters
-
+bool Object::get_assignment() const
+{
+	return is_assigned;
+}
 
 bool Object::get_first_state_set() const
 {
@@ -297,12 +304,19 @@ VectorXd Object::get_DX_O() const
 }
 
 
+int Object::get_id() const
+{
+	return id;
+}
+
 
 std::ostream& operator <<(std::ostream& stream, const Object& o)
 {
 	cout << "******PRINTING AN OBJECT******" << endl;
 	cout << "max_grabbing_state " << o.max_grabbing_state << endl;
 	cout << "dt " << o.dt << endl;
+	cout << "object id " << o.id << endl;
+	cout << "is assigned " << o.is_assigned << endl;
 	for(int i = 0; i < 3; i++)
 	{
 		cout << "minPos i " << i << " value " << o.minPos[i] << endl;
