@@ -798,7 +798,15 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdate(){
 	//		cout << *Task_allocator << endl;
 
 			cout << "trying to allocate" << endl;
+
+			struct timeval s_get, e_get;
+			gettimeofday(&s_get, NULL);
 			Task_allocator->allocate();
+			gettimeofday(&e_get, NULL);
+
+			double dur_get = ((e_get.tv_sec * 10e6 + e_get.tv_usec) -
+			                  (s_get.tv_sec * 10e6 + s_get.tv_usec)) * 1e-3;
+			cout << "allocation took " << dur_get << " ms" << endl;
 			cout << "done allocating" << endl;
 			cout << *Task_allocator << endl;
 			// end patrick */

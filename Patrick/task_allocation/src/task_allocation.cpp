@@ -291,16 +291,14 @@ void Task_allocation::allocate()
 
 
 		// ************** evaluate the coalitions
-		cout << "evaluating coalitions" << endl;
-		evaluate_coalitions();
+	//	cout << "evaluating coalitions" << endl;
+	//	evaluate_coalitions();
 
 		std::vector<double> coal_values;
 		coal_values.reserve(n_robots*n_robots); // this is just to preallocate and hopefully win some time.
 		coal_values.clear(); // might not be needed
 
 
-		// all these are not constant references, we risk changing them here. In some cases we want to change it though.
-		// (when computing coalitional value, we want to change the coalitional value in it)
 		for(auto& row : Coalitions)
 		{
 			for(auto& coal : row)
@@ -325,43 +323,32 @@ void Task_allocation::allocate()
 				{
 					lowest_weight = temp_weight;
 					low_coal = &(coal);
-		//			cout << "comparing the 2 pointers " << low_coal << " " << coal.print_pointer() << endl;
 				}
 			}
 		}
 
 
 
-		if(low_coal != nullptr)
-		{
-			cout << "found best coalition" << endl;
-			cout << *low_coal << endl;
-
 		// *******************
 		// add the corresponding coalition to the active coalitions
-		// remove the robots from that coalition from the unallocated robots
-		// remove the task from the available tasks
 		// set the assigned task in this coalition
 		// set the assignment (target task) of the robots in this coalition
-
-
+		if(low_coal != nullptr)
+		{
+	//		cout << "found best coalition" << endl;
+	//		cout << *low_coal << endl;
 			active_coalitions.push_back(*low_coal);
-			cout << "trying to assign" << endl;
 			low_coal->assign();
-			cout << "done assigning" << endl;
 		}
 		else
-			cout << "didn't find best coalition" << endl;
+			cout << "didn't find a coalition" << endl;
 	}
 
 
 
 }
 
-void Task_allocation::evaluate_coalitions()
-{
 
-}
 
 int Task_allocation::factorial(int n)
 {
@@ -370,6 +357,8 @@ int Task_allocation::factorial(int n)
     else
         return 1;
 }
+
+
 MatrixXd Task_allocation::PermGenerator(int n, int k)
 {
 	MatrixXd handle(factorial(n)/factorial(n-k),k);
@@ -395,6 +384,8 @@ MatrixXd Task_allocation::PermGenerator(int n, int k)
 
     return handle;
 }
+
+
 
 bool Task_allocation::check_dupe(const VectorXd& rowA, const VectorXd& rowB)
 {
@@ -461,20 +452,6 @@ std::ostream& operator<< (std::ostream& stream, const Task_allocation& o)
 		cout <<  "***** END OF OBJECT *****" << endl;
 	}
 
-
-
-	// print the coalitions. Isn't C++11 amazing?
-/*	cout << "printing all coalitions" << endl;
-	for (const auto& inner : o.Coalitions)
-	{
-	  for (const auto& item : inner)
-	  {
-		  cout << endl << "***** BEGIN OF COALITION  *****" << endl;
-		  cout << item << endl;
-		  cout << endl << "***** END OF COALITION  *****" << endl;
-	  }
-	}
-*/
 
 	cout << "printing active coalitions" << endl;
 
