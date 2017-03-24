@@ -33,10 +33,9 @@ Task_allocation::Task_allocation(double dt_, int n_state_, int max_n_bots_, int 
 	max_n_robots = max_n_bots_;
 
 	n_robots = 0;
-//	Robots = new Robot_agent[max_n_robots];
-//	Robots.reserve((unsigned long)(max_n_robots));
-	Robots.clear();
 
+	Robots.clear();
+	Objects.clear();
 
 	Multi_ds = DS_;
 
@@ -47,12 +46,6 @@ Task_allocation::Task_allocation(double dt_, int n_state_, int max_n_bots_, int 
 
 	max_n_objects = max_n_tasks_;
 	n_objects = 0;
-	//Objects = new Object[n_objects];
-
-//	Objects.reserve((unsigned long)(max_n_objects)); // this shouldn't be needed
-	Objects.clear();
-	//init_coalitions();
-
 
 	dt = dt_;
 	n_state = n_state_;
@@ -93,7 +86,8 @@ void Task_allocation::clear_coalitions()
 	unallocated_robots.clear();
 	for(auto& rob : Robots)
 	{
-		unallocated_robots.push_back(&(rob));
+		if(rob.get_assignment() == -1)
+			unallocated_robots.push_back(&(rob));
 	}
 
 	Coalitions.clear();
@@ -108,7 +102,7 @@ void Task_allocation::build_coalitions()
 	Coalitions.clear();
 	unallocated_robots.clear();
 
-cout << "build_coalitions: building unallocated_robots ...";
+//cout << "build_coalitions: building unallocated_robots ...";
 // ****** look for unallocated robots
 	for(auto& rob : Robots)
 	{
@@ -117,16 +111,16 @@ cout << "build_coalitions: building unallocated_robots ...";
 			unallocated_robots.push_back(&rob);
 		}
 	}
-cout << "... done" << endl;
+//cout << "... done" << endl;
 
 // ****** make all the possible coalitions
-cout << "build_coalitions: making the coalitions ..." << endl;
+//cout << "build_coalitions: making the coalitions ..." << endl;
 	int n_bots = unallocated_robots.size();
 	for(int i = 0; i < min(MAX_COALITION_SIZE, n_bots); i++)
 	{
 
 		// ************* make the matrix with all permutations of the available robots
-		unsigned long int number_of_coalitions = 10;
+		unsigned long int number_of_coalitions;
 		MatrixXd perm = PermGenerator(n_bots,i+1); // i+1 because in array 0 we store the coalitions of size 1(ie singletons)
 
 		int n_rows = perm.rows();
@@ -137,52 +131,27 @@ cout << "build_coalitions: making the coalitions ..." << endl;
 		for(int j = 0; j < n_rows; j++)
 			to_remove[j] = -1;
 
-		cout << "build_coalitions: finding dupes ...";
 		// remove the duplicates, as the order does not matter in our case
-		for(int u = 0; u < n_rows-1; u++)
+//		cout << "perm matrix for i = " << i << " and n_bots = " << n_bots << endl << perm << endl;
+		for(int u = 0; u < perm.rows() - 1; u++)
 		{
 
-			for(int j = u+1; j < n_rows; j++)
+			for(int j = u+1; j < perm.rows(); (dupe == false) ? j++ : j) // only increment if the previous wasn't a dupe, if it's a dupe, as we remove it, we need to check the same row
 			{
-				dupe = false;
-
-				check_dupe(perm.row(u), perm.row(j));
-				for(int k = 0; k < n_cols-1; k++)
-				{
-					for(int t = k+1; t < n_cols; t++)
-					{
-						if(perm(u,k) == perm(j,t))
-						{
-							cout << "found dupe at u k j t " << u << " " << k << " " << j << " " << t << endl;
-							dupe = true;
-						}
-
-					}
-				}
+				dupe = check_dupe(perm.row(u), perm.row(j));
 
 				if(dupe == true)
 				{
-					to_remove[n_dupes] = j;
-					n_dupes++;
+//					cout << "removing row " << perm.row(j) << " as it is similar to " << perm.row(u) << endl;
+					removeRow(perm, j);
+
 				}
 			}
 		}
-		cout << " done " << endl;
-		cout << "perm matrix for i = " << i << " and n_bots = " << n_bots << endl << perm << endl;
 
-		cout << "rows to remove..." << endl;
-		for(int j = 0; j < n_dupes; j++)
-		{
-			cout << j << " ";
-		}
-		cout << endl;
-		cout << "build_coalitions: removing dupes ...";
-		for(int j = 0; j < n_dupes; j++)
-		{
-			removeRow(perm, to_remove[j]);
-		}
 
-		cout << "done " << endl;
+	//	cout << "perm matrix for i = " << i << " and n_bots = " << n_bots << " without dupes " << endl << perm << endl;
+
 		number_of_coalitions = perm.rows();
 
 		Coalitions.push_back( std::vector<Coalition>() );
@@ -210,7 +179,7 @@ cout << "build_coalitions: making the coalitions ..." << endl;
 	}
 
 
-	// some tests on pointers and addresses and stuff in this part. This is just to confirm something*	int lowest_weight = 100000;
+	// some tests on pointers and addresses and stuff in this part. This is just to confirm something
 /*	double lowest_weight = 100000;
 	double temp_weight = lowest_weight;
 	Coalition* low_coal = NULL;
@@ -237,76 +206,6 @@ cout << "build_coalitions: making the coalitions ..." << endl;
 		i++;
 	}
 */
-
-	// commented out to be preserved.
-/*	Coalitions.reserve(MAX_COALITION_SIZE); // coalitions of 0 robots are pointless, so if max = 3, we want 3 arrays.
-	Coalitions.clear();
-	// the first level of indices is the coalition size
-	for(int i = 0; i < min(MAX_COALITION_SIZE, n_robots); i++)
-	{
-		unsigned long int number_of_coalitions = 10;
-		MatrixXd perm = PermGenerator(n_robots,i+1); // i+1 because in array 0 we store the coalitions of size 1(ie singletons)
-
-		int n_rows = perm.rows();
-		int n_cols = perm.cols();
-		bool dupe = false;
-		int to_remove[n_rows];
-		int n_dupes = 0;
-		for(int j = 0; j < n_rows; j++)
-			to_remove[j] = -1;
-
-		// remove the duplicates, as the order does not matter in our case
-		for(int u = 0; u < n_rows-1; u++)
-		{
-			dupe = false;
-			for(int j = u+1; j < n_rows; j++)
-			{
-				for(int k = 0; k < n_cols-1; k++)
-				{
-					for(int t = k+1; t < n_cols; t++)
-					{
-						if(perm(u,k) == perm(j,t))
-							dupe = true;
-					}
-				}
-				if(dupe == true)
-				{
-					to_remove[n_dupes] = j;
-					n_dupes++;
-				}
-			}
-		}
-
-		for(int j = 0; j < n_dupes; j++)
-		{
-			removeRow(perm, to_remove[j]);
-		}
-
-
-		number_of_coalitions = perm.rows();
-
-		Coalitions.push_back( std::vector<Coalition>() );
-		Coalitions[i].reserve(number_of_coalitions);
-
-		// the 2nd level is the ID of the coalition within that size
-		for(int j = 0; j < number_of_coalitions; j++)
-		{
-
-			// make the coalition
-			Coalition test;
-			for(int k = 0; k < i+1; k++) // add all robots that should be in this coalition.
-			{
-				test.add_robot(&(Robots[perm(j,k)]));
-			}
-			for(int k = 0; k < n_objects; k++)
-			{
-				test.add_task(&(Objects[k]));
-			}
-			Coalitions[i].push_back(test);
-//			cout << "Coalition of size " << i+1 << " number " << j << endl << Coalitions[i][j] << endl;
-		}
-	}
-//	cout << "done adding coalitions" << endl;*/
 }
 
 void removeRow(Eigen::MatrixXd& matrix, unsigned int rowToRemove)
@@ -380,9 +279,9 @@ void Task_allocation::allocate()
 	for(int i = 0; i < n_objects; i++) // the boundary should be something else....
 	{
 		// *************** build the coalitions
-		cout << "building coalitions" << endl;
+	//	cout << "building coalitions" << endl;
 		build_coalitions();
-		cout << "done building coalitions" << endl;
+	//	cout << "done building coalitions" << endl;
 
 		if(unallocated_robots.size() < 1)
 		{
@@ -409,14 +308,14 @@ void Task_allocation::allocate()
 				coal_values.push_back(coal.compute_value()); // not yet implemented, just empty
 			}
 		}
-		cout << "done evaluating coalitions" << endl;
+	//	cout << "done evaluating coalitions" << endl;
 		// now we have all coalitional values.
 
 		// **************** look for smallest coalitional weight
-		cout << "looking for best coalition" << endl;
+//		cout << "looking for best coalition" << endl;
 		int lowest_weight = 100000;
 		int temp_weight = lowest_weight;
-		Coalition* low_coal = NULL;
+		Coalition* low_coal = nullptr;
 		for(auto& row : Coalitions)
 		{
 			for(auto& coal : row)
@@ -433,10 +332,10 @@ void Task_allocation::allocate()
 
 
 
-		if(low_coal != NULL)
+		if(low_coal != nullptr)
 		{
 			cout << "found best coalition" << endl;
-	//		cout << *low_coal << endl;
+			cout << *low_coal << endl;
 
 		// *******************
 		// add the corresponding coalition to the active coalitions
@@ -445,12 +344,17 @@ void Task_allocation::allocate()
 		// set the assigned task in this coalition
 		// set the assignment (target task) of the robots in this coalition
 
+
 			active_coalitions.push_back(*low_coal);
+			cout << "trying to assign" << endl;
 			low_coal->assign();
+			cout << "done assigning" << endl;
 		}
 		else
 			cout << "didn't find best coalition" << endl;
 	}
+
+
 
 }
 
@@ -492,21 +396,34 @@ MatrixXd Task_allocation::PermGenerator(int n, int k)
     return handle;
 }
 
-void Task_allocation::check_dupe(VectorXd rowA, VectorXd rowB)
+bool Task_allocation::check_dupe(const VectorXd& rowA, const VectorXd& rowB)
 {
 	int dupe = 0;
-	std::vector<bool> found_items;
-	for(int i = 0; i < rowA.cols(); i++)
+	bool found[rowA.cols()];
+
+//	cout << "checking for dupe " << endl << rowA.transpose() << endl << rowB.transpose() << endl;
+//	cout << "these vectors have size " << rowA.rows() << " and " << rowB.rows() << endl;
+	if(rowA.rows() != rowB.rows())
+		return false;
+
+
+	for(int i = 0; i < rowA.rows(); i++)
 	{
-		for(int j = i; j < rowA.cols(); j++)
+		for(int j = 0; j < rowB.rows(); j++)
 		{
-			if(rowA(i) == rowA(j))
-				found_items.push_back(true);
+			if(rowA(i) == rowB(j))
+			{
+				found[i] = true;
+//				cout << "found common value " << rowA(i) << endl;
+//				break;
+			}
+		}
+		if(found[i] != true)
+		{
+			return false;
 		}
 	}
-
-	cout << "checking for dupe " << endl << rowA << endl << rowB << endl;
-	cout << "similarity level: " << found_items.size() << endl;
+	return true;
 
 }
 /*template <typename T> int sgn(T val) {
@@ -526,6 +443,8 @@ std::ostream& operator<< (std::ostream& stream, const Task_allocation& o)
 	cout << "max n objects " << o.max_n_objects << endl;
 
 	cout << "n robots " << o.n_robots << endl;
+	cout << "n objects " << o.n_objects << endl;
+
 
 	for(const auto& rob : o.Robots)
 	{
@@ -534,7 +453,6 @@ std::ostream& operator<< (std::ostream& stream, const Task_allocation& o)
 		cout << "***** END OF ROBOT *****" << endl;
 	}
 
-	cout << "n objects " << o.n_objects << endl;
 
 	for(const auto& obj : o.Objects)
 	{
@@ -546,7 +464,7 @@ std::ostream& operator<< (std::ostream& stream, const Task_allocation& o)
 
 
 	// print the coalitions. Isn't C++11 amazing?
-	cout << "printing all coalitions" << endl;
+/*	cout << "printing all coalitions" << endl;
 	for (const auto& inner : o.Coalitions)
 	{
 	  for (const auto& item : inner)
@@ -556,14 +474,14 @@ std::ostream& operator<< (std::ostream& stream, const Task_allocation& o)
 		  cout << endl << "***** END OF COALITION  *****" << endl;
 	  }
 	}
-
+*/
 
 	cout << "printing active coalitions" << endl;
 
 	for(const auto& coal : o.active_coalitions)
 	{
 		cout << endl << "***** BEGIN OF COALITION  *****" << endl;
-		cout << coal << endl;
+		cout << coal;
 		cout << endl << "***** END OF COALITION  *****" << endl;
 	}
 	cout << endl << "**************** END OF TASK ALLOCATION ****************" << endl;

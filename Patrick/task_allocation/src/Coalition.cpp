@@ -16,7 +16,7 @@ Coalition::Coalition()
 	n_objects = 0;
 //	Objects.reserve(max_n_objects);
 //	obj_values.reserve(max_n_objects);
-	des_obj = -1;
+	des_obj = nullptr;
 
 	value = 0;
 	weight = 0;
@@ -35,7 +35,9 @@ Coalition::~Coalition()
 
 int Coalition::get_object_id()
 {
-	return des_obj;
+	if(des_obj != nullptr)
+		return des_obj->get_id();
+	return -1;
 }
 
 std::vector<int>  Coalition::get_robots_id()
@@ -49,11 +51,13 @@ std::vector<int>  Coalition::get_robots_id()
 }
 void Coalition::assign()
 {
+	// assign all robots in here
 	for(const auto& rob : Robots)
 	{
-		rob->set_assignment(des_obj);
+		rob->set_assignment(des_obj->get_id());
 	}
-	Objects[des_obj]->set_assigned();
+
+	des_obj->set_assigned();
 }
 
 void Coalition::print_pointer()
@@ -140,7 +144,7 @@ double Coalition::compute_value()
 	double temp_weight = 10000;
 	double temp_value = 100000;
 	// check for each object
-	for(auto& obj : Objects)
+	for(const auto& obj : Objects)
 	{
 		// check if the object can be done by this coalition
 
@@ -153,7 +157,7 @@ double Coalition::compute_value()
 				value = temp_value;
 				weight = temp_weight;
 				cost = 1/value;
-				des_obj = obj->get_id();
+				des_obj = obj;
 			}
 
 	//		cout << "computed value, the object I want is " << obj->get_id() << endl;
@@ -172,9 +176,11 @@ bool Coalition::is_feasible(Object& obj)
 	bool feasible = false;
 //	cout << "n grippers " << n_grippers << " required " << obj.get_n_grippers() << endl;
 //	cout << "force " << force << " required " << obj.get_weight() << endl;
+	cout << "testing feasibility of object " << obj.get_id() << " which is assigned " << obj.get_assignment() << endl;
 	if(n_grippers == obj.get_n_grippers())
 		if(force >= obj.get_weight())
-			feasible = true;
+			if(obj.get_assignment() == false)
+				feasible = true;
 
 	return feasible;
 }
@@ -194,11 +200,9 @@ std::ostream& operator <<(std::ostream& stream, const Coalition& o)
 	cout << "coalitional value " << o.value << endl;
 	cout << "coalitional cost " << o.cost << endl;
 	cout << "coalitional weight " << o.weight << endl;
-	cout << "task I want to do " << o.des_obj << endl;
-/*	if(o.Assigned_obj != NULL)
-		cout << o.Assigned_obj->get_id();
+	if(o.des_obj != nullptr)
+		cout << "task I want to do " << (o.des_obj)->get_id() << endl;
 	else
-		cout << "none, I'm a lazy POS";
-	cout << endl;*/
+		cout << "task I want to do " << -1 << endl;
 }
 

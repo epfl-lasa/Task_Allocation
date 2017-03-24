@@ -65,8 +65,8 @@ private:
 
 	const static int max_n_objects = 12;
 	std::vector<Object*> Objects;
-	std::vector<double> obj_values;
-	int des_obj; // desired object for this coalition
+
+	Object* des_obj; // desired object for this coalition
 	int n_objects;
 	double value;
 	double cost;

@@ -49,7 +49,7 @@ using namespace Eigen;
 
 
 const double VALUATION_THRESHOLD = 1;
-const int MAX_COALITION_SIZE = 3;
+const int MAX_COALITION_SIZE = 6;
 
 const int MAX_TASKS = 6;
 
@@ -86,7 +86,7 @@ private:
 	void 	ERROR();
 	void	restart_everything();
 	void	evaluate_coalitions();
-	void 	check_dupe(VectorXd rowA, VectorXd rowB);
+	bool 	check_dupe(const VectorXd& rowA, const VectorXd& rowB);
 	void	assign_the_robots();
 	int 	factorial(int n);
 
