@@ -170,13 +170,9 @@ double Coalition::compute_value()
 
 
 
-
 bool Coalition::is_feasible(Object& obj)
 {
 	bool feasible = false;
-//	cout << "n grippers " << n_grippers << " required " << obj.get_n_grippers() << endl;
-//	cout << "force " << force << " required " << obj.get_weight() << endl;
-//	cout << "testing feasibility of object " << obj.get_id() << " which is assigned " << obj.get_assignment() << endl;
 	if(n_grippers == obj.get_n_grippers())
 		if(force >= obj.get_weight())
 			if(obj.get_assignment() == false)

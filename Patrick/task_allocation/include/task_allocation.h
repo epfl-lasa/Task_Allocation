@@ -62,7 +62,7 @@ class Task_allocation
 {
 public:
 	Task_allocation();
-	Task_allocation(double dt, int n_state, int max_n_bots, int max_n_tasks, MatrixXd A_V, multiarm_ds* DS_, Object_prediction_type Object_motion=Object_prediction_type::Straight);
+	Task_allocation(double max_time_, double dt, int n_state, MatrixXd A_V, multiarm_ds* DS_, Object_prediction_type Object_motion=Object_prediction_type::Straight);
 	~Task_allocation();
 
 	int			add_robot(Robot_agent bot);
@@ -71,14 +71,15 @@ public:
 	bool		set_object_state(int i, VectorXd X, VectorXd DX);
 	VectorXd	get_object_state(int i);
 	void 		predict_motion();
-	void 		Update();
-	void	build_coalitions(); //this makes "Coalitions" to hold all coalitions with the currently unallocated robots
-	void	clear_coalitions(); //this resets the coalitions, resets the unallocated robots and active coalitions
-	double 		coalition_evaluate_task(int coal_size, int coalition_id, int object);
-	double 		robot_evaluate_task(int i_robot, int i_object, int frame);
-	void		allocate(); // patrick
 
+	void		build_coalitions(); //this makes "Coalitions" to hold all coalitions with the currently unallocated robots
+	void		clear_coalitions(); //this resets the coalitions, resets the unallocated robots and active coalitions
 
+	void		allocate();
+	void		multi_frame_allocation();
+
+	double 		get_dt() const;
+	double 		get_max_time() const;
 	friend std::ostream& operator<< (std::ostream& stream, const Task_allocation& Object);
 
 private:
@@ -94,23 +95,25 @@ private:
 
 	Object_prediction_type Prediction_model;
 
-	bool				catching_pos_is_found;
 
 	int 				n_state;
-	int 				max_n_robots;
+
 	int 				n_robots;
 	std::vector<Robot_agent> Robots;
 	std::vector<Robot_agent*> unallocated_robots;
 
-	int 				max_n_objects;
-	int 				n_objects; // patrick
 
+	int 				n_objects;
 	std::vector<Object>		Objects;
+
+	double				max_pred_time;
 	double 				dt;
+	int 				n_frames;
+
 
 	std::vector< std::vector<Coalition> > 		Coalitions;
 	std::vector<Coalition> active_coalitions;
-	int 				n_frames; // patrick
+
 
 	multiarm_ds* 	Multi_ds;
 

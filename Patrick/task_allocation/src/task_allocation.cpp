@@ -20,40 +20,29 @@
 
 Task_allocation::Task_allocation()
 {
-	max_n_objects = 5;
+	cout << "you called an empty Task Allocation constructor and shouldn't have done that" << endl;
 	n_objects = 0;
+	n_robots = 0;
 }
 
-Task_allocation::Task_allocation(double dt_, int n_state_, int max_n_bots_, int max_n_tasks_, MatrixXd A_V_, multiarm_ds* DS_, Object_prediction_type Object_motion)
+Task_allocation::Task_allocation(double max_time_, double dt_, int n_state_, MatrixXd A_V_, multiarm_ds* DS_, Object_prediction_type Object_motion)
 {
-	if(max_n_bots_ < 1)
-	{
-		cout << "less than 1 robot for initialization, n_bots = " << max_n_bots_ <<  endl;
-	}
-	max_n_robots = max_n_bots_;
 
 	n_robots = 0;
-
+	n_objects = 0;
 	Robots.clear();
 	Objects.clear();
 
 	Multi_ds = DS_;
 
-	if(max_n_tasks_ < 1)
-	{
-		cout << "less than 1 task for initialization, n_tasks = " << max_n_tasks_ << endl;
-	}
 
-	max_n_objects = max_n_tasks_;
-	n_objects = 0;
-
-	dt = dt_;
 	n_state = n_state_;
-//	A_V = A_V_;
 
-	n_frames = 0;
+	max_pred_time = max_time_;
+	dt = dt_;
+	n_frames = floor(max_time_/dt)+1;
 	Prediction_model = Object_motion;
-	catching_pos_is_found = false;
+
 }
 
 VectorXd Task_allocation::get_object_state(int i)
@@ -61,7 +50,7 @@ VectorXd Task_allocation::get_object_state(int i)
 	VectorXd empty_vec;
 	empty_vec.resize(n_state);
 	empty_vec.setConstant(-1);
-	if(i >= 0 && i < max_n_objects)
+	if(i >= 0 && i < n_objects)
 		return Objects[i].get_X_O();
 	else
 		return empty_vec;
@@ -208,6 +197,8 @@ void Task_allocation::build_coalitions()
 */
 }
 
+
+
 void removeRow(Eigen::MatrixXd& matrix, unsigned int rowToRemove)
 {
     unsigned int numRows = matrix.rows()-1;
@@ -221,32 +212,18 @@ void removeRow(Eigen::MatrixXd& matrix, unsigned int rowToRemove)
 
 int Task_allocation::add_robot(Robot_agent bot)
 {
-	if(n_robots < max_n_robots)
-	{
-		Robots.push_back(bot);
-		n_robots++;
-	}
-	else
-	{
-		cout << "error, trying to add a robot but max robots is reached. n_robots " << n_robots << " max_n_robots " << max_n_robots << endl;
-	}
+	Robots.push_back(bot);
+	n_robots++;
+
 	return n_robots;
 }
 
+
 int Task_allocation::add_task(Object task)
 {
+	Objects.push_back(task);
+	n_objects++;
 
-//	cout << "Task allocation, trying to add an object" << endl;
-	if(n_objects < max_n_objects)
-	{
-		Objects.push_back(task);
-		n_objects++;
-	}
-	else
-	{
-		cout << "error, trying to add an object but max objects is reached. n_objects " << n_objects << " max_n_objects " << max_n_objects << endl;
-	}
-//	cout << "Task allocation, done adding an object" << endl;
 	return n_objects;
 }
 
@@ -264,11 +241,7 @@ bool Task_allocation::set_object_state(int i, VectorXd X, VectorXd DX)
 
 void Task_allocation::allocate()
 {
-	int n_steps = 5;
-
 	// **************** reset everything
-
-
 
 	// we are beginning, there's no active coalition, all robots are unallocated
 
@@ -349,6 +322,21 @@ void Task_allocation::allocate()
 }
 
 
+void Task_allocation::multi_frame_allocation()
+{
+
+}
+
+
+double Task_allocation::get_dt() const
+{
+	return dt;
+}
+
+double Task_allocation::get_max_time() const
+{
+	return max_pred_time;
+}
 
 int Task_allocation::factorial(int n)
 {
@@ -390,7 +378,7 @@ MatrixXd Task_allocation::PermGenerator(int n, int k)
 bool Task_allocation::check_dupe(const VectorXd& rowA, const VectorXd& rowB)
 {
 	int dupe = 0;
-	bool found[rowA.cols()];
+	bool found;
 
 //	cout << "checking for dupe " << endl << rowA.transpose() << endl << rowB.transpose() << endl;
 //	cout << "these vectors have size " << rowA.rows() << " and " << rowB.rows() << endl;
@@ -404,12 +392,13 @@ bool Task_allocation::check_dupe(const VectorXd& rowA, const VectorXd& rowB)
 		{
 			if(rowA(i) == rowB(j))
 			{
-				found[i] = true;
+				found = true;
+				break;
 //				cout << "found common value " << rowA(i) << endl;
 //				break;
 			}
 		}
-		if(found[i] != true)
+		if(found != true)
 		{
 			return false;
 		}
@@ -428,10 +417,7 @@ std::ostream& operator<< (std::ostream& stream, const Task_allocation& o)
 {
 	cout << endl << "**************** BEGIN OF TASK ALLOCATION ****************" << endl;
 
-	cout << "found catching position " << o.catching_pos_is_found << endl;
 	cout << "n state " << o.n_state << endl;
-	cout << "max n robots " << o.max_n_robots << endl;
-	cout << "max n objects " << o.max_n_objects << endl;
 
 	cout << "n robots " << o.n_robots << endl;
 	cout << "n objects " << o.n_objects << endl;
