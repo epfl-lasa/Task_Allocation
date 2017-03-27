@@ -31,7 +31,7 @@ public:
 	Object();
 	Object(int N_state, VectorXd X, VectorXd DX, double max_time, double dt, VectorXd grabbing_states[], int n_grabbing_states, double weight, double value, int id_, Object_prediction_type Object_motion=Object_prediction_type::Straight );
 
-	Object( const Object &o); // copy construct
+//	Object( const Object &o); // copy construct
 
 	void predict_motion();
 	void dumb_predict_motion();
@@ -55,6 +55,9 @@ public:
 	double get_weight() const;
 	int	get_n_grippers() const;
 	bool get_assignment() const;
+
+	// various
+	void print_estimator() const;
 
 	friend std::ostream& operator<< (std::ostream& stream, const Object& Object);
 
@@ -90,6 +93,8 @@ private:
 	double 		weight; // weight of the object, aka force required to lift it
 	double		value; // value of the object
 
+
+	TrajectoryEstimation *predict;
 
 };
 

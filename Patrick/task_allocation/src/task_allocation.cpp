@@ -210,7 +210,7 @@ void removeRow(Eigen::MatrixXd& matrix, unsigned int rowToRemove)
     matrix.conservativeResize(numRows,numCols);
 }
 
-int Task_allocation::add_robot(Robot_agent bot)
+int Task_allocation::add_robot(Robot_agent& bot)
 {
 	Robots.push_back(bot);
 	n_robots++;
@@ -236,6 +236,12 @@ bool Task_allocation::set_object_state(int i, VectorXd X, VectorXd DX)
 		return true;
 	}
 	return false;
+}
+
+void Task_allocation::print_obj()  const
+{
+	for(const auto& obj : Objects)
+		obj.print_estimator();
 }
 
 
@@ -272,11 +278,21 @@ void Task_allocation::allocate()
 		coal_values.clear(); // might not be needed
 
 
+		int lowest_weight = 100000;
+		int temp_weight = lowest_weight;
+		Coalition* low_coal = nullptr;
 		for(auto& row : Coalitions)
 		{
 			for(auto& coal : row)
 			{
-				coal_values.push_back(coal.compute_value()); // not yet implemented, just empty
+				coal.compute_value();
+		//		coal_values.push_back(coal.compute_value()); // not yet implemented, just empty
+				temp_weight = coal.get_weight();
+				if(0 < temp_weight && temp_weight < lowest_weight)
+				{
+					lowest_weight = temp_weight;
+					low_coal = &(coal);
+				}
 			}
 		}
 	//	cout << "done evaluating coalitions" << endl;
@@ -284,7 +300,7 @@ void Task_allocation::allocate()
 
 		// **************** look for smallest coalitional weight
 //		cout << "looking for best coalition" << endl;
-		int lowest_weight = 100000;
+/*		int lowest_weight = 100000;
 		int temp_weight = lowest_weight;
 		Coalition* low_coal = nullptr;
 		for(auto& row : Coalitions)
@@ -300,7 +316,7 @@ void Task_allocation::allocate()
 			}
 		}
 
-
+*/
 
 		// *******************
 		// add the corresponding coalition to the active coalitions

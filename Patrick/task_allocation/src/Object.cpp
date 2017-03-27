@@ -4,7 +4,7 @@ Object::Object()
 {
 
 }
-
+/*
 Object::Object( const Object &o) // copy construct
 {
 	//cout << "something called the copy constructor" << endl;
@@ -41,10 +41,21 @@ Object::Object( const Object &o) // copy construct
 	weight = o.weight;
 	value = o.value;
 
+	double gravity[3];gravity[0]=0;gravity[1]=0;
 
+	if (motion_type==Object_prediction_type::Ballistic)
+	{
+		gravity[2]=9.81;
+	}
+	else
+	{
+		gravity[2]=0;
+	}
+
+	predict = new TrajectoryEstimation(gravity, dt, 30, 10);
 }
 
-
+*/
 
 Object::Object(int N_state_, VectorXd X_, VectorXd DX_, double max_time_, double dt_, VectorXd grabbing_states_[], int n_grabbing_states_, double weight_, double value_, int id_, Object_prediction_type Object_motion )
 {
@@ -79,6 +90,20 @@ Object::Object(int N_state_, VectorXd X_, VectorXd DX_, double max_time_, double
 
 
 	motion_type = Object_motion;
+
+	double gravity[3];gravity[0]=0;gravity[1]=0;
+
+	if (motion_type==Object_prediction_type::Ballistic)
+	{
+		gravity[2]=9.81;
+	}
+	else
+	{
+		gravity[2]=0;
+	}
+
+	predict = new TrajectoryEstimation(gravity, dt, 30, 10);
+
 
 
 	is_assigned = false;
@@ -258,6 +283,11 @@ int Object::get_id() const
 	return id;
 }
 
+
+void Object::print_estimator() const
+{
+	cout << predict << endl;
+}
 
 std::ostream& operator <<(std::ostream& stream, const Object& o)
 {

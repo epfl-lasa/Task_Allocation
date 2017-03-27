@@ -809,6 +809,8 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdate(){
 			cout << "allocation took " << dur_get << " ms" << endl;
 			cout << "done allocating" << endl;
 			cout << *Task_allocator << endl;
+
+			Task_allocator->print_obj();
 			// end patrick */
 
 			Motion_G->Initialize_the_virtual_object();
@@ -1110,7 +1112,9 @@ void Bi_manual_scenario::add_objects_task_allocator()
 	Object task1(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value*0.3, 11);
 	Object task2(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value*0.3, 2);
 
+	cout << "adding task 0" << endl;
 	Task_allocator->add_task(task0);
+	cout << "done" << endl;
 	Task_allocator->add_task(task1);
 	Task_allocator->add_task(task2);
 

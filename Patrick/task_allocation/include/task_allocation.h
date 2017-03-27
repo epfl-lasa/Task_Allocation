@@ -47,7 +47,6 @@ using namespace Eigen;
 
 
 
-
 const double VALUATION_THRESHOLD = 1;
 const int MAX_COALITION_SIZE = 6;
 
@@ -63,9 +62,9 @@ class Task_allocation
 public:
 	Task_allocation();
 	Task_allocation(double max_time_, double dt, int n_state, MatrixXd A_V, multiarm_ds* DS_, Object_prediction_type Object_motion=Object_prediction_type::Straight);
-	~Task_allocation();
+//	~Task_allocation();
 
-	int			add_robot(Robot_agent bot);
+	int			add_robot(Robot_agent& bot);
 	int 		add_task(Object Object);
 
 	bool		set_object_state(int i, VectorXd X, VectorXd DX);
@@ -81,6 +80,8 @@ public:
 	double 		get_dt() const;
 	double 		get_max_time() const;
 	friend std::ostream& operator<< (std::ostream& stream, const Task_allocation& Object);
+
+	void		print_obj() const;
 
 private:
 

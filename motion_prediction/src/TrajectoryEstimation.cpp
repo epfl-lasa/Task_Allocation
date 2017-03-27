@@ -26,7 +26,8 @@ TrajectoryEstimation::TrajectoryEstimation(double gravity[3], double integration
 
 TrajectoryEstimation::~TrajectoryEstimation()
 {
-
+//	if(mReservoirIndexK != NULL) // patrick
+	//	free(mReservoirIndexK);
 }
 void TrajectoryEstimation::setAirdrag(double lAirdrag)
 {
