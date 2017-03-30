@@ -4,7 +4,7 @@
         #include <ros/ros.h>
 #include <visualization_msgs/Marker.h>
 #include "geometry_msgs/Pose.h"
-
+visualization_msgs::Marker marker_patrick;
 visualization_msgs::Marker marker;
 visualization_msgs::Marker marker_filtered;
 visualization_msgs::Marker marker_virtual;
