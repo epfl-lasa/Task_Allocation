@@ -85,8 +85,55 @@ void Bi_manual_scenario::chatterCallback_ObjectPosition_raw(const geometry_msgs:
 	O_object_raw.z()=msg.orientation.z;
 	O_object_raw.w()=msg.orientation.w;
 	Position_of_the_object_recieved[N_grabbing+3]=true;
+
+	P_objects[0](0)=msg.position.x;
+	P_objects[0](1)=msg.position.y;
+	P_objects[0](2)=msg.position.z;
+	O_objects[0].x()=msg.orientation.x;
+	O_objects[0].y()=msg.orientation.y;
+	O_objects[0].z()=msg.orientation.z;
+	O_objects[0].w()=msg.orientation.w;
+
 	pubish_on_tf(P_object_raw,O_object_raw,"ObjectPosition_raw");
 }
+
+
+void Bi_manual_scenario::chatterCallback_ObjectPositionP1(const geometry_msgs::Pose & msg)
+{
+	P_objects[1](0)=msg.position.x;
+	P_objects[1](1)=msg.position.y;
+	P_objects[1](2)=msg.position.z;
+	O_objects[1].x()=msg.orientation.x;
+	O_objects[1].y()=msg.orientation.y;
+	O_objects[1].z()=msg.orientation.z;
+	O_objects[1].w()=msg.orientation.w;
+}
+
+void Bi_manual_scenario::chatterCallback_ObjectPositionP2(const geometry_msgs::Pose & msg)
+{
+	P_objects[2](0)=msg.position.x;
+	P_objects[2](1)=msg.position.y;
+	P_objects[2](2)=msg.position.z;
+	O_objects[2].x()=msg.orientation.x;
+	O_objects[2].y()=msg.orientation.y;
+	O_objects[2].z()=msg.orientation.z;
+	O_objects[2].w()=msg.orientation.w;
+
+}
+
+void Bi_manual_scenario::chatterCallback_ObjectPositionP3(const geometry_msgs::Pose & msg)
+{
+	P_objects[3](0)=msg.position.x;
+	P_objects[3](1)=msg.position.y;
+	P_objects[3](2)=msg.position.z;
+	O_objects[3].x()=msg.orientation.x;
+	O_objects[3].y()=msg.orientation.y;
+	O_objects[3].z()=msg.orientation.z;
+	O_objects[3].w()=msg.orientation.w;
+
+}
+
+
 void Bi_manual_scenario::sendCommand(int _command)
 {
 	std_msgs::Int64 msg;
@@ -244,6 +291,11 @@ void Bi_manual_scenario::Topic_initialization()
 	}
 
 
+	sub_position_object_p1 = n->subscribe("/object/p1/position", 3, & Bi_manual_scenario::chatterCallback_ObjectPositionP1,this);
+	sub_position_object_p2 = n->subscribe("/object/p2/position", 3, & Bi_manual_scenario::chatterCallback_ObjectPositionP2,this);
+	sub_position_object_p3 = n->subscribe("/object/p3/position", 3, & Bi_manual_scenario::chatterCallback_ObjectPositionP3,this);
+
+
 	sub_position_object = n->subscribe("/object/filtered/position", 3, & Bi_manual_scenario::chatterCallback_ObjectPosition,this);
 	sub_position_object_raw	= n->subscribe("/object/raw/position", 3, & Bi_manual_scenario::chatterCallback_ObjectPosition_raw,this);
 	sub_velocity_object = n->subscribe("/object/filtered/velocity", 3, & Bi_manual_scenario::chatterCallback_ObjectVelocity,this);
@@ -323,6 +375,12 @@ void Bi_manual_scenario::Parameter_initialization()
 	DObject_State.resize(6); 		DObject_State.setZero();
 
 	VirtualOb_State.resize(6);	VirtualOb_State.setZero();
+
+	for(int i = 0; i < 4; i++)
+	{
+		Objects_state[i].resize(6);
+		Objects_state[i].setZero();
+	}
 
 	A_V.resize(6,6);A_V.setZero();
 	A_V(0,3)=1;
@@ -791,27 +849,32 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdate(){
 			}
 
 
+
+
 			// patrick
 
-			cout << "some patrick stuff coming" << endl;
+
 			prepare_task_allocator();
-	//		cout << *Task_allocator << endl;
 
-			cout << "trying to allocate" << endl;
+			for(int i = 0; i < 4; i++)
+			{
+				Objects_state[i].block(0,0,3,1)=P_objects[i];
+				Objects_state[i].block(3,0,3,1)=V_object;
+			}
 
-			struct timeval s_get, e_get;
-			gettimeofday(&s_get, NULL);
+			for(int i = 0; i < 4; i++)
+			{
+				Task_allocator->set_object_state(i, Objects_state[i], DObject_State); // all have same derivative...
+			}
+/*
+			Task_allocator->predict_motion();
 			Task_allocator->allocate();
-			gettimeofday(&e_get, NULL);
+*/
+			// end patrick
 
-			double dur_get = ((e_get.tv_sec * 10e6 + e_get.tv_usec) -
-			                  (s_get.tv_sec * 10e6 + s_get.tv_usec)) * 1e-3;
-			cout << "allocation took " << dur_get << " ms" << endl;
-			cout << "done allocating" << endl;
-			cout << *Task_allocator << endl;
 
-			Task_allocator->print_obj();
-			// end patrick */
+
+
 
 			Motion_G->Initialize_the_virtual_object();
 			Motion_G->Update();
@@ -887,22 +950,25 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 
 
 	// patrick
+		for(int i = 0; i < 4; i++)
+		{
+			Objects_state[i].block(0,0,3,1)=P_objects[i];
+			Objects_state[i].block(3,0,3,1)=V_object;
+		}
 
-		/*	VectorXd ZeroVec(6);
-				ZeroVec.resize(6);
-				ZeroVec.setZero();
+		for(int i = 0; i < 4; i++)
+		{
+			Objects_state[i].block(0,0,3,1)=P_objects[i];
+			Objects_state[i].block(3,0,3,1)=V_object;
+		}
 
-				VectorXd oneVec(6);
-				oneVec.resize(6);
-				oneVec.setConstant(1);*/
-
-		Task_allocator->set_object_state(0, Object_State, DObject_State);
+		for(int i = 0; i < 4; i++)
+		{
+			Task_allocator->set_object_state(i, Objects_state[i], DObject_State); // all have same derivative...
+		}
 
 		Task_allocator->predict_motion();
-
-
-		//cout << Task_allocator->get_object_state(0);
-
+		Task_allocator->allocate();
 	// end patrick */
 
 		for(int i=0;i<N_robots;i++)
@@ -1109,14 +1175,15 @@ void Bi_manual_scenario::add_objects_task_allocator()
 	single_grab[0] = Object_State_raw;
 
 	Object task0(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), Object_Grabbing_State, 2, weight, value, 0);
-	Object task1(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value*0.3, 11);
-	Object task2(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value*0.3, 2);
+	Object task1(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value*2, 1);
+	Object task2(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value*0.8, 2);
+	Object task3(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value*0.3, 3);
 
-	cout << "adding task 0" << endl;
+
 	Task_allocator->add_task(task0);
-	cout << "done" << endl;
 	Task_allocator->add_task(task1);
 	Task_allocator->add_task(task2);
+	Task_allocator->add_task(task3);
 
 }
 
@@ -1126,7 +1193,12 @@ void Bi_manual_scenario::add_robots_task_allocator()
 	cout << "adding robots" << endl;
 	double force = 5;
 	int grippers = 1;
-	for(int i = 0; i < 4; i++)
+	Vector3d rob0(0,-0.5,0);
+	Vector3d rob1(0,0.5,0);
+	Vector3d rob[2];
+	rob[0] = rob0;
+	rob[1] = rob1;
+	for(int i = 0; i < 2; i++)
 	{
 
 		Robot_agent Bot(1,addTwochar(Commom_path,"/A_Matrix").c_str(), addTwochar(Commom_path,"/Priors").c_str(),
@@ -1134,7 +1206,7 @@ void Bi_manual_scenario::add_robots_task_allocator()
 						6, 3, addTwochar(Commom_path,"/IIWA_workspace_Model_prior").c_str(),
 						addTwochar(Commom_path,"/IIWA_workspace_Model_mu").c_str(),
 						addTwochar(Commom_path,"/IIWA_workspace_Model_Sigma").c_str(),
-						addTwochar(Commom_path,"/IIWA_workspace_Model_Threshold").c_str(),Vector3d(), i, grippers, force);
+						addTwochar(Commom_path,"/IIWA_workspace_Model_Threshold").c_str(), rob[i], i, grippers, force);
 
 		Task_allocator->add_robot(Bot);
 	}

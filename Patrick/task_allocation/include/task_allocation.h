@@ -82,6 +82,7 @@ public:
 	friend std::ostream& operator<< (std::ostream& stream, const Task_allocation& Object);
 
 	void		print_obj() const;
+	void		print_coalitions() const;
 
 private:
 
@@ -103,7 +104,6 @@ private:
 	std::vector<Robot_agent> Robots;
 	std::vector<Robot_agent*> unallocated_robots;
 
-
 	int 				n_objects;
 	std::vector<Object>		Objects;
 
@@ -111,13 +111,10 @@ private:
 	double 				dt;
 	int 				n_frames;
 
-
 	std::vector< std::vector<Coalition> > 		Coalitions;
 	std::vector<Coalition> active_coalitions;
 
-
 	multiarm_ds* 	Multi_ds;
-
 };
 
 

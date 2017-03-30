@@ -40,7 +40,7 @@ public:
 	void set_prediction_parameters(double max_time_, double dt);
 	void set_state(VectorXd X, VectorXd DX);
 	void set_prediction_state(VectorXd X,VectorXd X_filtered, double time);
-	void set_assigned();
+	void set_assignment(bool val);
 
 	// getters
 	VectorXd get_X_O() const;

@@ -111,9 +111,9 @@ Object::Object(int N_state_, VectorXd X_, VectorXd DX_, double max_time_, double
 
 }
 
-void Object::set_assigned()
+void Object::set_assignment(bool val)
 {
-	is_assigned = true;
+	is_assigned = val;
 }
 
 void Object::predict_motion()
@@ -294,6 +294,8 @@ std::ostream& operator <<(std::ostream& stream, const Object& o)
 	cout << "******PRINTING AN OBJECT******" << endl;
 	cout << "max_grabbing_state " << o.max_grabbing_state << endl;
 	cout << "max pred time " << o.max_pred_time << endl;
+	cout << "weight " << o.weight << endl;
+	cout << "value " << o.value << endl;
 	cout << "dt " << o.dt << endl;
 	cout << "object id " << o.id << endl;
 	cout << "is assigned " << o.is_assigned << endl;
@@ -319,8 +321,7 @@ std::ostream& operator <<(std::ostream& stream, const Object& o)
 
 	printVector("DX_O", o.DX_O);
 
-	cout << "weight " << o.weight << endl;
-	cout << "value " << o.value << endl;
+
 
 	cout << "******DONE PRINTING AN OBJECT******" << endl;
 }

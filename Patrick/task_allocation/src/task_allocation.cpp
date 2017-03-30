@@ -70,16 +70,19 @@ void Task_allocation::predict_motion()
 
 void Task_allocation::clear_coalitions()
 {
-	// we are beginning, there's no active coalition, all robots are unallocated
+	Coalitions.clear();
 	active_coalitions.clear();
 	unallocated_robots.clear();
 	for(auto& rob : Robots)
 	{
-		if(rob.get_assignment() == -1)
-			unallocated_robots.push_back(&(rob));
+		rob.set_assignment(-1);
 	}
 
-	Coalitions.clear();
+
+	for(auto& obj : Objects)
+	{
+		obj.set_assignment(false);
+	}
 }
 
 
@@ -251,20 +254,23 @@ void Task_allocation::allocate()
 
 	// we are beginning, there's no active coalition, all robots are unallocated
 
-	//reset_coalitions();
-	active_coalitions.clear();
-	unallocated_robots.clear();
+	clear_coalitions();
 
 	for(int i = 0; i < n_objects; i++) // the boundary should be something else....
 	{
 		// *************** build the coalitions
 	//	cout << "building coalitions" << endl;
 		build_coalitions();
-	//	cout << "done building coalitions" << endl;
 
+		int n_coal = 0;
+		for(auto& row: Coalitions)
+			for(auto& coal : row)
+				n_coal++;
+		cout << "done building coalitions: " << unallocated_robots.size() << " available robots, making " << n_coal << " coalitions " << endl;
 		if(unallocated_robots.size() < 1)
 		{
 			cout << "all robots have been allocated" << endl;
+			cout << *this << endl;
 			break;
 		}
 
@@ -272,11 +278,6 @@ void Task_allocation::allocate()
 		// ************** evaluate the coalitions
 	//	cout << "evaluating coalitions" << endl;
 	//	evaluate_coalitions();
-
-		std::vector<double> coal_values;
-		coal_values.reserve(n_robots*n_robots); // this is just to preallocate and hopefully win some time.
-		coal_values.clear(); // might not be needed
-
 
 		int lowest_weight = 100000;
 		int temp_weight = lowest_weight;
@@ -288,26 +289,7 @@ void Task_allocation::allocate()
 				coal.compute_value();
 		//		coal_values.push_back(coal.compute_value()); // not yet implemented, just empty
 				temp_weight = coal.get_weight();
-				if(0 < temp_weight && temp_weight < lowest_weight)
-				{
-					lowest_weight = temp_weight;
-					low_coal = &(coal);
-				}
-			}
-		}
-	//	cout << "done evaluating coalitions" << endl;
-		// now we have all coalitional values.
-
-		// **************** look for smallest coalitional weight
-//		cout << "looking for best coalition" << endl;
-/*		int lowest_weight = 100000;
-		int temp_weight = lowest_weight;
-		Coalition* low_coal = nullptr;
-		for(auto& row : Coalitions)
-		{
-			for(auto& coal : row)
-			{
-				temp_weight = coal.get_weight();
+				cout << "temp weight for this coalition " << temp_weight << endl;
 				if(0 < temp_weight && temp_weight < lowest_weight)
 				{
 					lowest_weight = temp_weight;
@@ -316,7 +298,6 @@ void Task_allocation::allocate()
 			}
 		}
 
-*/
 
 		// *******************
 		// add the corresponding coalition to the active coalitions
@@ -396,11 +377,8 @@ bool Task_allocation::check_dupe(const VectorXd& rowA, const VectorXd& rowB)
 	int dupe = 0;
 	bool found;
 
-//	cout << "checking for dupe " << endl << rowA.transpose() << endl << rowB.transpose() << endl;
-//	cout << "these vectors have size " << rowA.rows() << " and " << rowB.rows() << endl;
 	if(rowA.rows() != rowB.rows())
 		return false;
-
 
 	for(int i = 0; i < rowA.rows(); i++)
 	{
@@ -410,23 +388,28 @@ bool Task_allocation::check_dupe(const VectorXd& rowA, const VectorXd& rowB)
 			{
 				found = true;
 				break;
-//				cout << "found common value " << rowA(i) << endl;
-//				break;
 			}
 		}
+
 		if(found != true)
-		{
 			return false;
-		}
+
 	}
 	return true;
 
 }
-/*template <typename T> int sgn(T val) {
-    return (T(0) < val) - (val < T(0));
-}*/
 
 
+
+void Task_allocation::print_coalitions() const
+{
+	for(const auto& coal : active_coalitions)
+	{
+		cout << endl << "***** BEGIN OF COALITION  *****" << endl;
+		cout << coal;
+		cout << endl << "***** END OF COALITION  *****" << endl;
+	}
+}
 
 
 std::ostream& operator<< (std::ostream& stream, const Task_allocation& o)

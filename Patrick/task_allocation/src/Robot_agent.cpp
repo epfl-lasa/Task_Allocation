@@ -153,20 +153,30 @@ int Robot_agent::get_id() const
 	return id;
 }
 
+
+double Robot_agent::evaluate_task(const Object& obj)
+{
+	Vector3d delta;
+	delta = X_base - obj.get_X_O().block(0,0,3,1);
+
+	return delta.norm();
+}
+
+/*
 bool Robot_agent::init_robot(VectorXd base, Vector3d X_init, VectorXd X, VectorXd ATX_, LPV Dynamic, GMM Workspace, int grippers, double force)
 {
 
 	set_base(base);
 //	set_LPV(Dynamic);
 //	set_ATX(ATX_);
-	set_grippers(grippers);
-	set_force(force);
+//	set_grippers(grippers);
+//	set_force(force);
 //	set_initial_state(X_init);
 	set_state(X);
 
 	return true;
 }
-
+*/
 
 void Robot_agent::set_base(Vector3d X)
 {
@@ -174,15 +184,21 @@ void Robot_agent::set_base(Vector3d X)
 }
 
 
+/*
 void Robot_agent::set_grippers(int n)
 {
 	n_grippers = n;
 }
 
+*/
+
+/*
 void Robot_agent::set_force(double force_)
 {
 	force = force_;
 }
+
+*/
 
 
 std::ostream& operator <<(std::ostream& stream, const Robot_agent& o)

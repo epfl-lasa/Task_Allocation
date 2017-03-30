@@ -88,6 +88,12 @@ private :
 	void 						chatterCallback_hand_state(const std_msgs::Int64 & msg);
 	void 						Send_Postion_To_Robot(int index,VectorXd Position);
 
+	void						chatterCallback_ObjectPositionP1(const geometry_msgs::Pose & msg); // patrick
+	void						chatterCallback_ObjectPositionP2(const geometry_msgs::Pose & msg); // patrick
+	void						chatterCallback_ObjectPositionP3(const geometry_msgs::Pose & msg); // patrick
+
+
+
 
 	void 						Topic_initialization();
 	void 						Parameter_initialization();
@@ -138,6 +144,11 @@ private :
 	ros::Subscriber 			sub_traget_of_robots[N_robots];
 /*	ros::Subscriber 			sub_Orientation_On_object[N_grabbing];*/
 	ros::Subscriber 			sub_pos_catching;
+
+	ros::Subscriber				sub_position_object_p1; // patrick
+	ros::Subscriber				sub_position_object_p2; // patrick
+	ros::Subscriber				sub_position_object_p3; // patrick
+
 	ros::Publisher 				pub_command;
 	geometry_msgs::Pose			msg_vobject;
 	geometry_msgs::Pose			msg_robot_base;
@@ -154,6 +165,9 @@ private :
 	VectorXd 					Desired_JointPos[N_robots];
 	VectorXd 					JointDesVel[N_robots];
 
+	VectorXd					Objects_state[4]; // patrick
+	Vector3d					P_objects[4];					// patrick
+	Quaterniond					O_objects[4];					// patrick
 
 	VectorXd 					End_State [N_robots];
 	VectorXd 					DEnd_State [N_robots];

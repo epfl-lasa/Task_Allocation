@@ -14,6 +14,10 @@ Command COM;
 /*ENUM_State State;*/
 double Postion_VO[3];
 
+double Pos_p1[3];
+double Pos_p2[3];
+double Pos_p3[3];
+
 void chatterCallback_Command(const std_msgs::Int64& msg)
 {
 	int command;
@@ -48,12 +52,40 @@ void chatterCallback_object(const visualization_msgs::InteractiveMarkerFeedback&
 	P_O(2)=msg.pose.position.z;
 }
 
+/*
+void chatterCallback_object_p1(const visualization_msgs::InteractiveMarkerFeedback& msg)
+{
+
+	Pos_p1[0]=msg.pose.position.x;
+	Pos_p1[1]=msg.pose.position.y;
+	Pos_p1[2]=msg.pose.position.z;
+}
+
+void chatterCallback_object_p2(const visualization_msgs::InteractiveMarkerFeedback& msg)
+{
+
+	Pos_p2[0]=msg.pose.position.x;
+	Pos_p2[1]=msg.pose.position.y;
+	Pos_p2[2]=msg.pose.position.z;
+}
+
+void chatterCallback_object_p3(const visualization_msgs::InteractiveMarkerFeedback& msg)
+{
+
+	Pos_p3[0]=msg.pose.position.x;
+	Pos_p3[1]=msg.pose.position.y;
+	Pos_p3[2]=msg.pose.position.z;
+}
+*/
 
 int main(int argc, char **argv) {
 
 	ros::init(argc, argv, "talker");
 	ros::NodeHandle n;
 	ros::Publisher chatter_pub;
+	ros::Publisher chatter_pub_p1; // p
+	ros::Publisher chatter_pub_p2;// p
+	ros::Publisher chatter_pub_p3;// p
 	ros::Publisher chatter_pub_f;
 	ros::Publisher chatter_pub_acc_f;
 	ros::Publisher chatter_pub_vel_f;
@@ -62,7 +94,13 @@ int main(int argc, char **argv) {
 	ros::Subscriber sub_command;
 	ros::Subscriber sub_state;
 	ros::Subscriber object_state;
+	ros::Subscriber object_state_p1; // p
+	ros::Subscriber object_state_p2;// p
+	ros::Subscriber object_state_p3;// p
 	geometry_msgs::Pose Object;
+	geometry_msgs::Pose Object_p1;// p
+	geometry_msgs::Pose Object_p2;// p
+	geometry_msgs::Pose Object_p3;// p
 	geometry_msgs::Pose Object_f;
 	geometry_msgs::Pose Object_vel;
 	geometry_msgs::Pose Object_acc;
@@ -75,10 +113,21 @@ int main(int argc, char **argv) {
 	chatter_pub_acc_f = n.advertise<geometry_msgs::Pose>("/object/filtered/acceleration", 3);
 	chatter_pub_object_left = n.advertise<geometry_msgs::Pose>("/object/filtered/left/position", 3);
 	chatter_pub_object_right = n.advertise<geometry_msgs::Pose>("/object/filtered/right/position", 3);
+
+
+
 	sub_command = n.subscribe("/command", 3, chatterCallback_Command);
 	//sub_state = n.subscribe("/catch/state", 3, chatterCallback_State);
 	object_state = n.subscribe("/target_interaction/feedback", 3, chatterCallback_object);
 
+	// pat
+	chatter_pub_p1 = n.advertise<geometry_msgs::Pose>("/object/p1/position", 3);
+	chatter_pub_p2 = n.advertise<geometry_msgs::Pose>("/object/p2/position", 3);
+	chatter_pub_p3 = n.advertise<geometry_msgs::Pose>("/object/p3/position", 3);
+	/*object_state_p1 = n.subscribe("/target_interaction/feedback1", 3, chatterCallback_object);
+	object_state_p2 = n.subscribe("/target_interaction/feedback2", 3, chatterCallback_object);
+	object_state_p3 = n.subscribe("/target_interaction/feedback3", 3, chatterCallback_object);
+*/
 	filter	 = new SGF::SavitzkyGolayFilter(dim,order, winlen, sample_time);
 
 	double P_I[3];
@@ -240,6 +289,24 @@ int main(int argc, char **argv) {
 		chatter_pub_acc_f.publish(Object_acc);
 		chatter_pub_object_left.publish(Object_left);
 		chatter_pub_object_right.publish(Object_right);
+
+
+		// patrick  make our objects here... hard-coded 2 in front, big in middle, one in back
+		Object_p1.position.x = Object.position.x + 0.5;
+		Object_p1.position.y = Object.position.y + 0.2;
+		Object_p1.position.z = Object.position.z;
+
+		Object_p2.position.x = Object.position.x - 0.5;
+		Object_p2.position.y = Object.position.y - 0.0;
+		Object_p2.position.z = Object.position.z;
+
+		Object_p3.position.x = Object.position.x + 0.5;
+		Object_p3.position.y = Object.position.y - 0.2;
+		Object_p3.position.z = Object.position.z;
+
+		chatter_pub_p1.publish(Object_p1);
+		chatter_pub_p2.publish(Object_p2);
+		chatter_pub_p3.publish(Object_p3);
 
 		r.sleep();
 		ros::spinOnce();

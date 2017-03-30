@@ -24,6 +24,7 @@
 #include "TrajectoryEstimation.h"
 #include <math.h>
 #include  <omp.h>
+#include "Object.h"
 
 using namespace Eigen;
 
@@ -38,10 +39,10 @@ public:
 			VectorXd X_, VectorXd X_intercept_, VectorXd DX_, VectorXd X_I_C_, VectorXd X_F_P_,
 			VectorXd DX_F_P_, VectorXd X_d_, VectorXd DX_d_, double tau_, double Dtau_, double DDtau_, MatrixXd Prob_of_catching_, int n_grippers_, double force);
 	Robot_agent(int Num_LPV_Com, const char  *path_A_LPV, const char  *path_prior_LPV,const char  *path_mu_LPV,const char  *path_sigma_LPV, int Num_GMM_Com,
-					int Num_GMM_state, const char  *path_prior_GMM,const char  *path_mu_GMM,const char  *path_sigma_GMM, const char *path_threshold,Vector3d X_Base, int ID, int grip, double force);
+					int Num_GMM_state, const char  *path_prior_GMM,const char  *path_mu_GMM,const char  *path_sigma_GMM, const char *path_threshold, Vector3d X_Base, int ID, int grip, double force);
 
 
-//	~Robot_agent();
+	double evaluate_task(const Object& obj);
 	int	get_id() const;
 	int get_assignment() const;
 	void set_assignment(int);
@@ -51,12 +52,11 @@ public:
 	int get_n_grippers() const;
 	double get_force() const;
 
-	bool init_robot(VectorXd base, Vector3d X_init, VectorXd X, VectorXd ATX_, LPV Dynamic, GMM Workspace, int grippers, double force);
+//	bool init_robot(VectorXd base, Vector3d X_init, VectorXd X, VectorXd ATX_, LPV Dynamic, GMM Workspace, int grippers, double force);
 	void set_base(Vector3d X);
-	void set_grippers(int n);
-	void set_force(double force);
 	void set_state(VectorXd X);
-
+//	void set_grippers(int n);
+//	void set_force(double force);
 
 	friend std::ostream& operator <<(std::ostream& stream, const Robot_agent& o);
 private:

@@ -57,7 +57,7 @@ void Coalition::assign()
 		rob->set_assignment(des_obj->get_id());
 	}
 
-	des_obj->set_assigned();
+	des_obj->set_assignment(true);
 }
 
 void Coalition::print_pointer()
@@ -143,6 +143,7 @@ double Coalition::compute_value()
 	cost = 1000000;
 	double temp_weight = 10000;
 	double temp_value = 100000;
+	double temp_cost = 0;
 	// check for each object
 	for(const auto& obj : Objects)
 	{
@@ -150,6 +151,14 @@ double Coalition::compute_value()
 
 		if(is_feasible(*obj))
 		{
+			temp_cost = 0;
+			cout << "computing cost ";
+			for(const auto& rob : Robots)
+			{
+				temp_cost += rob->evaluate_task(*obj);
+				cout << temp_cost << " " ;
+			}
+			cout << endl;
 			temp_value = obj->get_value();
 			temp_weight = 1/(temp_value*n_robots);
 			if(temp_weight < weight)
@@ -162,6 +171,8 @@ double Coalition::compute_value()
 
 	//		cout << "computed value, the object I want is " << obj->get_id() << endl;
 		}
+		else
+			cout << "cant do this object, requires n_grips force " << obj->get_n_grippers() << " " << obj->get_weight() << " I have " << n_grippers << " " << force << endl;
 	}
 
 
@@ -197,8 +208,9 @@ std::ostream& operator <<(std::ostream& stream, const Coalition& o)
 	cout << "coalitional cost " << o.cost << endl;
 	cout << "coalitional weight " << o.weight << endl;
 	if(o.des_obj != nullptr)
-		cout << "task I want to do " << (o.des_obj)->get_id() << endl;
+		cout << "task I want to do " << (o.des_obj)->get_id();
 	else
-		cout << "task I want to do " << -1 << endl;
+		cout << "task I want to do " << -1;
+	cout << endl;
 }
 

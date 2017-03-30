@@ -1,10 +1,18 @@
 
 
 
-        #include <ros/ros.h>
+#include <ros/ros.h>
 #include <visualization_msgs/Marker.h>
 #include "geometry_msgs/Pose.h"
-visualization_msgs::Marker marker_patrick;
+
+
+visualization_msgs::Marker marker_p1;
+visualization_msgs::Marker marker_p2;
+visualization_msgs::Marker marker_p3;
+ros::Publisher marker_p1_pub;
+ros::Publisher marker_p2_pub;
+ros::Publisher marker_p3_pub;
+
 visualization_msgs::Marker marker;
 visualization_msgs::Marker marker_filtered;
 visualization_msgs::Marker marker_virtual;
@@ -46,6 +54,16 @@ void chatterCallback_object_virtual(const geometry_msgs::Pose & msg)
 	marker_virtual.pose.orientation.y = msg.orientation.y;
 	marker_virtual.pose.orientation.z = msg.orientation.z;
 	marker_virtual_pub.publish(marker_virtual);
+
+// pat
+	marker_p1.pose.position.x = msg.position.x;
+	marker_p1.pose.position.y = msg.position.y-B_t_U;
+	marker_p1.pose.position.z = msg.position.z;
+	marker_p1.pose.orientation.w = msg.orientation.w;
+	marker_p1.pose.orientation.x = msg.orientation.x;
+	marker_p1.pose.orientation.y = msg.orientation.y;
+	marker_p1.pose.orientation.z = msg.orientation.z;
+	marker_p1_pub.publish(marker_p1);
 }
 
 
@@ -67,6 +85,65 @@ void chatterCallback_object_filter(const geometry_msgs::Pose & msg)
 }
 
 
+void chatterCallback_object_P1(const geometry_msgs::Pose & msg)
+{
+
+	marker_p1.header.stamp = ros::Time::now();
+
+	// Set the pose of the marker.  This is a full 6DOF pose relative to the frame/time specified in the header
+
+	marker_p1.pose.position.x = msg.position.x;
+	marker_p1.pose.position.y = msg.position.y-B_t_U;
+	marker_p1.pose.position.z = msg.position.z;
+	marker_p1.pose.orientation.w = msg.orientation.w;
+	marker_p1.pose.orientation.x = msg.orientation.x;
+	marker_p1.pose.orientation.y = msg.orientation.y;
+	marker_p1.pose.orientation.z = msg.orientation.z;
+	marker_p1_pub.publish(marker_p1);
+}
+
+
+void chatterCallback_object_P2(const geometry_msgs::Pose & msg)
+{
+
+	marker_p2.header.stamp = ros::Time::now();
+
+	// Set the pose of the marker.  This is a full 6DOF pose relative to the frame/time specified in the header
+
+	marker_p2.pose.position.x = msg.position.x;
+	marker_p2.pose.position.y = msg.position.y-B_t_U;
+	marker_p2.pose.position.z = msg.position.z;
+	marker_p2.pose.orientation.w = msg.orientation.w;
+	marker_p2.pose.orientation.x = msg.orientation.x;
+	marker_p2.pose.orientation.y = msg.orientation.y;
+	marker_p2.pose.orientation.z = msg.orientation.z;
+	marker_p2_pub.publish(marker_p2);
+}
+
+void chatterCallback_object_P3(const geometry_msgs::Pose & msg)
+{
+
+	marker_p3.header.stamp = ros::Time::now();
+
+	// Set the pose of the marker.  This is a full 6DOF pose relative to the frame/time specified in the header
+
+	marker_p3.pose.position.x = msg.position.x;
+	marker_p3.pose.position.y = msg.position.y-B_t_U;
+	marker_p3.pose.position.z = msg.position.z;
+	marker_p3.pose.orientation.w = msg.orientation.w;
+	marker_p3.pose.orientation.x = msg.orientation.x;
+	marker_p3.pose.orientation.y = msg.orientation.y;
+	marker_p3.pose.orientation.z = msg.orientation.z;
+	marker_p3_pub.publish(marker_p3);
+}
+
+
+
+
+
+
+
+
 int main( int argc, char** argv )
 {
 	ros::init(argc, argv, "basic_shapes");
@@ -77,6 +154,14 @@ int main( int argc, char** argv )
 	ros::Subscriber	sub_object = n.subscribe("/object/raw/position", 3, chatterCallback_object);
 	ros::Subscriber	sub_object_virtual = n.subscribe("/object/virtual/position", 3, chatterCallback_object_virtual);
 	ros::Subscriber	sub_object_fitler = n.subscribe("/object/filtered/position", 3, chatterCallback_object_filter);
+
+	marker_p1_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
+	marker_p2_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
+	marker_p3_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
+
+	ros::Subscriber	sub_object_p1 = n.subscribe("/object/p1/position", 3, chatterCallback_object_P1);
+	ros::Subscriber	sub_object_p2 = n.subscribe("/object/p2/position", 3, chatterCallback_object_P2);
+	ros::Subscriber	sub_object_p3 = n.subscribe("/object/p3/position", 3, chatterCallback_object_P3);
 
 
 	// Set our initial shape type to be a cube
@@ -100,6 +185,71 @@ int main( int argc, char** argv )
 	marker.color.b = 1.0f;
 	marker.color.a = 1.0;
 	marker.pose.position.x = 0.0 ;
+
+
+	marker_p1.header.frame_id = "/world_frame";
+	marker_p1.action = visualization_msgs::Marker::ADD;  // Set the marker action.  Options are ADD, DELETE, and new in ROS Indigo: 3 (DELETEALL)
+	marker_p1.ns = "basic_shapes";
+	marker_p1.id = 1;
+	marker_p1.type = shape;
+	marker_p1.pose.orientation.x = 0.0;
+	marker_p1.pose.orientation.y = 0.0;
+	marker_p1.pose.orientation.z = 0.0;
+	marker_p1.pose.orientation.w = 1.0;
+
+	marker_p1.scale.x = 0.2;
+	marker_p1.scale.y = 0.2;
+	marker_p1.scale.z = 0.2;
+	marker_p1.color.r = 1.0f;
+	marker_p1.color.g = 0.0f;
+	marker_p1.color.b = 0.0f;
+	marker_p1.color.a = 1.0;
+	marker_p1.pose.position.x = 0.0 ;
+
+	marker_p2.header.frame_id = "/world_frame";
+	marker_p2.action = visualization_msgs::Marker::ADD;  // Set the marker action.  Options are ADD, DELETE, and new in ROS Indigo: 3 (DELETEALL)
+	marker_p2.ns = "basic_shapes";
+	marker_p2.id = 2;
+	marker_p2.type = shape;
+	marker_p2.pose.orientation.x = 0.0;
+	marker_p2.pose.orientation.y = 0.0;
+	marker_p2.pose.orientation.z = 0.0;
+	marker_p2.pose.orientation.w = 1.0;
+
+	marker_p2.scale.x = 0.2;
+	marker_p2.scale.y = 0.2;
+	marker_p2.scale.z = 0.2;
+	marker_p2.color.r = 1.0f;
+	marker_p2.color.g = 0.0f;
+	marker_p2.color.b = 1.0f;
+	marker_p2.color.a = 1.0;
+	marker_p2.pose.position.x = 0.0 ;
+
+
+	marker_p3.header.frame_id = "/world_frame";
+	marker_p3.action = visualization_msgs::Marker::ADD;  // Set the marker action.  Options are ADD, DELETE, and new in ROS Indigo: 3 (DELETEALL)
+	marker_p3.ns = "basic_shapes";
+	marker_p3.id = 3;
+	marker_p3.type = shape;
+	marker_p3.pose.orientation.x = 0.0;
+	marker_p3.pose.orientation.y = 0.0;
+	marker_p3.pose.orientation.z = 0.0;
+	marker_p3.pose.orientation.w = 1.0;
+
+	marker_p3.scale.x = 0.2;
+	marker_p3.scale.y = 0.2;
+	marker_p3.scale.z = 0.2;
+	marker_p3.color.r = 1.0f;
+	marker_p3.color.g = 1.0f;
+	marker_p3.color.b = 1.0f;
+	marker_p3.color.a = 1.0;
+	marker_p3.pose.position.x = 0.0 ;
+
+
+
+
+
+
 
 	marker_filtered.header.frame_id = "/world_frame";
 	marker_filtered.action = visualization_msgs::Marker::ADD;  // Set the marker action.  Options are ADD, DELETE, and new in ROS Indigo: 3 (DELETEALL)
@@ -142,5 +292,10 @@ int main( int argc, char** argv )
 	marker_virtual.pose.position.x = 0.0 ;
 	marker_pub.publish(marker);
 	marker_virtual_pub.publish(marker_virtual);
+
+
+	marker_p1_pub.publish(marker_p1);
+	marker_p2_pub.publish(marker_p2);
+	marker_p3_pub.publish(marker_p3);
 	ros::spin();
 }
