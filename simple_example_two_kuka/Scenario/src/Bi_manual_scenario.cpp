@@ -969,6 +969,7 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 
 		Task_allocator->predict_motion();
 		Task_allocator->allocate();
+		Task_allocator->print_coalitions();
 	// end patrick */
 
 		for(int i=0;i<N_robots;i++)
@@ -1137,9 +1138,8 @@ void Bi_manual_scenario::prepare_task_allocator()
 	double dt = 10;
 	double max_time = 1000; // ms
 	int n_state = 6;
-//	double dt, int n_state, int max_n_bots, int max_n_tasks, MatrixXd A_V,Object_prediction_type Object_motion=Object_prediction_type::Straight
-	Task_allocator = new Task_allocation(max_time, dt, n_state, A_V, Motion_G);
 
+	Task_allocator = new Task_allocation(max_time, dt, n_state, A_V, Motion_G);
 
 	// adding object(s)
 	add_objects_task_allocator();
@@ -1149,15 +1149,9 @@ void Bi_manual_scenario::prepare_task_allocator()
 	add_robots_task_allocator();
 
 
-//	cout << "init coalitions " << endl;
-
 	Task_allocator->clear_coalitions();
-
-	// make coalitions
-//	Task_allocator->build_coalitions();
-//	cout << "done building coalitions" << endl;
-
 }
+
 
 void Bi_manual_scenario::add_objects_task_allocator()
 {
@@ -1170,12 +1164,12 @@ void Bi_manual_scenario::add_objects_task_allocator()
 
 
 	double weight = 3.14;
-	double value = 0.1;
+	double value = 15;
 	VectorXd single_grab[1];
 	single_grab[0] = Object_State_raw;
 
 	Object task0(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), Object_Grabbing_State, 2, weight, value, 0);
-	Object task1(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value*2, 1);
+	Object task1(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value*0.5, 1);
 	Object task2(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value*0.8, 2);
 	Object task3(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value*0.3, 3);
 
@@ -1186,6 +1180,7 @@ void Bi_manual_scenario::add_objects_task_allocator()
 	Task_allocator->add_task(task3);
 
 }
+
 
 void Bi_manual_scenario::add_robots_task_allocator()
 {

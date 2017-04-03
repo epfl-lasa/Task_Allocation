@@ -254,6 +254,7 @@ void Task_allocation::allocate()
 
 	// we are beginning, there's no active coalition, all robots are unallocated
 
+
 	clear_coalitions();
 
 	for(int i = 0; i < n_objects; i++) // the boundary should be something else....
@@ -266,11 +267,11 @@ void Task_allocation::allocate()
 		for(auto& row: Coalitions)
 			for(auto& coal : row)
 				n_coal++;
-		cout << "done building coalitions: " << unallocated_robots.size() << " available robots, making " << n_coal << " coalitions " << endl;
+//		cout << "done building coalitions: " << unallocated_robots.size() << " available robots, making " << n_coal << " coalitions " << endl;
 		if(unallocated_robots.size() < 1)
 		{
-			cout << "all robots have been allocated" << endl;
-			cout << *this << endl;
+		//	cout << "all robots have been allocated" << endl;
+//			cout << *this << endl;
 			break;
 		}
 
@@ -289,7 +290,7 @@ void Task_allocation::allocate()
 				coal.compute_value();
 		//		coal_values.push_back(coal.compute_value()); // not yet implemented, just empty
 				temp_weight = coal.get_weight();
-				cout << "temp weight for this coalition " << temp_weight << endl;
+//				cout << "temp weight for this coalition " << temp_weight << endl;
 				if(0 < temp_weight && temp_weight < lowest_weight)
 				{
 					lowest_weight = temp_weight;
@@ -310,8 +311,8 @@ void Task_allocation::allocate()
 			active_coalitions.push_back(*low_coal);
 			low_coal->assign();
 		}
-		else
-			cout << "didn't find a coalition" << endl;
+	//	else
+		//	cout << "didn't find a coalition" << endl;
 	}
 
 
@@ -403,12 +404,19 @@ bool Task_allocation::check_dupe(const VectorXd& rowA, const VectorXd& rowB)
 
 void Task_allocation::print_coalitions() const
 {
+	if(active_coalitions.size() < 1)
+	{
+		cout << "no coalitions" << endl;
+		return;
+	}
+
 	for(const auto& coal : active_coalitions)
 	{
 		cout << endl << "***** BEGIN OF COALITION  *****" << endl;
 		cout << coal;
 		cout << endl << "***** END OF COALITION  *****" << endl;
 	}
+
 }
 
 

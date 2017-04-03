@@ -156,10 +156,27 @@ int Robot_agent::get_id() const
 
 double Robot_agent::evaluate_task(const Object& obj)
 {
-	Vector3d delta;
-	delta = X_base - obj.get_X_O().block(0,0,3,1);
+	int n_grips = obj.get_n_grippers();
+	Vector3d delta[n_grips];
+	double delta_norm = 1000000;
+	double temp_delta;
+	MatrixXd POG[n_grips];
+	for(int i = 0; i < n_grips; i++)
+	{
+		POG[i] = obj.get_P_O_G_prediction(i);
+	//	cout << " POG " << i << endl << POG[i] << endl;
+	//	cout << " POG " << i  << " has " << POG[i].cols() << " columns" << endl;
+	//	cout << "last column is " << endl << POG[i].col(POG[i].cols()-1) << endl;
+		temp_delta = (X_base - (POG[i].col(POG[i].cols() -1)).block(0,0,3,1)).norm();
+		if(temp_delta < delta_norm)
+			delta_norm = temp_delta;
+	}
 
-	return delta.norm();
+	// check feasibility somehow
+	//if(delta_norm > 20)
+	//	delta_norm = 1000000;
+//	cout << "delta norm = " << delta_norm << endl;
+	return delta_norm;
 }
 
 /*

@@ -152,16 +152,20 @@ double Coalition::compute_value()
 		if(is_feasible(*obj))
 		{
 			temp_cost = 0;
-			cout << "computing cost ";
+//			cout << "computing cost ";
 			for(const auto& rob : Robots)
 			{
 				temp_cost += rob->evaluate_task(*obj);
-				cout << temp_cost << " " ;
+	//			cout << temp_cost << " " ;
 			}
-			cout << endl;
+		//	cout << endl;
+			cout << "evaluated cost " << temp_cost;
 			temp_value = obj->get_value();
-			temp_weight = 1/(temp_value*n_robots);
-			if(temp_weight < weight)
+			cout << " evaluated value " << temp_value;
+			temp_weight = temp_value - 0.01*temp_cost;
+			temp_weight = 1/(temp_weight*n_robots);
+			cout << " evaluated weight " << temp_weight << endl;
+			if(0 < temp_weight && temp_weight < weight)
 			{
 				value = temp_value;
 				weight = temp_weight;
@@ -170,9 +174,11 @@ double Coalition::compute_value()
 			}
 
 	//		cout << "computed value, the object I want is " << obj->get_id() << endl;
+	//		if(weight < 5)
+		//		weight = -1;
 		}
-		else
-			cout << "cant do this object, requires n_grips force " << obj->get_n_grippers() << " " << obj->get_weight() << " I have " << n_grippers << " " << force << endl;
+	//	else
+	//		cout << "cant do this object, requires n_grips force " << obj->get_n_grippers() << " " << obj->get_weight() << " I have " << n_grippers << " " << force << endl;
 	}
 
 

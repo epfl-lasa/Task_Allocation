@@ -68,7 +68,7 @@ Object::Object(int N_state_, VectorXd X_, VectorXd DX_, double max_time_, double
 
 	max_pred_time = max_time_;
 	dt = dt_;
-
+	n_frames = floor(max_pred_time/dt)+1;
 	if(n_grabbing_states_ > max_grabbing_state)
 		cout << "error, n grabbing bigger than max grabbing" << endl;
 
@@ -107,8 +107,6 @@ Object::Object(int N_state_, VectorXd X_, VectorXd DX_, double max_time_, double
 
 
 	is_assigned = false;
-	n_frames = -1;
-
 }
 
 void Object::set_assignment(bool val)
@@ -182,7 +180,7 @@ void Object::dumb_predict_motion()
 //		cout << "for grabbing pos " << j << endl << P_O_G_prediction[j] << endl;
 	}
 
-//	cout << "P_O predicted " << endl << P_O_prediction << endl;
+//	cout << "P_O predicted for " << n_frames << " frames" << endl << P_O_prediction << endl;
 }
 
 

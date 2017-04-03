@@ -55,15 +55,6 @@ void chatterCallback_object_virtual(const geometry_msgs::Pose & msg)
 	marker_virtual.pose.orientation.z = msg.orientation.z;
 	marker_virtual_pub.publish(marker_virtual);
 
-// pat
-	marker_p1.pose.position.x = msg.position.x;
-	marker_p1.pose.position.y = msg.position.y-B_t_U;
-	marker_p1.pose.position.z = msg.position.z;
-	marker_p1.pose.orientation.w = msg.orientation.w;
-	marker_p1.pose.orientation.x = msg.orientation.x;
-	marker_p1.pose.orientation.y = msg.orientation.y;
-	marker_p1.pose.orientation.z = msg.orientation.z;
-	marker_p1_pub.publish(marker_p1);
 }
 
 
@@ -196,7 +187,6 @@ int main( int argc, char** argv )
 	marker_p1.pose.orientation.y = 0.0;
 	marker_p1.pose.orientation.z = 0.0;
 	marker_p1.pose.orientation.w = 1.0;
-
 	marker_p1.scale.x = 0.2;
 	marker_p1.scale.y = 0.2;
 	marker_p1.scale.z = 0.2;
@@ -215,7 +205,6 @@ int main( int argc, char** argv )
 	marker_p2.pose.orientation.y = 0.0;
 	marker_p2.pose.orientation.z = 0.0;
 	marker_p2.pose.orientation.w = 1.0;
-
 	marker_p2.scale.x = 0.2;
 	marker_p2.scale.y = 0.2;
 	marker_p2.scale.z = 0.2;
@@ -235,7 +224,6 @@ int main( int argc, char** argv )
 	marker_p3.pose.orientation.y = 0.0;
 	marker_p3.pose.orientation.z = 0.0;
 	marker_p3.pose.orientation.w = 1.0;
-
 	marker_p3.scale.x = 0.2;
 	marker_p3.scale.y = 0.2;
 	marker_p3.scale.z = 0.2;
@@ -254,7 +242,7 @@ int main( int argc, char** argv )
 	marker_filtered.header.frame_id = "/world_frame";
 	marker_filtered.action = visualization_msgs::Marker::ADD;  // Set the marker action.  Options are ADD, DELETE, and new in ROS Indigo: 3 (DELETEALL)
 	marker_filtered.ns = "basic_shapes";
-	marker_filtered.id = 0;
+	marker_filtered.id = 4;
 	marker_filtered.type = shape;
 	marker_filtered.pose.orientation.x = 0.0;
 	marker_filtered.pose.orientation.y = 0.0;
@@ -276,7 +264,7 @@ int main( int argc, char** argv )
 	marker_virtual.header.frame_id = "/world_frame";
 	marker_virtual.action = visualization_msgs::Marker::ADD;  // Set the marker action.  Options are ADD, DELETE, and new in ROS Indigo: 3 (DELETEALL)
 	marker_virtual.ns = "basic_shapes";
-	marker_virtual.id = 1;
+	marker_virtual.id = 5;
 	marker_virtual.type = shape;
 	marker_virtual.pose.orientation.x = 0.0;
 	marker_virtual.pose.orientation.y = 0.0;
