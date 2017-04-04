@@ -270,8 +270,11 @@ private :
 	std::ofstream				TheRobotdata;
 
 
-
+	// patrick stuff
 	Task_allocation* Task_allocator;
+	ros::Publisher pub_rob0_id;
+	ros::Publisher pub_rob1_id;
+	std_msgs::Int64 rob_id_msg;
 
 };
 

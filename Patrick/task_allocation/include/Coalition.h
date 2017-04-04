@@ -35,16 +35,16 @@ public:
 	int add_robot(Robot_agent* bot);
 	int add_task(Object* Task);
 
-	void print_pointer();
-	int get_n_robots();
-	int get_n_grippers();
-	int get_id();
-	std::vector<int> get_robots_id();
-	int get_object_id();
-	double get_force();
-	double get_value();
-	double get_cost();
-	double get_weight();
+	void print_pointer() const;
+	int get_n_robots() const;
+	int get_n_grippers() const;
+	int get_id() const;
+	std::vector<int> get_robots_id() const;
+	int get_object_id() const;
+	double get_force() const;
+	double get_value() const;
+	double get_cost() const;
+	double get_weight() const;
 
 	double compute_value(); // updates value, cost and weight
 

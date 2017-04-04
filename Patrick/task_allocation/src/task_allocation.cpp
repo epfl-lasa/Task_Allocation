@@ -280,8 +280,8 @@ void Task_allocation::allocate()
 	//	cout << "evaluating coalitions" << endl;
 	//	evaluate_coalitions();
 
-		int lowest_weight = 100000;
-		int temp_weight = lowest_weight;
+		double lowest_weight = 100000;
+		double temp_weight = lowest_weight;
 		Coalition* low_coal = nullptr;
 		for(auto& row : Coalitions)
 		{
@@ -290,8 +290,8 @@ void Task_allocation::allocate()
 				coal.compute_value();
 		//		coal_values.push_back(coal.compute_value()); // not yet implemented, just empty
 				temp_weight = coal.get_weight();
-//				cout << "temp weight for this coalition " << temp_weight << endl;
-				if(0 < temp_weight && temp_weight < lowest_weight)
+	//			cout << "temp weight for this coalition " << temp_weight << endl;
+				if(0.0 < temp_weight && temp_weight < lowest_weight)
 				{
 					lowest_weight = temp_weight;
 					low_coal = &(coal);
@@ -319,6 +319,37 @@ void Task_allocation::allocate()
 
 }
 
+int Task_allocation::get_n_coals() const
+{
+	return active_coalitions.size();
+}
+
+int Task_allocation::get_robot_target(int i) const
+{
+	if(i >= 0 && i < Robots.size())
+		return Robots[i].get_assignment();
+	else
+		return -1;
+}
+
+void Task_allocation::update_objects_value()
+{
+	for(auto & obj : Objects)
+	{
+		obj.update_value();
+	}
+}
+
+
+bool Task_allocation::set_robot_state(int i, VectorXd X_)
+{
+	if(i > 0 && i < n_robots)
+	{
+		Robots[i].set_state(X_);
+		return true;
+	}
+	return false;
+}
 
 void Task_allocation::multi_frame_allocation()
 {
@@ -406,7 +437,7 @@ void Task_allocation::print_coalitions() const
 {
 	if(active_coalitions.size() < 1)
 	{
-		cout << "no coalitions" << endl;
+	//	cout << "no coalitions" << endl;
 		return;
 	}
 

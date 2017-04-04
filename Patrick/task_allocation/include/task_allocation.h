@@ -68,6 +68,7 @@ public:
 	int 		add_task(Object Object);
 
 	bool		set_object_state(int i, VectorXd X, VectorXd DX);
+	bool		set_robot_state(int i, VectorXd X_);
 	VectorXd	get_object_state(int i);
 	void 		predict_motion();
 
@@ -79,11 +80,13 @@ public:
 
 	double 		get_dt() const;
 	double 		get_max_time() const;
+	int 		get_n_coals() const;
+	int 		get_robot_target(int i) const;
 	friend std::ostream& operator<< (std::ostream& stream, const Task_allocation& Object);
 
 	void		print_obj() const;
 	void		print_coalitions() const;
-
+	void 		update_objects_value();
 private:
 
 	void 	ERROR();
@@ -113,7 +116,7 @@ private:
 
 	std::vector< std::vector<Coalition> > 		Coalitions;
 	std::vector<Coalition> active_coalitions;
-
+	int 			n_coalitions;
 	multiarm_ds* 	Multi_ds;
 };
 

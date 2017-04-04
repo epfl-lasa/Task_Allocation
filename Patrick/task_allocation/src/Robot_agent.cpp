@@ -32,7 +32,7 @@ Robot_agent::Robot_agent(int Num_LPV_Com, const char *path_A_LPV, const char *pa
 	//Dynamic.initialize_A(path_A_LPV);
 	X_base = X_Base;
 
-
+	X.resize(n_state); X.setZero();
 
 	workspace_model_is_set = true;
 	//LPV_is_set = true;
@@ -167,7 +167,7 @@ double Robot_agent::evaluate_task(const Object& obj)
 	//	cout << " POG " << i << endl << POG[i] << endl;
 	//	cout << " POG " << i  << " has " << POG[i].cols() << " columns" << endl;
 	//	cout << "last column is " << endl << POG[i].col(POG[i].cols()-1) << endl;
-		temp_delta = (X_base - (POG[i].col(POG[i].cols() -1)).block(0,0,3,1)).norm();
+		temp_delta = (X_base - (POG[i].col(0)).block(0,0,3,1)).norm();
 		if(temp_delta < delta_norm)
 			delta_norm = temp_delta;
 	}

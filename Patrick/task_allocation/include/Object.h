@@ -58,7 +58,7 @@ public:
 
 	// various
 	void print_estimator() const;
-
+	double update_value();
 	friend std::ostream& operator<< (std::ostream& stream, const Object& Object);
 
 private:

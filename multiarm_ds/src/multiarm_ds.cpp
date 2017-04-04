@@ -783,9 +783,9 @@ void multiarm_ds::predict_the_object_position()
 				}
 				for (int i=0;i<N_robots_;i++)
 				{
-					cout<<"The "<<i<<" th robot is assigned to grab "<<Robots_[i].index_of_grabbing_posititon_<<" the catching position. ";
+	//				cout<<"The "<<i<<" th robot is assigned to grab "<<Robots_[i].index_of_grabbing_posititon_<<" the catching position. ";
 				}
-				cout<<""<<endl;
+		//		cout<<""<<endl;
 				The_catching_pos_is_found=true;
 			}
 			else

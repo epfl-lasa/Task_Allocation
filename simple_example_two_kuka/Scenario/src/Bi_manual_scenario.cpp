@@ -348,6 +348,11 @@ void Bi_manual_scenario::Topic_initialization()
 	pub_gamma= n->advertise<std_msgs::Float64>("/collision_avoidance/gamma", 3);
 	tf_br= new tf::TransformBroadcaster();
 
+
+	// patrick stuff
+	pub_rob0_id = n->advertise<std_msgs::Int64>("/robotsPat/id0/", 1);
+	pub_rob1_id = n->advertise<std_msgs::Int64>("/robotsPat/id1/", 1);
+
 }
 void Bi_manual_scenario::Parameter_initialization()
 {
@@ -967,9 +972,26 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 			Task_allocator->set_object_state(i, Objects_state[i], DObject_State); // all have same derivative...
 		}
 
+		for(int i = 0; i < N_robots; i++)
+		{
+			Task_allocator->set_robot_state(i, End_State[i]);
+		}
+
+		Task_allocator->update_objects_value();
 		Task_allocator->predict_motion();
 		Task_allocator->allocate();
-		Task_allocator->print_coalitions();
+	//	Task_allocator->print_coalitions();
+
+
+		// publish the ids for the coalitions for display
+		rob_id_msg.data = Task_allocator->get_robot_target(0);
+//		cout << "robot 0 target " << rob_id_msg.data << " " ;
+		pub_rob0_id.publish(rob_id_msg);
+
+		rob_id_msg.data = Task_allocator->get_robot_target(1);
+	//	cout << " robot 1 target " << rob_id_msg.data << endl;
+		pub_rob1_id.publish(rob_id_msg);
+
 	// end patrick */
 
 		for(int i=0;i<N_robots;i++)
@@ -1169,9 +1191,9 @@ void Bi_manual_scenario::add_objects_task_allocator()
 	single_grab[0] = Object_State_raw;
 
 	Object task0(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), Object_Grabbing_State, 2, weight, value, 0);
-	Object task1(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value*0.5, 1);
-	Object task2(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value*0.8, 2);
-	Object task3(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value*0.3, 3);
+	Object task1(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value*0.4, 1);
+	Object task2(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value*0.4, 2);
+	Object task3(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value*0.4, 3);
 
 
 	Task_allocator->add_task(task0);
@@ -1188,22 +1210,29 @@ void Bi_manual_scenario::add_robots_task_allocator()
 	cout << "adding robots" << endl;
 	double force = 5;
 	int grippers = 1;
-	Vector3d rob0(0,-0.5,0);
+/*	Vector3d rob0(0,-0.5,0);
 	Vector3d rob1(0,0.5,0);
 	Vector3d rob[2];
 	rob[0] = rob0;
 	rob[1] = rob1;
+*/
 	for(int i = 0; i < 2; i++)
 	{
 
+		Vector3d base;
+		base(0) = X[i];
+		base(1) = Y[i];
+		base(2) = Z[i];
 		Robot_agent Bot(1,addTwochar(Commom_path,"/A_Matrix").c_str(), addTwochar(Commom_path,"/Priors").c_str(),
 						addTwochar(Commom_path,"/Mu").c_str(), addTwochar(Commom_path,"/Sigma").c_str(),
 						6, 3, addTwochar(Commom_path,"/IIWA_workspace_Model_prior").c_str(),
 						addTwochar(Commom_path,"/IIWA_workspace_Model_mu").c_str(),
 						addTwochar(Commom_path,"/IIWA_workspace_Model_Sigma").c_str(),
-						addTwochar(Commom_path,"/IIWA_workspace_Model_Threshold").c_str(), rob[i], i, grippers, force);
+						addTwochar(Commom_path,"/IIWA_workspace_Model_Threshold").c_str(), base, i, grippers, force);
 
 		Task_allocator->add_robot(Bot);
+
+	//	cout << "robot " << i << " base " << base << endl;
 	}
 }
 

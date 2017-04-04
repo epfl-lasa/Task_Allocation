@@ -296,12 +296,12 @@ int main(int argc, char **argv) {
 		Object_p1.position.y = Object.position.y + 0.2;
 		Object_p1.position.z = Object.position.z;
 
-		Object_p2.position.x = Object.position.x - 0.5;
-		Object_p2.position.y = Object.position.y - 0.0;
+		Object_p2.position.x = Object.position.x + 0.5;
+		Object_p2.position.y = Object.position.y - 0.2;
 		Object_p2.position.z = Object.position.z;
 
-		Object_p3.position.x = Object.position.x + 0.5;
-		Object_p3.position.y = Object.position.y - 0.2;
+		Object_p3.position.x = Object.position.x - 0.5;
+		Object_p3.position.y = Object.position.y - 0.0;
 		Object_p3.position.z = Object.position.z;
 
 		chatter_pub_p1.publish(Object_p1);

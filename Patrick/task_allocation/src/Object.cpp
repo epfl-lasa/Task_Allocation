@@ -187,7 +187,7 @@ void Object::dumb_predict_motion()
 void Object::set_state(VectorXd X, VectorXd DX)
 {
 
-	if ((X.rows()!=n_state)&&(DX.rows()!=n_state))
+	if ((X.rows()!=n_state)||(DX.rows()!=n_state))
 	{
 		cout<<"The dimension of the state of the object is wrong"<<endl;
 	}
@@ -243,6 +243,22 @@ int Object::get_n_grippers() const
 	return n_grabbing_pos;
 }
 
+double Object::update_value()
+{
+	value = value + 10*X_O(0)+30;
+
+	if(n_grabbing_pos > 1)
+	{
+		value *=2.2;
+	}
+	if(X_O(0) > 0) // too late to catch
+	{
+		value = 0;
+	//	cout << "object " << id << " is set to 0 because X_O(0) is " << X_O(0) << endl;
+	}
+	return value;
+
+}
 double Object::get_value() const
 {
 	return value;

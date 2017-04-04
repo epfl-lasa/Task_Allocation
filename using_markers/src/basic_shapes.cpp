@@ -4,7 +4,7 @@
 #include <ros/ros.h>
 #include <visualization_msgs/Marker.h>
 #include "geometry_msgs/Pose.h"
-
+#include "std_msgs/Int64.h"
 
 visualization_msgs::Marker marker_p1;
 visualization_msgs::Marker marker_p2;
@@ -20,6 +20,13 @@ ros::Publisher marker_pub;
 ros::Publisher marker_virtual_pub;
 ros::Publisher marker_filter_pub;
 
+
+
+
+const int n_bots = 2;
+int rob_id[n_bots];
+visualization_msgs::Marker marker_rob[n_bots];
+ros::Publisher marker_rob_pub[n_bots];
 double B_t_U=0.0;
 
 void chatterCallback_object(const geometry_msgs::Pose & msg)
@@ -130,6 +137,82 @@ void chatterCallback_object_P3(const geometry_msgs::Pose & msg)
 
 
 
+void chatterCallback_rob0_id(const std_msgs::Int64 & msg)
+{
+	rob_id[0] = msg.data;
+
+	switch(rob_id[0])
+	{
+		case 0:
+			marker_rob[0].color.r = 0.0f;
+			marker_rob[0].color.g = 0.0f;
+			marker_rob[0].color.b = 1.0f;
+			break;
+		case 1:
+			marker_rob[0].color.r = 1.0f;
+			marker_rob[0].color.g = 0.0f;
+			marker_rob[0].color.b = 0.0f;
+			break;
+		case 2:
+			marker_rob[0].color.r = 1.0f;
+			marker_rob[0].color.g = 0.0f;
+			marker_rob[0].color.b = 1.0f;
+			break;
+		case 3:
+			marker_rob[0].color.r = 1.0f;
+			marker_rob[0].color.g = 1.0f;
+			marker_rob[0].color.b = 1.0f;
+			break;
+		default:
+			marker_rob[0].color.r = 0.0f;
+			marker_rob[0].color.g = 1.0f;
+			marker_rob[0].color.b = 1.0f;
+			break;
+	}
+	marker_rob_pub[0].publish(marker_rob[0]);
+//	std::cout << "got a robot id marker" << std::endl;
+
+}
+
+void chatterCallback_rob1_id(const std_msgs::Int64 & msg)
+{
+	rob_id[1] = msg.data;
+
+	switch(rob_id[1])
+	{
+		case 0:
+			marker_rob[1].color.r = 0.0f;
+			marker_rob[1].color.g = 0.0f;
+			marker_rob[1].color.b = 1.0f;
+			break;
+		case 1:
+			marker_rob[1].color.r = 1.0f;
+			marker_rob[1].color.g = 0.0f;
+			marker_rob[1].color.b = 0.0f;
+			break;
+		case 2:
+			marker_rob[1].color.r = 1.0f;
+			marker_rob[1].color.g = 0.0f;
+			marker_rob[1].color.b = 1.0f;
+			break;
+		case 3:
+			marker_rob[1].color.r = 1.0f;
+			marker_rob[1].color.g = 1.0f;
+			marker_rob[1].color.b = 1.0f;
+			break;
+		default:
+			marker_rob[1].color.r = 0.0f;
+			marker_rob[1].color.g = 1.0f;
+			marker_rob[1].color.b = 1.0f;
+			break;
+	}
+	marker_rob_pub[1].publish(marker_rob[1]);
+//	std::cout << "got a robot id marker" << std::endl;
+}
+
+
+
+
 
 
 
@@ -149,6 +232,12 @@ int main( int argc, char** argv )
 	marker_p1_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
 	marker_p2_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
 	marker_p3_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
+
+	marker_rob_pub[0] = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
+	marker_rob_pub[1] = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
+
+	ros::Subscriber sub_rob0_id = n.subscribe("/robotsPat/id0/", 1, chatterCallback_rob0_id);
+	ros::Subscriber sub_rob1_id = n.subscribe("/robotsPat/id1/", 1, chatterCallback_rob1_id);
 
 	ros::Subscriber	sub_object_p1 = n.subscribe("/object/p1/position", 3, chatterCallback_object_P1);
 	ros::Subscriber	sub_object_p2 = n.subscribe("/object/p2/position", 3, chatterCallback_object_P2);
@@ -285,5 +374,57 @@ int main( int argc, char** argv )
 	marker_p1_pub.publish(marker_p1);
 	marker_p2_pub.publish(marker_p2);
 	marker_p3_pub.publish(marker_p3);
+
+
+
+
+
+	marker_rob[0].header.frame_id = "/world_frame";
+	marker_rob[0].action = visualization_msgs::Marker::ADD;  // Set the marker action.  Options are ADD, DELETE, and new in ROS Indigo: 3 (DELETEALL)
+	marker_rob[0].ns = "basic_shapes";
+	marker_rob[0].id = 6;
+	marker_rob[0].type = visualization_msgs::Marker::SPHERE;
+	marker_rob[0].pose.position.x = 0;
+	marker_rob[0].pose.position.y = -1.25;
+	marker_rob[0].pose.position.z = -0.25;
+	marker_rob[0].pose.orientation.x = 0.0;
+	marker_rob[0].pose.orientation.y = 0.0;
+	marker_rob[0].pose.orientation.z = 0.0;
+	marker_rob[0].pose.orientation.w = 1.0;
+	marker_rob[0].scale.x = 0.4;
+	marker_rob[0].scale.y = 0.4;
+	marker_rob[0].scale.z = 0.4;
+	marker_rob[0].color.r = 1.0;
+	marker_rob[0].color.g = 1.0;
+	marker_rob[0].color.b = 1.0;
+	marker_rob[0].color.a = 1.0;
+	marker_rob[0].pose.position.x = 0.0 ;
+
+
+	marker_rob[1].header.frame_id = "/world_frame";
+	marker_rob[1].action = visualization_msgs::Marker::ADD;  // Set the marker action.  Options are ADD, DELETE, and new in ROS Indigo: 3 (DELETEALL)
+	marker_rob[1].ns = "basic_shapes";
+	marker_rob[1].id = 7;
+	marker_rob[1].type = visualization_msgs::Marker::SPHERE;
+	marker_rob[1].pose.position.x = 0;
+	marker_rob[1].pose.position.y = -0;
+	marker_rob[1].pose.position.z = -0.25;
+	marker_rob[1].pose.orientation.x = 0.0;
+	marker_rob[1].pose.orientation.y = 0.0;
+	marker_rob[1].pose.orientation.z = 0.0;
+	marker_rob[1].pose.orientation.w = 1.0;
+	marker_rob[1].scale.x = 0.4;
+	marker_rob[1].scale.y = 0.4;
+	marker_rob[1].scale.z = 0.4;
+	marker_rob[1].color.r = 1.0;
+	marker_rob[1].color.g = 1.0;
+	marker_rob[1].color.b = 1.0;
+	marker_rob[1].color.a = 1.0;
+	marker_rob[1].pose.position.x = 0.0 ;
+
+
+	marker_rob_pub[0].publish(marker_rob[0]);
+	marker_rob_pub[1].publish(marker_rob[1]);
+
 	ros::spin();
 }
