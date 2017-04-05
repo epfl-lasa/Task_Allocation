@@ -193,13 +193,16 @@ double Coalition::compute_value()
 	//		cout << "cant do this object, requires n_grips force " << obj->get_n_grippers() << " " << obj->get_weight() << " I have " << n_grippers << " " << force << endl;
 	}
 
-	cout << endl;
+//	cout << endl;
 //	cout << "weight " << weight << " id " << id << " object " << des_obj->get_id() << endl;
 
 	return value;
 }
 
-
+void Coalition::print_intercept() const
+{
+	Robots[0]->get_intercept(*des_obj);
+}
 
 bool Coalition::is_feasible(Object& obj)
 {

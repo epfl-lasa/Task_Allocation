@@ -974,6 +974,7 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 		Task_allocator->update_objects_value();
 		Task_allocator->predict_motion();
 		Task_allocator->allocate();
+		Task_allocator->print_intercepts();
 	//	Task_allocator->print_coalitions();
 
 
@@ -1151,8 +1152,8 @@ int Bi_manual_scenario::RespondToConsoleCommand(const string cmd, const vector<s
 // patrick below
 void Bi_manual_scenario::prepare_task_allocator()
 {
-	double dt = 10;
-	double max_time = 1000; // ms
+	double dt = 100;
+	double max_time = 5000; // ms
 	int n_state = 6;
 
 	Task_allocator = new Task_allocation(max_time, dt, n_state, A_V, Motion_G);
@@ -1182,7 +1183,7 @@ void Bi_manual_scenario::add_objects_task_allocator()
 	double weight = 3.14;
 	double value = 15;
 	VectorXd single_grab[1];
-	single_grab[0] = Object_State_raw;
+	single_grab[0].resize(Object_State_raw.size()); single_grab[0].setZero();
 
 	Object task0(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), Object_Grabbing_State, 2, weight, value, 0);
 	Object task1(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value, 1);
@@ -1228,7 +1229,7 @@ void Bi_manual_scenario::add_robots_task_allocator()
 
 	//	cout << "robot " << i << " base " << base << endl;
 	}
-	Task_allocator->print_bases();
+	//Task_allocator->print_bases();
 }
 
 // end patrick

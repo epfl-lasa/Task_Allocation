@@ -43,6 +43,7 @@ public:
 
 
 	double evaluate_task(const Object& obj);
+	VectorXd get_intercept(const Object& obj);
 	int	get_id() const;
 	int get_assignment() const;
 	void set_assignment(int);

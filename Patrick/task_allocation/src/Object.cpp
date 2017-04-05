@@ -277,7 +277,7 @@ MatrixXd Object::get_P_O_prediction() const
 
 MatrixXd Object::get_P_O_G_prediction(int index) const
 {
-	if(index > 0 && index < n_grabbing_pos)
+	if(index >= 0 && index < n_grabbing_pos)
 		return P_O_G_prediction[index];
 	return P_O_G_prediction[0];
 }

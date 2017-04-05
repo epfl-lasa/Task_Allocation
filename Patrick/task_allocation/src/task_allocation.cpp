@@ -348,6 +348,14 @@ void Task_allocation::update_objects_value()
 	}
 }
 
+void Task_allocation::print_intercepts() const
+{
+	for(const auto & coal : active_coalitions)
+	{
+		if(coal.get_n_robots() == 1)
+			coal.print_intercept();
+	}
+}
 
 bool Task_allocation::set_robot_state(int i, VectorXd X_)
 {

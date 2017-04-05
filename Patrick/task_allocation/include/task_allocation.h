@@ -87,6 +87,7 @@ public:
 	void		print_obj() const;
 	void		print_coalitions() const;
 	void 		print_bases() const;
+	void		print_intercepts() const;
 	void 		update_objects_value();
 private:
 

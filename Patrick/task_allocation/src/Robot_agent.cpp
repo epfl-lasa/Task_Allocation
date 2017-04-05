@@ -24,6 +24,7 @@ Robot_agent::Robot_agent(int Num_LPV_Com, const char *path_A_LPV, const char *pa
 
 	int n_state = 6;
 
+	cout << "begin creating a robot " << endl;
 	Workspace_model.initialize(Num_GMM_Com,Num_GMM_state);
 	//Dynamic.initialize(Num_LPV_Com,n_state);
 
@@ -44,6 +45,7 @@ Robot_agent::Robot_agent(int Num_LPV_Com, const char *path_A_LPV, const char *pa
 	force = force_;
 
 	assignment = -1;
+	cout << "done" << endl;
 }
 
 
@@ -206,7 +208,29 @@ void Robot_agent::set_base(Vector3d X)
 	X_base = X;
 }
 
+VectorXd Robot_agent::get_intercept(const Object& obj)
+{
+	VectorXd best_pos;
 
+	MatrixXd POG = obj.get_P_O_G_prediction(0);//obj.get_P_O_G_prediction(0);
+//	cout << "trying to get intercept for object " << obj.get_id() << " POG is of size " << POG.rows() << " " << POG.cols()  << endl;// << POG << endl;
+	double best_prob = -1;
+	double temp_prob = -1;
+	for(int i = 0; i < POG.cols(); i++)
+	{
+//		cout << "vector " << i << endl << POG.col(i) << endl;
+		temp_prob = Workspace_model.PDF(POG.col(i).block(0,0,3,1));
+		if(temp_prob > best_prob)
+		{
+			best_prob = temp_prob;
+			best_pos = POG.col(i).block(0,0,3,1);
+		}
+	}
+
+	cout << "best catching position for robot " << id << " of object " << obj.get_id() << " with probability " << best_prob << " is " << endl << best_pos <<  endl;
+
+	return best_pos;
+}
 /*
 void Robot_agent::set_grippers(int n)
 {
