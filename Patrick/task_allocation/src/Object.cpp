@@ -245,7 +245,7 @@ int Object::get_n_grippers() const
 
 double Object::update_value()
 {
-	value = value + 10*X_O(0)+30;
+	value = 10*X_O(0)+30;
 
 	if(n_grabbing_pos > 1)
 	{
@@ -256,6 +256,7 @@ double Object::update_value()
 		value = 0;
 	//	cout << "object " << id << " is set to 0 because X_O(0) is " << X_O(0) << endl;
 	}
+	// */
 	return value;
 
 }

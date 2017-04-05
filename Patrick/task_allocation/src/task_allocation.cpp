@@ -332,6 +332,14 @@ int Task_allocation::get_robot_target(int i) const
 		return -1;
 }
 
+void Task_allocation::print_bases() const
+{
+	for(const auto & rob : Robots)
+	{
+		cout << "Robot " << rob.get_id() << " base at " << rob.get_base() << endl;
+	}
+}
+
 void Task_allocation::update_objects_value()
 {
 	for(auto & obj : Objects)

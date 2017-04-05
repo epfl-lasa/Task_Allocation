@@ -137,6 +137,10 @@ void Robot_agent::set_state(VectorXd X_)
 //	state_is_set = true;
 }
 
+VectorXd Robot_agent::get_base() const
+{
+	return X_base;
+}
 
 int Robot_agent::get_n_grippers() const
 {
@@ -161,17 +165,19 @@ double Robot_agent::evaluate_task(const Object& obj)
 	double delta_norm = 1000000;
 	double temp_delta;
 	MatrixXd POG[n_grips];
-	for(int i = 0; i < n_grips; i++)
+/*	for(int i = 0; i < n_grips; i++)
 	{
 		POG[i] = obj.get_P_O_G_prediction(i);
 	//	cout << " POG " << i << endl << POG[i] << endl;
 	//	cout << " POG " << i  << " has " << POG[i].cols() << " columns" << endl;
 	//	cout << "last column is " << endl << POG[i].col(POG[i].cols()-1) << endl;
-		temp_delta = (X_base - (POG[i].col(0)).block(0,0,3,1)).norm();
+		temp_delta = (X_base.block(0,0,3,1) - (POG[i].col(0)).block(0,0,3,1)).norm();
 		if(temp_delta < delta_norm)
 			delta_norm = temp_delta;
 	}
-
+*/
+	temp_delta = (X_base.block(0,0,3,1) - obj.get_X_O().block(0,0,3,1)).norm();
+	delta_norm = temp_delta;
 	// check feasibility somehow
 	//if(delta_norm > 20)
 	//	delta_norm = 1000000;

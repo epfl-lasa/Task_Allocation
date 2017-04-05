@@ -165,6 +165,16 @@ double Coalition::compute_value()
 			temp_weight = temp_value - temp_cost;
 			temp_weight /= n_robots;
 			temp_weight = 1/(temp_weight);
+
+	/*		if(n_robots == 1) // robot 1 is at (0,0,0)
+			{
+				if(temp_weight > 0)
+				{
+					if(Robots[0]->get_id() == 1)
+						cout << " cost " << temp_cost << " for object " << obj->get_id();
+				}
+			}//   */
+
 //			cout << " evaluated weight " << temp_weight << endl;
 			if(0.0 < temp_weight && temp_weight < weight)
 			{
@@ -183,6 +193,7 @@ double Coalition::compute_value()
 	//		cout << "cant do this object, requires n_grips force " << obj->get_n_grippers() << " " << obj->get_weight() << " I have " << n_grippers << " " << force << endl;
 	}
 
+	cout << endl;
 //	cout << "weight " << weight << " id " << id << " object " << des_obj->get_id() << endl;
 
 	return value;

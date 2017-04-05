@@ -963,12 +963,6 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 
 		for(int i = 0; i < 4; i++)
 		{
-			Objects_state[i].block(0,0,3,1)=P_objects[i];
-			Objects_state[i].block(3,0,3,1)=V_object;
-		}
-
-		for(int i = 0; i < 4; i++)
-		{
 			Task_allocator->set_object_state(i, Objects_state[i], DObject_State); // all have same derivative...
 		}
 
@@ -1191,9 +1185,9 @@ void Bi_manual_scenario::add_objects_task_allocator()
 	single_grab[0] = Object_State_raw;
 
 	Object task0(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), Object_Grabbing_State, 2, weight, value, 0);
-	Object task1(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value*0.4, 1);
-	Object task2(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value*0.4, 2);
-	Object task3(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value*0.4, 3);
+	Object task1(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value, 1);
+	Object task2(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value, 2);
+	Object task3(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value, 3);
 
 
 	Task_allocator->add_task(task0);
@@ -1234,6 +1228,7 @@ void Bi_manual_scenario::add_robots_task_allocator()
 
 	//	cout << "robot " << i << " base " << base << endl;
 	}
+	Task_allocator->print_bases();
 }
 
 // end patrick

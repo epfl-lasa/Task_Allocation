@@ -49,6 +49,7 @@ public:
 	bool get_workspace_set() const;
 	bool get_state_set() const;
 	void get_state(VectorXd& X) const;
+	VectorXd get_base() const;
 	int get_n_grippers() const;
 	double get_force() const;
 
