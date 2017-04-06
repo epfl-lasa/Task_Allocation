@@ -43,6 +43,14 @@
 #include "Coalition.h"
 #include "multiarm_ds.h"
 
+
+#include "std_msgs/MultiArrayLayout.h"
+#include "std_msgs/MultiArrayDimension.h"
+
+#include "std_msgs/Int32MultiArray.h"
+
+
+
 using namespace Eigen;
 
 
@@ -74,7 +82,8 @@ public:
 
 	void		build_coalitions(); //this makes "Coalitions" to hold all coalitions with the currently unallocated robots
 	void		clear_coalitions(); //this resets the coalitions, resets the unallocated robots and active coalitions
-
+	void		compute_intercepts();
+	VectorXd 	get_robot_intercept(int i) const;
 	void		allocate();
 	void		multi_frame_allocation();
 
@@ -89,6 +98,10 @@ public:
 	void 		print_bases() const;
 	void		print_intercepts() const;
 	void 		update_objects_value();
+
+	void		set_coordination();
+
+
 private:
 
 	void 	ERROR();

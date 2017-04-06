@@ -141,7 +141,7 @@ public:
 	void 		Set_index_of_grabbing_posititon_(int index_of_robot,int indext_of_grabbing_pos);
 	void 		Set_pos_of_grabbing_posititon_for_object_(bool catching_pos_is_found,double likelihood, Vector3d X_I_C);
 	void 		Set_index_of_grabbing_posititon_(int index_of_robot, int index_of_grabbing, Vector3d X_I_C);
-
+	void		Set_coordination(int rob, double x);
 	bool 		Get_prediction_state();
 	bool 		Get_catching_state();
 	void 		Get_Virtual_state(VectorXd & X);

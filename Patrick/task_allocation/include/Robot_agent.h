@@ -43,7 +43,8 @@ public:
 
 
 	double evaluate_task(const Object& obj);
-	VectorXd get_intercept(const Object& obj);
+	VectorXd compute_intercept(const Object& obj);
+	VectorXd get_intercept() const;
 	int	get_id() const;
 	int get_assignment() const;
 	void set_assignment(int);
@@ -68,7 +69,7 @@ private:
 	Vector3d 	X_initial_pose; 	// Initial position of the end-effector of the robot with respect to the world frame
 //	LPV			Dynamic;
 	VectorXd 	X; 					//State of the robot in the world frame
-
+	VectorXd	X_targ;
 
 	int 		id;
 	int 		n_grippers; // number of grippers on this robot, typically 1

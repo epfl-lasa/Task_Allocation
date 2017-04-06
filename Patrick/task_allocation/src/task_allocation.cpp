@@ -30,9 +30,11 @@ Task_allocation::Task_allocation(double max_time_, double dt_, int n_state_, Mat
 
 	n_robots = 0;
 	n_objects = 0;
+	n_coalitions = 0;
 	Robots.clear();
 	Objects.clear();
-
+	active_coalitions.clear();
+	Coalitions.clear();
 	Multi_ds = DS_;
 
 
@@ -56,15 +58,28 @@ VectorXd Task_allocation::get_object_state(int i)
 		return empty_vec;
 }
 
+
+VectorXd Task_allocation::get_robot_intercept(int i) const
+{
+	if(i >= 0 && i < n_robots)
+	{
+		return Robots[i].get_intercept();
+	}
+	return Robots[0].get_intercept();
+}
+
+
 void Task_allocation::predict_motion()
 {
 
-	for(int i = 0; i < n_objects; i++)
+	for(auto & obj : Objects)
+		obj.dumb_predict_motion();
+/*	for(int i = 0; i < n_objects; i++)
 	{
 		//cout << "predicting object " << i << endl;
 		Objects[i].dumb_predict_motion();
 		//cout << "predicted object " << i << endl;
-	}
+	}*/
 }
 
 
@@ -82,6 +97,32 @@ void Task_allocation::clear_coalitions()
 	for(auto& obj : Objects)
 	{
 		obj.set_assignment(false);
+	}
+}
+
+
+void Task_allocation::set_coordination()
+{
+
+	std::vector<int> robId;
+	VectorXd zeroVec;
+	zeroVec.resize(6); zeroVec.setZero();
+	for(auto & coal : active_coalitions)
+	{
+		robId = coal.get_robots_id();
+		if(coal.get_n_robots() == 1)
+		{
+		//	cout << "robot in this coalition " << robId[0] << endl;
+			Multi_ds->Set_coordination(robId[0],0);
+			Multi_ds->Set_the_robot_first_primitive_desired_position(robId[0], get_robot_intercept(robId[0]), zeroVec);
+		}
+		else
+		{
+			for(auto i : robId)
+			{
+				Multi_ds->Set_coordination(i,1);
+			}
+		}
 	}
 }
 
@@ -353,9 +394,24 @@ void Task_allocation::print_intercepts() const
 	for(const auto & coal : active_coalitions)
 	{
 		if(coal.get_n_robots() == 1)
+		{
 			coal.print_intercept();
+		}
 	}
 }
+
+void Task_allocation::compute_intercepts()
+{
+	for(const auto & coal : active_coalitions)
+	{
+		if(coal.get_n_robots() == 1)
+		{
+			coal.print_intercept();
+		}
+	}
+}
+
+
 
 bool Task_allocation::set_robot_state(int i, VectorXd X_)
 {

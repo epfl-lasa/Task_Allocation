@@ -208,7 +208,12 @@ void Robot_agent::set_base(Vector3d X)
 	X_base = X;
 }
 
-VectorXd Robot_agent::get_intercept(const Object& obj)
+VectorXd Robot_agent::get_intercept() const
+{
+	return X_targ;
+}
+
+VectorXd Robot_agent::compute_intercept(const Object& obj)
 {
 	VectorXd best_pos;
 
@@ -216,20 +221,25 @@ VectorXd Robot_agent::get_intercept(const Object& obj)
 //	cout << "trying to get intercept for object " << obj.get_id() << " POG is of size " << POG.rows() << " " << POG.cols()  << endl;// << POG << endl;
 	double best_prob = -1;
 	double temp_prob = -1;
+	int best_i = 0;
 	for(int i = 0; i < POG.cols(); i++)
 	{
 //		cout << "vector " << i << endl << POG.col(i) << endl;
-		temp_prob = Workspace_model.PDF(POG.col(i).block(0,0,3,1));
+		temp_prob = Workspace_model.PDF((POG.col(i).block(0,0,3,1) - X_base));
 		if(temp_prob > best_prob)
 		{
 			best_prob = temp_prob;
-			best_pos = POG.col(i).block(0,0,3,1);
+			best_pos = POG.col(i);//.block(0,0,3,1);
+			best_i = i;
 		}
 	}
 
-	cout << "best catching position for robot " << id << " of object " << obj.get_id() << " with probability " << best_prob << " is " << endl << best_pos <<  endl;
+	if(id == 1)
+		if(best_prob > 0.1)
+			cout << "best catching position for robot " << id << " of object " << obj.get_id() << " with probability " << best_prob << " is frame " << best_i << " at pos "<< endl << best_pos <<  endl;
 
-	return best_pos;
+	X_targ = best_pos;
+	return X_targ;
 }
 /*
 void Robot_agent::set_grippers(int n)

@@ -245,7 +245,7 @@ int Object::get_n_grippers() const
 
 double Object::update_value()
 {
-	value = 10*X_O(0)+30;
+	value = 5*X_O(0)+30;
 
 	if(n_grabbing_pos > 1)
 	{

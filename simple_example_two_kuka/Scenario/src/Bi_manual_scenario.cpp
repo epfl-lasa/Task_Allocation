@@ -19,6 +19,7 @@
 
 /* The right robot (KUKA 7) is 1 and the left robot (KUKA 14) is 0*/
 
+
 bool True_robot=false;
 
 bool Using_target_moving = false;
@@ -929,7 +930,7 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 			if (Using_target_moving)
 			{
 				VectorXd handle;handle.resize(6); handle.setZero();
-				Motion_G->Set_the_robot_first_primitive_desired_position(i,Pfirst_primitive[i],handle);
+		//		Motion_G->Set_the_robot_first_primitive_desired_position(i,Pfirst_primitive[i],handle);
 
 				//	cout<<"Pfirst_primitive[i] "<<i<<endl<<Pfirst_primitive[i]<<endl;
 			}
@@ -951,7 +952,7 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 
 		Motion_G->Set_the_object_state(Object_State,DObject_State);
 
-		Motion_G->Update();
+	//	Motion_G->Update();
 
 
 	// patrick
@@ -975,6 +976,9 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 		Task_allocator->predict_motion();
 		Task_allocator->allocate();
 		Task_allocator->print_intercepts();
+
+
+		Task_allocator->set_coordination();
 	//	Task_allocator->print_coalitions();
 
 
@@ -987,6 +991,7 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 	//	cout << " robot 1 target " << rob_id_msg.data << endl;
 		pub_rob1_id.publish(rob_id_msg);
 
+		Motion_G->Update();
 	// end patrick */
 
 		for(int i=0;i<N_robots;i++)
@@ -1152,8 +1157,8 @@ int Bi_manual_scenario::RespondToConsoleCommand(const string cmd, const vector<s
 // patrick below
 void Bi_manual_scenario::prepare_task_allocator()
 {
-	double dt = 100;
-	double max_time = 5000; // ms
+	double dt = 0.030; // seconds
+	double max_time = 2; // seconds
 	int n_state = 6;
 
 	Task_allocator = new Task_allocation(max_time, dt, n_state, A_V, Motion_G);

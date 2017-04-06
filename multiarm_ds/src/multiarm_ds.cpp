@@ -395,6 +395,15 @@ void multiarm_ds::Set_index_of_grabbing_posititon_(int index_of_robot,int indext
 	Robots_[index_of_robot].index_of_grabbing_posititon_=indext_of_grabbing_pos;
 }
 
+void multiarm_ds::Set_coordination(int rob, double x)
+{
+//	Vobject_.tau_sum_ = 0;
+
+	Robots_[rob].Dtau_ = 0;
+	Robots_[rob].tau_ = x;
+	Vobject_.tau_sum_=Vobject_.tau_sum_+Robots_[rob].tau_;
+}
+
 void multiarm_ds::Set_the_grabbing_state(int index,VectorXd X_G)
 {
 	/* Setting the grabbing states on the object with respect to the universal frame (the same frame as the object and etc...
@@ -586,6 +595,7 @@ void multiarm_ds::calculate_coordination_allocation()
 			Robots_[i].Dtau_=0.0;
 		}
 
+
 /*		Robots_[i].tau_=.0;
 		Robots_[i].Dtau_=0.0;*/
 
@@ -618,6 +628,8 @@ void multiarm_ds::calculate_coordination_parameter()
 		Vobject_.gamma_=0;
 		Vobject_.Dgamma_=0;
 	}
+
+
 	//	cout<<"Vobject_.gamma "<<Vobject_.gamma_<<" "<<Vobject_.Dgamma_<<endl;
 
 }
@@ -829,7 +841,7 @@ void multiarm_ds::assign_the_robots()
 
 void multiarm_ds::Update()
 {
-
+	Vobject_.tau_sum_ = 0;
 
 	if (!everythingisreceived())
 	{
@@ -838,7 +850,7 @@ void multiarm_ds::Update()
 	}
 	if (The_catching_pos_is_found)
 	{
-		calculate_coordination_parameter();
+	//	calculate_coordination_parameter();
 		calculate_coordination_allocation();
 		assign_the_robots();
 		calculate_ATX();

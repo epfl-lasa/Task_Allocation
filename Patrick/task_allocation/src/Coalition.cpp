@@ -199,9 +199,12 @@ double Coalition::compute_value()
 	return value;
 }
 
+
+// not to be used
 void Coalition::print_intercept() const
 {
-	Robots[0]->get_intercept(*des_obj);
+	Robots[0]->compute_intercept(*des_obj);
+	Robots[0]->get_intercept();
 }
 
 bool Coalition::is_feasible(Object& obj)
