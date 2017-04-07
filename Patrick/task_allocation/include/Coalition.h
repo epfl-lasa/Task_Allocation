@@ -45,6 +45,7 @@ public:
 	double get_value() const;
 	double get_cost() const;
 	double get_weight() const;
+	void compute_intercept();
 	void print_intercept() const;
 
 	double compute_value(); // updates value, cost and weight

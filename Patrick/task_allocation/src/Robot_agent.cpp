@@ -234,9 +234,9 @@ VectorXd Robot_agent::compute_intercept(const Object& obj)
 		}
 	}
 
-	if(id == 1)
-		if(best_prob > 0.1)
-			cout << "best catching position for robot " << id << " of object " << obj.get_id() << " with probability " << best_prob << " is frame " << best_i << " at pos "<< endl << best_pos <<  endl;
+//	if(id == 1)
+	//	if(best_prob > 0.1)
+		//	cout << "best catching position for robot " << id << " of object " << obj.get_id() << " with probability " << best_prob << " is frame " << best_i << " at pos "<< endl << best_pos <<  endl;
 
 	X_targ = best_pos;
 	return X_targ;

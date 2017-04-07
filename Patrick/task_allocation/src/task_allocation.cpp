@@ -101,9 +101,11 @@ void Task_allocation::clear_coalitions()
 }
 
 
-void Task_allocation::set_coordination()
+MatrixXd Task_allocation::set_coordination()
 {
 
+	MatrixXd targets;
+	targets.resize(6, n_robots);
 	std::vector<int> robId;
 	VectorXd zeroVec;
 	zeroVec.resize(6); zeroVec.setZero();
@@ -113,8 +115,9 @@ void Task_allocation::set_coordination()
 		if(coal.get_n_robots() == 1)
 		{
 		//	cout << "robot in this coalition " << robId[0] << endl;
+			targets.col(robId[0]) =get_robot_intercept(robId[0]);
 			Multi_ds->Set_coordination(robId[0],0);
-			Multi_ds->Set_the_robot_first_primitive_desired_position(robId[0], get_robot_intercept(robId[0]), zeroVec);
+			Multi_ds->Set_the_robot_first_primitive_desired_position(robId[0], targets.col(robId[0]), zeroVec);
 		}
 		else
 		{
@@ -124,6 +127,7 @@ void Task_allocation::set_coordination()
 			}
 		}
 	}
+	return targets;
 }
 
 
@@ -402,11 +406,11 @@ void Task_allocation::print_intercepts() const
 
 void Task_allocation::compute_intercepts()
 {
-	for(const auto & coal : active_coalitions)
+	for(auto & coal : active_coalitions)
 	{
 		if(coal.get_n_robots() == 1)
 		{
-			coal.print_intercept();
+			coal.compute_intercept();
 		}
 	}
 }

@@ -99,7 +99,7 @@ public:
 	void		print_intercepts() const;
 	void 		update_objects_value();
 
-	void		set_coordination();
+	MatrixXd	set_coordination();
 
 
 private:

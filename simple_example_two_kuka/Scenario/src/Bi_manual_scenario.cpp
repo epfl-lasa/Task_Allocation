@@ -351,10 +351,19 @@ void Bi_manual_scenario::Topic_initialization()
 
 
 	// patrick stuff
-	pub_rob0_id = n->advertise<std_msgs::Int64>("/robotsPat/id0/", 1);
-	pub_rob1_id = n->advertise<std_msgs::Int64>("/robotsPat/id1/", 1);
-
+	pub_rob0_id = n->advertise<std_msgs::Int64>("/robotsPat/id0/", 3);
+	pub_rob1_id = n->advertise<std_msgs::Int64>("/robotsPat/id1/", 3);
+	pub_pat_targets.clear();
+	for(int i = 0; i < N_robots; i++)
+	{
+		ros::Publisher test;
+		std::ostringstream oss;
+		oss << "/robotsPat/target" << i;
+		pub_pat_targets.push_back(n->advertise<geometry_msgs::Pose>(oss.str(), 3));
+	}
 }
+
+
 void Bi_manual_scenario::Parameter_initialization()
 {
 
@@ -918,6 +927,7 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdate(){
 	return STATUS_OK;
 }
 RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
+	MatrixXd targets;
 
 	switch(mPlanner){
 	case PLANNER_CARTESIAN :
@@ -952,7 +962,7 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 
 		Motion_G->Set_the_object_state(Object_State,DObject_State);
 
-	//	Motion_G->Update();
+		Motion_G->Update();
 
 
 	// patrick
@@ -975,10 +985,24 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 		Task_allocator->update_objects_value();
 		Task_allocator->predict_motion();
 		Task_allocator->allocate();
-		Task_allocator->print_intercepts();
+		Task_allocator->compute_intercepts();
 
 
-		Task_allocator->set_coordination();
+	//	targets = Task_allocator->set_coordination();
+
+
+		// publish the targets...
+	//	cout << "publishing" << endl << "i have " << targets.cols() << " targets and " << pub_pat_targets.size() << " publishers" << endl;
+		for(int i = 0; i < targets.cols(); i++)
+		{
+			geometry_msgs::Pose msg;
+			msg.position.x = (targets.col(i))(0);
+			msg.position.y = (targets.col(i))(1);
+			msg.position.z = (targets.col(i))(2);
+			pub_pat_targets[i].publish(msg);
+
+		}
+
 	//	Task_allocator->print_coalitions();
 
 
@@ -991,7 +1015,6 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 	//	cout << " robot 1 target " << rob_id_msg.data << endl;
 		pub_rob1_id.publish(rob_id_msg);
 
-		Motion_G->Update();
 	// end patrick */
 
 		for(int i=0;i<N_robots;i++)

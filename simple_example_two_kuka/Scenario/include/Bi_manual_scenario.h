@@ -148,7 +148,7 @@ private :
 	ros::Subscriber				sub_position_object_p1; // patrick
 	ros::Subscriber				sub_position_object_p2; // patrick
 	ros::Subscriber				sub_position_object_p3; // patrick
-
+	std::vector<ros::Publisher> pub_pat_targets;
 	ros::Publisher 				pub_command;
 	geometry_msgs::Pose			msg_vobject;
 	geometry_msgs::Pose			msg_robot_base;

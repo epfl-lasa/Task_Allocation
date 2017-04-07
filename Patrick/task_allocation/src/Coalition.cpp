@@ -200,11 +200,15 @@ double Coalition::compute_value()
 }
 
 
-// not to be used
 void Coalition::print_intercept() const
 {
 	Robots[0]->compute_intercept(*des_obj);
-	Robots[0]->get_intercept();
+	cout << "intercept for robot " << Robots[0]->get_id() << " is " << endl <<  Robots[0]->get_intercept() << endl;
+}
+
+void Coalition::compute_intercept()
+{
+	Robots[0]->compute_intercept(*des_obj);
 }
 
 bool Coalition::is_feasible(Object& obj)
