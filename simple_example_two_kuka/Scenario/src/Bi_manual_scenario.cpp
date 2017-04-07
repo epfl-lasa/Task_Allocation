@@ -1184,7 +1184,7 @@ void Bi_manual_scenario::prepare_task_allocator()
 	double max_time = 2; // seconds
 	int n_state = 6;
 
-	Task_allocator = new Task_allocation(max_time, dt, n_state, A_V, Motion_G);
+	Task_allocator = new Task_allocation(max_time, dt, n_state);
 
 	// adding object(s)
 	add_objects_task_allocator();

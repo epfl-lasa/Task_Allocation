@@ -41,7 +41,7 @@
 #include <omp.h>
 #include <vector>
 #include "Coalition.h"
-#include "multiarm_ds.h"
+//#include "multiarm_ds.h"
 
 
 #include "std_msgs/MultiArrayLayout.h"
@@ -69,7 +69,7 @@ class Task_allocation
 {
 public:
 	Task_allocation();
-	Task_allocation(double max_time_, double dt, int n_state, MatrixXd A_V, multiarm_ds* DS_, Object_prediction_type Object_motion=Object_prediction_type::Straight);
+	Task_allocation(double max_time_, double dt, int n_state, Object_prediction_type Object_motion=Object_prediction_type::Straight);
 //	~Task_allocation();
 
 	int			add_robot(Robot_agent& bot);
@@ -132,7 +132,7 @@ private:
 	std::vector< std::vector<Coalition> > 		Coalitions;
 	std::vector<Coalition> active_coalitions;
 	int 			n_coalitions;
-	multiarm_ds* 	Multi_ds;
+//	multiarm_ds* 	Multi_ds;
 };
 
 

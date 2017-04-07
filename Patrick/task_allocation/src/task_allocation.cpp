@@ -25,7 +25,7 @@ Task_allocation::Task_allocation()
 	n_robots = 0;
 }
 
-Task_allocation::Task_allocation(double max_time_, double dt_, int n_state_, MatrixXd A_V_, multiarm_ds* DS_, Object_prediction_type Object_motion)
+Task_allocation::Task_allocation(double max_time_, double dt_, int n_state_, Object_prediction_type Object_motion)
 {
 
 	n_robots = 0;
@@ -35,7 +35,7 @@ Task_allocation::Task_allocation(double max_time_, double dt_, int n_state_, Mat
 	Objects.clear();
 	active_coalitions.clear();
 	Coalitions.clear();
-	Multi_ds = DS_;
+//	Multi_ds = DS_;
 
 
 	n_state = n_state_;
@@ -116,14 +116,14 @@ MatrixXd Task_allocation::set_coordination()
 		{
 		//	cout << "robot in this coalition " << robId[0] << endl;
 			targets.col(robId[0]) =get_robot_intercept(robId[0]);
-			Multi_ds->Set_coordination(robId[0],0);
-			Multi_ds->Set_the_robot_first_primitive_desired_position(robId[0], targets.col(robId[0]), zeroVec);
+	//		Multi_ds->Set_coordination(robId[0],0);
+		//	Multi_ds->Set_the_robot_first_primitive_desired_position(robId[0], targets.col(robId[0]), zeroVec);
 		}
 		else
 		{
 			for(auto i : robId)
 			{
-				Multi_ds->Set_coordination(i,1);
+		//		Multi_ds->Set_coordination(i,1);
 			}
 		}
 	}
