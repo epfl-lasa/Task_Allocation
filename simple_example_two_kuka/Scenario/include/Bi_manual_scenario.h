@@ -37,7 +37,7 @@
 const int KUKA_DOF=7;
 int IK_CONSTRAINTS=9;
 double IK_ORIENTATIONCONTROLSTART=0.01;
-double Gain_velocity_limit=100; //50 on the real robot
+double Gain_velocity_limit=500; //50 on the real robot
 double Gain=50;
 SGF::real sample_time = 0.002;
 double X[2];

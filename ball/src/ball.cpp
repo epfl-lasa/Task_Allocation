@@ -183,13 +183,13 @@ int main(int argc, char **argv) {
 			/*				break;
 			}*/
 
-			Object.position.x=P_O(0)+fRand(-0.05*AA,0.05*AA);
+			/*			Object.position.x=P_O(0)+fRand(-0.05*AA,0.05*AA);
 			Object.position.y=P_O(1)+fRand(-0.05*AA,0.05*AA);
-			Object.position.z=P_O(2)+fRand(-0.05*AA,0.05*AA);
+			Object.position.z=P_O(2)+fRand(-0.05*AA,0.05*AA);*/
 
-/*			Object.position.x=P_O(0);
+			Object.position.x=P_O(0);
 			Object.position.y=P_O(1);
-			Object.position.z=P_O(2);*/
+			Object.position.z=P_O(2);
 			Object.orientation.x=0;
 			Object.orientation.y=0;
 			Object.orientation.z=0;
@@ -221,26 +221,26 @@ int main(int argc, char **argv) {
 
 
 
-/*			Object.position.x=P_O(0);
+			Object.position.x=P_O(0);
 			Object.position.y=P_O(1);
-			Object.position.z=P_O(2);*/
+			Object.position.z=P_O(2);
 
-			Object.position.x=P_O(0)+fRand(-0.05*AA,0.05*AA);
+			/*			Object.position.x=P_O(0)+fRand(-0.05*AA,0.05*AA);
 			Object.position.y=P_O(1)+fRand(-0.05*AA,0.05*AA);
-			Object.position.z=P_O(2)+fRand(-0.05*AA,0.05*AA);
+			Object.position.z=P_O(2)+fRand(-0.05*AA,0.05*AA);*/
 
 			Object.orientation.x=0;
 			Object.orientation.y=0;
 			Object.orientation.z=0;
 			Object.orientation.w=1;
 
-/*			Object_left.position.x=P_O(0)+Shift_left_P_O(0);
+			Object_left.position.x=P_O(0)+Shift_left_P_O(0);
 			Object_left.position.y=P_O(1)+Shift_left_P_O(1);
-			Object_left.position.z=P_O(2)+Shift_left_P_O(2);*/
+			Object_left.position.z=P_O(2)+Shift_left_P_O(2);
 
-			Object_left.position.x=P_O(0)+Shift_left_P_O(0)+fRand(-0.05*AA,0.05*AA);
+			/*			Object_left.position.x=P_O(0)+Shift_left_P_O(0)+fRand(-0.05*AA,0.05*AA);
 			Object_left.position.y=P_O(1)+Shift_left_P_O(1)+fRand(-0.05*AA,0.05*AA);
-			Object_left.position.z=P_O(2)+Shift_left_P_O(2)+fRand(-0.05*AA,0.05*AA);
+			Object_left.position.z=P_O(2)+Shift_left_P_O(2)+fRand(-0.05*AA,0.05*AA);*/
 
 
 			Object_left.orientation.x=0;
@@ -248,13 +248,13 @@ int main(int argc, char **argv) {
 			Object_left.orientation.z=0;
 			Object_left.orientation.w=1;
 
-/*			Object_right.position.x=P_O(0)+Shift_right_P_O(0);
+			Object_right.position.x=P_O(0)+Shift_right_P_O(0);
 			Object_right.position.y=P_O(1)+Shift_right_P_O(1);
-			Object_right.position.z=P_O(2)+Shift_right_P_O(2);*/
+			Object_right.position.z=P_O(2)+Shift_right_P_O(2);
 
-			Object_right.position.x=P_O(0)+Shift_right_P_O(0)+fRand(-0.05*AA,0.05*AA);
+			/*Object_right.position.x=P_O(0)+Shift_right_P_O(0)+fRand(-0.05*AA,0.05*AA);
 			Object_right.position.y=P_O(1)+Shift_right_P_O(1)+fRand(-0.05*AA,0.05*AA);
-			Object_right.position.z=P_O(2)+Shift_right_P_O(2)+fRand(-0.05*AA,0.05*AA);
+			Object_right.position.z=P_O(2)+Shift_right_P_O(2)+fRand(-0.05*AA,0.05*AA);*/
 
 			Object_right.orientation.x=0;
 			Object_right.orientation.y=0;

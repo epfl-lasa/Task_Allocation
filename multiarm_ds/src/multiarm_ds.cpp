@@ -401,8 +401,8 @@ void multiarm_ds::Set_coordination(int rob, double x)
 {
 //	Vobject_.tau_sum_ = 0;
 
-//	Robots_[rob].Dtau_ = 0;
-//	Robots_[rob].tau_ = x;
+	Robots_[rob].Dtau_ = 0;
+	Robots_[rob].tau_ = x;
 //	Vobject_.tau_sum_=Vobject_.tau_sum_+Robots_[rob].tau_;
 }
 

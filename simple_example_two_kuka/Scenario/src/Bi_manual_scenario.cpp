@@ -936,7 +936,7 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 		{
 			prepare_motion_generator(i);
 			// For closed loop
-			Motion_G->Set_the_robot_state(i,End_State[i]);
+			//	Motion_G->Set_the_robot_state(i,End_State[i]);
 			if (Using_target_moving)
 			{
 				VectorXd handle;handle.resize(6); handle.setZero();
@@ -945,7 +945,7 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 				//	cout<<"Pfirst_primitive[i] "<<i<<endl<<Pfirst_primitive[i]<<endl;
 			}
 			// For open loop
-			//	Motion_G->Set_the_robot_state(i,Desired_End_State[i]);
+				Motion_G->Set_the_robot_state(i,Desired_End_State[i]);
 		}
 		if (State==S_Open)
 		{
@@ -988,7 +988,7 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 		Task_allocator->compute_intercepts();
 
 
-	//	targets = Task_allocator->set_coordination();
+		targets = Task_allocator->set_coordination();
 
 
 		// publish the targets...
