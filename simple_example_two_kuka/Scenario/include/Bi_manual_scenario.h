@@ -31,7 +31,7 @@
 #include "std_msgs/Float64MultiArray.h"
 #include "commands.h"
 
-#include "task_allocation.h"
+//#include "task_allocation.h"
 
 
 const int KUKA_DOF=7;
@@ -145,10 +145,7 @@ private :
 /*	ros::Subscriber 			sub_Orientation_On_object[N_grabbing];*/
 	ros::Subscriber 			sub_pos_catching;
 
-	ros::Subscriber				sub_position_object_p1; // patrick
-	ros::Subscriber				sub_position_object_p2; // patrick
-	ros::Subscriber				sub_position_object_p3; // patrick
-	std::vector<ros::Publisher> pub_pat_targets;
+
 	ros::Publisher 				pub_command;
 	geometry_msgs::Pose			msg_vobject;
 	geometry_msgs::Pose			msg_robot_base;
@@ -271,11 +268,15 @@ private :
 
 
 	// patrick stuff
-	Task_allocation* Task_allocator;
+//	Task_allocation* Task_allocator;
 	ros::Publisher pub_rob0_id;
 	ros::Publisher pub_rob1_id;
 	std_msgs::Int64 rob_id_msg;
 
+	ros::Subscriber				sub_position_object_p1; // patrick
+	ros::Subscriber				sub_position_object_p2; // patrick
+	ros::Subscriber				sub_position_object_p3; // patrick
+	std::vector<ros::Publisher> pub_pat_targets;
 };
 
 

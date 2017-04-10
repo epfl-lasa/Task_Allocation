@@ -351,7 +351,7 @@ void Bi_manual_scenario::Topic_initialization()
 
 
 	// patrick stuff
-	pub_rob0_id = n->advertise<std_msgs::Int64>("/robotsPat/id0/", 3);
+/*	pub_rob0_id = n->advertise<std_msgs::Int64>("/robotsPat/id0/", 3);
 	pub_rob1_id = n->advertise<std_msgs::Int64>("/robotsPat/id1/", 3);
 	pub_pat_targets.clear();
 	for(int i = 0; i < N_robots; i++)
@@ -360,7 +360,7 @@ void Bi_manual_scenario::Topic_initialization()
 		std::ostringstream oss;
 		oss << "/robotsPat/target" << i;
 		pub_pat_targets.push_back(n->advertise<geometry_msgs::Pose>(oss.str(), 3));
-	}
+	}*/
 }
 
 
@@ -548,8 +548,8 @@ void Bi_manual_scenario::initKinematics(int index)
 	pub_base_of_robot[index].publish(msg_robot_base);
 	pub_base_of_robot[index].publish(msg_robot_base);
 	cout<<"Motion initialization for "<<index<<"the robot"<<endl;
-	Motion_G->Initialize_robot(index,1,addTwochar(Commom_path,"/A_Matrix").c_str(),addTwochar(Commom_path,"/Priors").c_str(),addTwochar(Commom_path,"/Mu").c_str(),addTwochar(Commom_path,"/Sigma").c_str(),
-			6,3,addTwochar(Commom_path,"/IIWA_workspace_Model_prior").c_str(),addTwochar(Commom_path,"/IIWA_workspace_Model_mu").c_str(),addTwochar(Commom_path,"/IIWA_workspace_Model_Sigma").c_str(),addTwochar(Commom_path,"/IIWA_workspace_Model_Threshold").c_str(),X_base);
+	Motion_G->Initialize_robot(index,1,addTwochar(Common_path,"/A_Matrix").c_str(),addTwochar(Common_path,"/Priors").c_str(),addTwochar(Common_path,"/Mu").c_str(),addTwochar(Common_path,"/Sigma").c_str(),
+			6,3,addTwochar(Common_path,"/IIWA_workspace_Model_prior").c_str(),addTwochar(Common_path,"/IIWA_workspace_Model_mu").c_str(),addTwochar(Common_path,"/IIWA_workspace_Model_Sigma").c_str(),addTwochar(Common_path,"/IIWA_workspace_Model_Threshold").c_str(),X_base);
 
 
 
@@ -869,7 +869,7 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdate(){
 			// patrick
 
 
-			prepare_task_allocator();
+	/*		prepare_task_allocator();
 
 			for(int i = 0; i < 4; i++)
 			{
@@ -936,16 +936,16 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 		{
 			prepare_motion_generator(i);
 			// For closed loop
-			//	Motion_G->Set_the_robot_state(i,End_State[i]);
+				Motion_G->Set_the_robot_state(i,End_State[i]);
 			if (Using_target_moving)
 			{
 				VectorXd handle;handle.resize(6); handle.setZero();
-		//		Motion_G->Set_the_robot_first_primitive_desired_position(i,Pfirst_primitive[i],handle);
+				Motion_G->Set_the_robot_first_primitive_desired_position(i,Pfirst_primitive[i],handle);
 
 				//	cout<<"Pfirst_primitive[i] "<<i<<endl<<Pfirst_primitive[i]<<endl;
 			}
 			// For open loop
-				Motion_G->Set_the_robot_state(i,Desired_End_State[i]);
+			//	Motion_G->Set_the_robot_state(i,Desired_End_State[i]);
 		}
 		if (State==S_Open)
 		{
@@ -966,7 +966,8 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 
 
 	// patrick
-		for(int i = 0; i < 4; i++)
+
+/*		for(int i = 0; i < 4; i++)
 		{
 			Objects_state[i].block(0,0,3,1)=P_objects[i];
 			Objects_state[i].block(3,0,3,1)=V_object;
@@ -1177,6 +1178,7 @@ int Bi_manual_scenario::RespondToConsoleCommand(const string cmd, const vector<s
 }
 
 
+/*
 // patrick below
 void Bi_manual_scenario::prepare_task_allocator()
 {
@@ -1233,12 +1235,7 @@ void Bi_manual_scenario::add_robots_task_allocator()
 	cout << "adding robots" << endl;
 	double force = 5;
 	int grippers = 1;
-/*	Vector3d rob0(0,-0.5,0);
-	Vector3d rob1(0,0.5,0);
-	Vector3d rob[2];
-	rob[0] = rob0;
-	rob[1] = rob1;
-*/
+
 	for(int i = 0; i < 2; i++)
 	{
 
@@ -1260,7 +1257,7 @@ void Bi_manual_scenario::add_robots_task_allocator()
 	//Task_allocator->print_bases();
 }
 
-// end patrick
+// end patrick */
 extern "C"{
 // These two "C" functions manage the creation and destruction of the class
 Bi_manual_scenario* create(){return new Bi_manual_scenario();}

@@ -236,8 +236,8 @@ int main( int argc, char** argv )
 	marker_rob_pub[0] = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
 	marker_rob_pub[1] = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
 
-	ros::Subscriber sub_rob0_id = n.subscribe("/robotsPat/id0/", 1, chatterCallback_rob0_id);
-	ros::Subscriber sub_rob1_id = n.subscribe("/robotsPat/id1/", 1, chatterCallback_rob1_id);
+	ros::Subscriber sub_rob0_id = n.subscribe("/robotsPat/targetID/0", 1, chatterCallback_rob0_id);
+	ros::Subscriber sub_rob1_id = n.subscribe("/robotsPat/targetID/1", 1, chatterCallback_rob1_id);
 
 	ros::Subscriber	sub_object_p1 = n.subscribe("/object/p1/position", 3, chatterCallback_object_P1);
 	ros::Subscriber	sub_object_p2 = n.subscribe("/object/p2/position", 3, chatterCallback_object_P2);

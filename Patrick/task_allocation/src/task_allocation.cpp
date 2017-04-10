@@ -47,13 +47,38 @@ Task_allocation::Task_allocation(double max_time_, double dt_, int n_state_, Obj
 
 }
 
+
+/*
+Robot_agent* Task_allocation::get_robot(int i)
+{
+	if(i >= 0 && i < Robots.size())
+		{
+			return &(Robots[i]);
+		}
+		cout << "wrong parameter given to task_allocation::get_object(i), I might segfault. i = " << i << endl;
+		return &(Robots[0]); // just pray that there is one....
+}
+*/
+/*
+Object* Task_allocation::get_object(int i)
+{
+	if(i >= 0 && i < Objects.size())
+	{
+		return &(Objects[i]);
+	}
+	cout << "wrong parameter given to task_allocation::get_object(i), I might segfault. i = " << i << endl;
+	return &(Objects[0]); // just pray that there is one....
+//	return (Object*)nullptr;
+}
+*/
+
 VectorXd Task_allocation::get_object_state(int i)
 {
 	VectorXd empty_vec;
 	empty_vec.resize(n_state);
 	empty_vec.setConstant(-1);
 	if(i >= 0 && i < n_objects)
-		return Objects[i].get_X_O();
+		return Objects[i]->get_X_O();
 	else
 		return empty_vec;
 }
@@ -61,11 +86,14 @@ VectorXd Task_allocation::get_object_state(int i)
 
 VectorXd Task_allocation::get_robot_intercept(int i) const
 {
+	VectorXd empty_vec;
+	empty_vec.resize(n_state);
+	empty_vec.setConstant(-1);
 	if(i >= 0 && i < n_robots)
 	{
-		return Robots[i].get_intercept();
+		return Robots[i]->get_intercept();
 	}
-	return Robots[0].get_intercept();
+	return VectorXd();
 }
 
 
@@ -73,13 +101,8 @@ void Task_allocation::predict_motion()
 {
 
 	for(auto & obj : Objects)
-		obj.dumb_predict_motion();
-/*	for(int i = 0; i < n_objects; i++)
-	{
-		//cout << "predicting object " << i << endl;
-		Objects[i].dumb_predict_motion();
-		//cout << "predicted object " << i << endl;
-	}*/
+		obj->dumb_predict_motion();
+
 }
 
 
@@ -90,13 +113,13 @@ void Task_allocation::clear_coalitions()
 	unallocated_robots.clear();
 	for(auto& rob : Robots)
 	{
-		rob.set_assignment(-1);
+		rob->set_assignment(-1);
 	}
 
 
 	for(auto& obj : Objects)
 	{
-		obj.set_assignment(false);
+		obj->set_assignment(false);
 	}
 }
 
@@ -143,9 +166,9 @@ void Task_allocation::build_coalitions()
 // ****** look for unallocated robots
 	for(auto& rob : Robots)
 	{
-		if(rob.get_assignment() ==  -1)
+		if(rob->get_assignment() ==  -1)
 		{
-			unallocated_robots.push_back(&rob);
+			unallocated_robots.push_back(rob);
 		}
 	}
 //cout << "... done" << endl;
@@ -206,8 +229,8 @@ void Task_allocation::build_coalitions()
 			}
 			for(int k = 0; k < n_objects; k++)
 			{
-				if(Objects[k].get_assignment() == false)
-					test.add_task(&(Objects[k]));
+				if(Objects[k]->get_assignment() == false)
+					test.add_task((Objects[k]));
 			}
 			test.set_id(i*min(MAX_COALITION_SIZE, n_bots)+j);
 			Coalitions[i].push_back(test);
@@ -258,7 +281,7 @@ void removeRow(Eigen::MatrixXd& matrix, unsigned int rowToRemove)
     matrix.conservativeResize(numRows,numCols);
 }
 
-int Task_allocation::add_robot(Robot_agent& bot)
+int Task_allocation::add_robot(Robot_agent* bot)
 {
 	Robots.push_back(bot);
 	n_robots++;
@@ -267,7 +290,7 @@ int Task_allocation::add_robot(Robot_agent& bot)
 }
 
 
-int Task_allocation::add_task(Object task)
+int Task_allocation::add_task(Object* task)
 {
 	Objects.push_back(task);
 	n_objects++;
@@ -279,7 +302,7 @@ bool Task_allocation::set_object_state(int i, VectorXd X, VectorXd DX)
 {
 	if(i < n_objects)
 	{
-		Objects[i].set_state(X, DX);
+		Objects[i]->set_state(X, DX);
 
 		return true;
 	}
@@ -289,7 +312,7 @@ bool Task_allocation::set_object_state(int i, VectorXd X, VectorXd DX)
 void Task_allocation::print_obj()  const
 {
 	for(const auto& obj : Objects)
-		obj.print_estimator();
+		obj->print_estimator();
 }
 
 
@@ -372,7 +395,7 @@ int Task_allocation::get_n_coals() const
 int Task_allocation::get_robot_target(int i) const
 {
 	if(i >= 0 && i < Robots.size())
-		return Robots[i].get_assignment();
+		return Robots[i]->get_assignment();
 	else
 		return -1;
 }
@@ -381,7 +404,7 @@ void Task_allocation::print_bases() const
 {
 	for(const auto & rob : Robots)
 	{
-		cout << "Robot " << rob.get_id() << " base at " << rob.get_base() << endl;
+		cout << "Robot " << rob->get_id() << " base at " << rob->get_base() << endl;
 	}
 }
 
@@ -389,7 +412,7 @@ void Task_allocation::update_objects_value()
 {
 	for(auto & obj : Objects)
 	{
-		obj.update_value();
+		obj->update_value();
 	}
 }
 
@@ -421,7 +444,7 @@ bool Task_allocation::set_robot_state(int i, VectorXd X_)
 {
 	if(i > 0 && i < n_robots)
 	{
-		Robots[i].set_state(X_);
+		Robots[i]->set_state(X_);
 		return true;
 	}
 	return false;
@@ -540,7 +563,7 @@ std::ostream& operator<< (std::ostream& stream, const Task_allocation& o)
 	for(const auto& rob : o.Robots)
 	{
 		cout << endl << "***** BEGIN OF ROBOT *****" << endl;
-		cout << rob;
+		cout << *rob;
 		cout << "***** END OF ROBOT *****" << endl;
 	}
 
@@ -548,7 +571,7 @@ std::ostream& operator<< (std::ostream& stream, const Task_allocation& o)
 	for(const auto& obj : o.Objects)
 	{
 		cout << endl << "***** BEGIN OF OBJECT *****" << endl;
-		cout << obj << endl;
+		cout << *obj << endl;
 		cout <<  "***** END OF OBJECT *****" << endl;
 	}
 

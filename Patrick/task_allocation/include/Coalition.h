@@ -11,12 +11,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "eigen3/Eigen/Dense"
-#include "geometry_msgs/Pose.h"
-#include "ros/ros.h"
-#include "LPV.h"
-#include "TrajectoryEstimation.h"
+//#include "geometry_msgs/Pose.h"
+//#include "ros/ros.h"
+//#include "LPV.h"
+//#include "TrajectoryEstimation.h"
 #include <math.h>
-#include <omp.h>
+//#include <omp.h>
 #include <vector>
 
 #include "Object.h"

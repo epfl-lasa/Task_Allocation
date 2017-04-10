@@ -33,12 +33,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "eigen3/Eigen/Dense"
-#include "geometry_msgs/Pose.h"
+//#include "geometry_msgs/Pose.h"
 #include "ros/ros.h"
-#include "LPV.h"
-#include "TrajectoryEstimation.h"
+//#include "LPV.h"
+//#include "TrajectoryEstimation.h"
 #include <math.h>
-#include <omp.h>
+//#include <omp.h>
 #include <vector>
 #include "Coalition.h"
 //#include "multiarm_ds.h"
@@ -72,8 +72,8 @@ public:
 	Task_allocation(double max_time_, double dt, int n_state, Object_prediction_type Object_motion=Object_prediction_type::Straight);
 //	~Task_allocation();
 
-	int			add_robot(Robot_agent& bot);
-	int 		add_task(Object Object);
+	int			add_robot(Robot_agent* bot);
+	int 		add_task(Object* Object);
 
 	bool		set_object_state(int i, VectorXd X, VectorXd DX);
 	bool		set_robot_state(int i, VectorXd X_);
@@ -87,10 +87,13 @@ public:
 	void		allocate();
 	void		multi_frame_allocation();
 
+
+	Object*		get_object(int i);
 	double 		get_dt() const;
 	double 		get_max_time() const;
 	int 		get_n_coals() const;
 	int 		get_robot_target(int i) const;
+	Robot_agent* get_robot(int i);
 	friend std::ostream& operator<< (std::ostream& stream, const Task_allocation& Object);
 
 	void		print_obj() const;
@@ -119,11 +122,11 @@ private:
 	int 				n_state;
 
 	int 				n_robots;
-	std::vector<Robot_agent> Robots;
+	std::vector<Robot_agent*> Robots;
 	std::vector<Robot_agent*> unallocated_robots;
 
 	int 				n_objects;
-	std::vector<Object>		Objects;
+	std::vector<Object*>		Objects;
 
 	double				max_pred_time;
 	double 				dt;

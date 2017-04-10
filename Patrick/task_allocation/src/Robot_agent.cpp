@@ -203,10 +203,13 @@ bool Robot_agent::init_robot(VectorXd base, Vector3d X_init, VectorXd X, VectorX
 }
 */
 
+
+/*
 void Robot_agent::set_base(Vector3d X)
 {
 	X_base = X;
 }
+*/
 
 VectorXd Robot_agent::get_intercept() const
 {
@@ -256,6 +259,21 @@ void Robot_agent::set_force(double force_)
 }
 
 */
+
+
+void Robot_agent::set_base(const geometry_msgs::Pose & msg)
+{
+	X_base(0) = msg.position.x;
+	X_base(1) = msg.position.y;
+	X_base(2) = msg.position.z;
+}
+
+void Robot_agent::set_end(const geometry_msgs::Pose & msg)
+{
+	X_end(0) = msg.position.x;
+	X_end(1) = msg.position.y;
+	X_end(2) = msg.position.z;
+}
 
 
 std::ostream& operator <<(std::ostream& stream, const Robot_agent& o)

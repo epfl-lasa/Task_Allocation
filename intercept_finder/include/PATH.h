@@ -24,7 +24,7 @@
 
 using namespace std;
 //std::string Commom_path  = "/home/sina/catkin_workspace/src/IJRR/simple_example_two_kuka/data";
-std::string Commom_path  = "/home/patrick/lasa-project/catkin_ws/src/IJRR/simple_example_two_kuka/data";
+std::string Common_path  = "/home/patrick/lasa-project/catkin_ws/src/IJRR/simple_example_two_kuka/data";
 
 // Path to SVM Collision Model
 std::string svm_filename = "/home/patrick/lasa-project/catkin_ws/src/IJRR/SVMGrad/SVMGrad/matlab/models/FenderwHands/36D-29k-Optimal-Model-FenderwHands.txt";

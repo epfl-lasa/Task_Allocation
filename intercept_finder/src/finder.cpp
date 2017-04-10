@@ -116,8 +116,8 @@ void chatterCallback_Command(const std_msgs::Int64& msg)
 			X_base_v(0)=X_base[i];
 			X_base_v(1)=Y_base[i];
 			X_base_v(2)=Z_base[i];
-			Motion_G->Initialize_robot(i,1,addTwochar(Commom_path,"/A_Matrix").c_str(),addTwochar(Commom_path,"/Priors").c_str(),addTwochar(Commom_path,"/Mu").c_str(),addTwochar(Commom_path,"/Sigma").c_str(),
-					6,3,addTwochar(Commom_path,"/IIWA_workspace_Model_prior").c_str(),addTwochar(Commom_path,"/IIWA_workspace_Model_mu").c_str(),addTwochar(Commom_path,"/IIWA_workspace_Model_Sigma").c_str(),addTwochar(Commom_path,"/IIWA_workspace_Model_Threshold").c_str(),X_base_v);
+			Motion_G->Initialize_robot(i,1,addTwochar(Common_path,"/A_Matrix").c_str(),addTwochar(Common_path,"/Priors").c_str(),addTwochar(Common_path,"/Mu").c_str(),addTwochar(Common_path,"/Sigma").c_str(),
+					6,3,addTwochar(Common_path,"/IIWA_workspace_Model_prior").c_str(),addTwochar(Common_path,"/IIWA_workspace_Model_mu").c_str(),addTwochar(Common_path,"/IIWA_workspace_Model_Sigma").c_str(),addTwochar(Common_path,"/IIWA_workspace_Model_Threshold").c_str(),X_base_v);
 			X_base_v(0)=X_end[i];
 			X_base_v(1)=Y_end[i];
 			X_base_v(2)=Z_end[i];

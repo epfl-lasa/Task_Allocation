@@ -17,7 +17,7 @@
 #include "geometry_msgs/Pose.h"
 #include "ros/ros.h"
 #include "LPV.h"
-#include "TrajectoryEstimation.h"
+//#include "TrajectoryEstimation.h"
 #include <math.h>
 #include  <omp.h>
 #include <string>
@@ -38,6 +38,9 @@ public:
 
 	// setters
 	void set_prediction_parameters(double max_time_, double dt);
+	void set_position(const geometry_msgs::Pose & msg);
+	void set_velocity(const geometry_msgs::Pose & msg);
+	void set_accel(const geometry_msgs::Pose & msg);
 	void set_state(VectorXd X, VectorXd DX);
 	void set_prediction_state(VectorXd X,VectorXd X_filtered, double time);
 	void set_assignment(bool val);
@@ -94,7 +97,7 @@ private:
 	double		value; // value of the object
 
 
-	TrajectoryEstimation *predict;
+//	TrajectoryEstimation *predict;
 
 };
 

@@ -102,7 +102,7 @@ Object::Object(int N_state_, VectorXd X_, VectorXd DX_, double max_time_, double
 		gravity[2]=0;
 	}
 
-	predict = new TrajectoryEstimation(gravity, dt, 30, 10);
+//	predict = new TrajectoryEstimation(gravity, dt, 30, 10);
 
 
 
@@ -298,10 +298,35 @@ int Object::get_id() const
 	return id;
 }
 
+void Object::set_position(const geometry_msgs::Pose &  msg)
+{
+	X_O(0) = msg.position.x;
+	X_O(1) = msg.position.y;
+	X_O(2) = msg.position.z;
+//	cout << "received new position" << endl << X_O << endl;
+}
+
+void Object::set_velocity(const geometry_msgs::Pose & msg)
+{
+	X_O(3) = msg.position.x;
+	X_O(4) = msg.position.y;
+	X_O(5) = msg.position.z;
+	DX_O(0) = X_O(3);
+	DX_O(1) = X_O(4);
+	DX_O(2) = X_O(5);
+}
+
+void Object::set_accel(const geometry_msgs::Pose & msg)
+{
+	DX_O(3) = msg.position.x;
+	DX_O(4) = msg.position.y;
+	DX_O(5) = msg.position.z;
+}
+
 
 void Object::print_estimator() const
 {
-	cout << predict << endl;
+//	cout << predict << endl;
 }
 
 std::ostream& operator <<(std::ostream& stream, const Object& o)
