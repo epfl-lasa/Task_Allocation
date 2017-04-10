@@ -170,7 +170,7 @@ void init_topics()
 
 		oss.str("");
 		oss.clear();
-		oss << "/robot_real/end" << i;
+		oss << "/robot_real/end/" << i;
 		rob_end_sub.push_back(n->subscribe(oss.str(), 1, &Robot_agent::set_end, &(Robots[i])));
 	}
 
