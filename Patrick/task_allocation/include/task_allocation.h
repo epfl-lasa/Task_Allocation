@@ -102,8 +102,9 @@ public:
 	void		print_intercepts() const;
 	void 		update_objects_value();
 
-	MatrixXd	set_coordination();
-
+	void		compute_coordination();
+	MatrixXd	get_targets();
+	std::vector<double> get_coordinations();
 
 private:
 
@@ -113,6 +114,10 @@ private:
 	bool 	check_dupe(const VectorXd& rowA, const VectorXd& rowB);
 	void	assign_the_robots();
 	int 	factorial(int n);
+
+	MatrixXd targets;
+	std::vector<double> coordinations;
+
 
 	MatrixXd PermGenerator(int n, int k);
 

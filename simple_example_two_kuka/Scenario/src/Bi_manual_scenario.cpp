@@ -25,6 +25,12 @@ bool True_robot=false;
 bool Using_target_moving = false;
 
 
+
+
+
+
+
+
 void Bi_manual_scenario::chatterCallback_sub_target_object0(const geometry_msgs::Pose & msg)
 {
 	Pfirst_primitive[1](0)=msg.position.x;
@@ -87,52 +93,59 @@ void Bi_manual_scenario::chatterCallback_ObjectPosition_raw(const geometry_msgs:
 	O_object_raw.w()=msg.orientation.w;
 	Position_of_the_object_recieved[N_grabbing+3]=true;
 
-	P_objects[0](0)=msg.position.x;
+/*	P_objects[0](0)=msg.position.x;
 	P_objects[0](1)=msg.position.y;
 	P_objects[0](2)=msg.position.z;
 	O_objects[0].x()=msg.orientation.x;
 	O_objects[0].y()=msg.orientation.y;
 	O_objects[0].z()=msg.orientation.z;
-	O_objects[0].w()=msg.orientation.w;
+	O_objects[0].w()=msg.orientation.w;*/
 
 	pubish_on_tf(P_object_raw,O_object_raw,"ObjectPosition_raw");
 }
 
 
-void Bi_manual_scenario::chatterCallback_ObjectPositionP1(const geometry_msgs::Pose & msg)
+// patrick stuff
+
+void Bi_manual_scenario::chatterCallback_rob0_coordination(const std_msgs::Float64 & msg)
 {
-	P_objects[1](0)=msg.position.x;
-	P_objects[1](1)=msg.position.y;
-	P_objects[1](2)=msg.position.z;
-	O_objects[1].x()=msg.orientation.x;
-	O_objects[1].y()=msg.orientation.y;
-	O_objects[1].z()=msg.orientation.z;
-	O_objects[1].w()=msg.orientation.w;
+	coordinations[0] = msg.data;
 }
 
-void Bi_manual_scenario::chatterCallback_ObjectPositionP2(const geometry_msgs::Pose & msg)
+void Bi_manual_scenario::chatterCallback_rob1_coordination(const std_msgs::Float64 & msg)
 {
-	P_objects[2](0)=msg.position.x;
-	P_objects[2](1)=msg.position.y;
-	P_objects[2](2)=msg.position.z;
-	O_objects[2].x()=msg.orientation.x;
-	O_objects[2].y()=msg.orientation.y;
-	O_objects[2].z()=msg.orientation.z;
-	O_objects[2].w()=msg.orientation.w;
+	coordinations[1] = msg.data;
+}
+
+
+
+
+/*
+void Bi_manual_scenario::chatterCallback_rob_target_0(const geometry_msgs::Pose & msg)
+{
 
 }
 
-void Bi_manual_scenario::chatterCallback_ObjectPositionP3(const geometry_msgs::Pose & msg)
+
+void Bi_manual_scenario::chatterCallback_rob_target_1(const geometry_msgs::Pose & msg)
 {
-	P_objects[3](0)=msg.position.x;
-	P_objects[3](1)=msg.position.y;
-	P_objects[3](2)=msg.position.z;
-	O_objects[3].x()=msg.orientation.x;
-	O_objects[3].y()=msg.orientation.y;
-	O_objects[3].z()=msg.orientation.z;
-	O_objects[3].w()=msg.orientation.w;
 
 }
+
+
+void Bi_manual_scenario::chatterCallback_rob_target_2(const geometry_msgs::Pose & msg)
+{
+
+}
+
+
+void Bi_manual_scenario::chatterCallback_rob_target_3(const geometry_msgs::Pose & msg)
+{
+
+}
+*/
+
+
 
 
 void Bi_manual_scenario::sendCommand(int _command)
@@ -292,11 +305,6 @@ void Bi_manual_scenario::Topic_initialization()
 	}
 
 
-	sub_position_object_p1 = n->subscribe("/object/p1/position", 3, & Bi_manual_scenario::chatterCallback_ObjectPositionP1,this);
-	sub_position_object_p2 = n->subscribe("/object/p2/position", 3, & Bi_manual_scenario::chatterCallback_ObjectPositionP2,this);
-	sub_position_object_p3 = n->subscribe("/object/p3/position", 3, & Bi_manual_scenario::chatterCallback_ObjectPositionP3,this);
-
-
 	sub_position_object = n->subscribe("/object/filtered/position", 3, & Bi_manual_scenario::chatterCallback_ObjectPosition,this);
 	sub_position_object_raw	= n->subscribe("/object/raw/position", 3, & Bi_manual_scenario::chatterCallback_ObjectPosition_raw,this);
 	sub_velocity_object = n->subscribe("/object/filtered/velocity", 3, & Bi_manual_scenario::chatterCallback_ObjectVelocity,this);
@@ -307,8 +315,13 @@ void Bi_manual_scenario::Topic_initialization()
 	sub_Orientation_On_object[1]  = n->subscribe("/object/raw/left/position", 3, & Bi_manual_scenario::chatterCallback_sub_G_On_object0,this);*/
 	sub_pos_catching	= n->subscribe("/catching/states", 3, & Bi_manual_scenario::chatterCallback_catching_state,this);
 
-	sub_traget_of_robots[0]=n->subscribe("/object/KUKA7_target/position", 3, & Bi_manual_scenario::chatterCallback_sub_target_object0,this);
-	sub_traget_of_robots[1]=n->subscribe("/object/KUKA14_target/position", 3, & Bi_manual_scenario::chatterCallback_sub_target_object1,this);
+
+
+	// pat commented thse out and made the 2 below instead.
+//	sub_traget_of_robots[0]=n->subscribe("/object/KUKA7_target/position", 3, & Bi_manual_scenario::chatterCallback_sub_target_object0,this);
+//	sub_traget_of_robots[1]=n->subscribe("/object/KUKA14_target/position", 3, & Bi_manual_scenario::chatterCallback_sub_target_object1,this);
+	sub_traget_of_robots[0]=n->subscribe("/robotsPat/target/0", 3, & Bi_manual_scenario::chatterCallback_sub_target_object0,this);
+	sub_traget_of_robots[1]=n->subscribe("/robotsPat/target/1", 3, & Bi_manual_scenario::chatterCallback_sub_target_object1,this);
 
 
 	pub_command_robot[0] = n->advertise<kuka_fri_bridge::JointStateImpedance>("/l_arm_controller/joint_imp_cmd", 3);
@@ -351,16 +364,18 @@ void Bi_manual_scenario::Topic_initialization()
 
 
 	// patrick stuff
-/*	pub_rob0_id = n->advertise<std_msgs::Int64>("/robotsPat/id0/", 3);
-	pub_rob1_id = n->advertise<std_msgs::Int64>("/robotsPat/id1/", 3);
-	pub_pat_targets.clear();
+	sub_pat_coordination.clear();
+	sub_pat_coordination.push_back(n->subscribe("/robotsPat/coordination/0", 3, &Bi_manual_scenario::chatterCallback_rob0_coordination, this));
+	sub_pat_coordination.push_back(n->subscribe("/robotsPat/coordination/1", 3, &Bi_manual_scenario::chatterCallback_rob1_coordination, this));
+/*	sub_pat_targets.clear();
 	for(int i = 0; i < N_robots; i++)
 	{
-		ros::Publisher test;
 		std::ostringstream oss;
 		oss << "/robotsPat/target" << i;
-		pub_pat_targets.push_back(n->advertise<geometry_msgs::Pose>(oss.str(), 3));
-	}*/
+		sub_pat_targets.push_back(n->subscribe(oss.str(), 3, chatterCallback_rob_targets[i]));
+	}
+
+	*/
 }
 
 
@@ -390,12 +405,6 @@ void Bi_manual_scenario::Parameter_initialization()
 	DObject_State.resize(6); 		DObject_State.setZero();
 
 	VirtualOb_State.resize(6);	VirtualOb_State.setZero();
-
-	for(int i = 0; i < 4; i++)
-	{
-		Objects_state[i].resize(6);
-		Objects_state[i].setZero();
-	}
 
 	A_V.resize(6,6);A_V.setZero();
 	A_V(0,3)=1;
@@ -740,6 +749,8 @@ void Bi_manual_scenario::prepare_jacobian(int index)
 
 Bi_manual_scenario::Bi_manual_scenario()
 :RobotInterface(){
+	coordinations.push_back(0);
+	coordinations.push_back(0);
 }
 Bi_manual_scenario::~Bi_manual_scenario(){
 }
@@ -836,10 +847,14 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdate(){
 				if (Using_target_moving)
 				{
 					Motion_G->Set_the_robot_first_primitive_desired_position(i,Pfirst_primitive[i],handle);
+					Motion_G->Set_coordination(i, coordinations[i]);
 				}
 				else
 				{
-					Motion_G->Set_the_robot_first_primitive_desired_position(i,End_State[i],handle);
+					// pat modified here
+				//	Motion_G->Set_the_robot_first_primitive_desired_position(i,End_State[i],handle);
+					Motion_G->Set_the_robot_first_primitive_desired_position(i,Pfirst_primitive[i],handle);
+					Motion_G->Set_coordination(i, coordinations[i]);
 				}
 				Desired_End_State[i]=End_State[i];
 			}
@@ -914,7 +929,7 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 			{
 				VectorXd handle;handle.resize(6); handle.setZero();
 				Motion_G->Set_the_robot_first_primitive_desired_position(i,Pfirst_primitive[i],handle);
-
+				Motion_G->Set_coordination(i, coordinations[i]);
 				//	cout<<"Pfirst_primitive[i] "<<i<<endl<<Pfirst_primitive[i]<<endl;
 			}
 			// For open loop

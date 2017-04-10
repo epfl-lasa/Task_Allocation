@@ -31,7 +31,7 @@
 #include "std_msgs/Float64MultiArray.h"
 #include "commands.h"
 
-//#include "task_allocation.h"
+
 
 
 const int KUKA_DOF=7;
@@ -74,6 +74,15 @@ public:
 	virtual int                 RespondToConsoleCommand(const string cmd, const vector<string> &args);
 private :
 
+/*	void						chatterCallback_rob_target_0(const geometry_msgs::Pose & msg);
+	void						chatterCallback_rob_target_1(const geometry_msgs::Pose & msg);
+	void						chatterCallback_rob_target_2(const geometry_msgs::Pose & msg);
+	void						chatterCallback_rob_target_3(const geometry_msgs::Pose & msg);
+*/
+	void						chatterCallback_rob0_coordination(const std_msgs::Float64 & msg);
+	void						chatterCallback_rob1_coordination(const std_msgs::Float64 & msg);
+
+
 	void 						chatterCallback_left_position(const sensor_msgs::JointState & msg);
 	void 						chatterCallback_right_position(const sensor_msgs::JointState & msg);
 	void						chatterCallback_ObjectPosition(const geometry_msgs::Pose & msg);
@@ -111,11 +120,11 @@ private :
 	void						prepare_jacobian(int index);
 
 
-
+/*
 	void						prepare_task_allocator();
 	void						add_robots_task_allocator();
 	void 						add_objects_task_allocator();
-
+*/
 	bool						flag_init[2];
 	bool						flag_job;
 	bool						Position_of_the_robot_recieved[N_robots];
@@ -162,10 +171,10 @@ private :
 	VectorXd 					Desired_JointPos[N_robots];
 	VectorXd 					JointDesVel[N_robots];
 
-	VectorXd					Objects_state[4]; // patrick
+/*	VectorXd					Objects_state[4]; // patrick
 	Vector3d					P_objects[4];					// patrick
 	Quaterniond					O_objects[4];					// patrick
-
+*/
 	VectorXd 					End_State [N_robots];
 	VectorXd 					DEnd_State [N_robots];
 	VectorXd 					Desired_End_State[N_robots];
@@ -268,15 +277,10 @@ private :
 
 
 	// patrick stuff
-//	Task_allocation* Task_allocator;
-	ros::Publisher pub_rob0_id;
-	ros::Publisher pub_rob1_id;
-	std_msgs::Int64 rob_id_msg;
+	std::vector<ros::Subscriber> sub_pat_targets;
+	std::vector<ros::Subscriber> sub_pat_coordination;
+	std::vector<double> 		coordinations;
 
-	ros::Subscriber				sub_position_object_p1; // patrick
-	ros::Subscriber				sub_position_object_p2; // patrick
-	ros::Subscriber				sub_position_object_p3; // patrick
-	std::vector<ros::Publisher> pub_pat_targets;
 };
 
 

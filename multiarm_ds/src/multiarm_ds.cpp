@@ -851,8 +851,8 @@ void multiarm_ds::Update()
 	}
 	if (The_catching_pos_is_found)
 	{
-		calculate_coordination_parameter();
-		calculate_coordination_allocation();
+	//	calculate_coordination_parameter();
+	//	calculate_coordination_allocation();
 		assign_the_robots();
 		calculate_ATX();
 		calculate_u();

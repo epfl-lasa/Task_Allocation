@@ -51,24 +51,25 @@ void chatter_ready(const std_msgs::Int64 msg)
 int main(int argc, char **argv) {
 
 	MatrixXd targets;
+	std::vector<double> coordinations;
 
 	ros::init(argc, argv, "task_allocation");
 
 	n = new ros::NodeHandle();
-	cout << "task allocation node started" << endl;
+//	cout << "task allocation node started" << endl;
 
 	init();
 
 	prepare_task_allocator();
 
-	cout << " done initializing, starting on topics" << endl;
+//	cout << " done initializing, starting on topics" << endl;
 	init_topics();
 
 
 
-	cout << "done initializing topics" << endl;
+	cout << "done initializing task allocation" << endl;
 
-
+	cout << "waiting for simulator start" << endl;
 	// while we haven't received everything, wait.. This is not very orthodox
 	while(start != 0) // 0 is the value we get from the "init" in the "job init catch" sequence
 	{
@@ -79,6 +80,7 @@ int main(int argc, char **argv) {
 		}
 	}
 
+	cout << "starting allocating in a loop" << endl;
 
 	// loop...
 	ros::Rate r(10);
@@ -90,13 +92,20 @@ int main(int argc, char **argv) {
 		Task_allocator->allocate();
 		Task_allocator->compute_intercepts();
 
+		Task_allocator->compute_coordination();
 
-		targets = Task_allocator->set_coordination();
+		targets = Task_allocator->get_targets();
+		coordinations = Task_allocator->get_coordinations();
 
-	//	cout << "done allocating" << endl;
+		// publish the desired coordinations...
+		for(int i = 0; i < coordinations.size(); i++)
+		{
+			std_msgs::Float64 msg;
+			msg.data = coordinations[i];
+			rob_coordination_pub[i].publish(msg);
+		}
 
 		// publish the targets...
-	//	cout << "publishing" << endl << "i have " << targets.cols() << " targets and " << pub_pat_targets.size() << " publishers" << endl;
 		for(int i = 0; i < targets.cols(); i++)
 		{
 			geometry_msgs::Pose msg;
@@ -105,13 +114,14 @@ int main(int argc, char **argv) {
 			msg.position.z = (targets.col(i))(2);
 
 			rob_target_pub[i].publish(msg);
-
 		}
+
+
+
 
 		// publish the ids for the coalitions for display
 		for(int i = 0; i < N_ROBOTS; i++)
 		{
-//			cout << "trying to publish ID of robot " << i << endl;
 			rob_id_msg.data = Task_allocator->get_robot_target(i);
 			rob_target_id_pub[i].publish(rob_id_msg);
 		}
@@ -144,7 +154,7 @@ void init_topics()
 
 		oss.str("");
 		oss.clear();
-		oss << "/coordinationPat/" << i;
+		oss << "/robotsPat/coordination/" << i;
 		rob_coordination_pub.push_back(n->advertise<std_msgs::Float64>(oss.str(), 1));
 
 		oss.str("");
