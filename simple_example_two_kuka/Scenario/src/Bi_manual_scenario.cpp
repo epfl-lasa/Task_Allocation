@@ -864,33 +864,6 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdate(){
 			}
 
 
-
-
-			// patrick
-
-
-	/*		prepare_task_allocator();
-
-			for(int i = 0; i < 4; i++)
-			{
-				Objects_state[i].block(0,0,3,1)=P_objects[i];
-				Objects_state[i].block(3,0,3,1)=V_object;
-			}
-
-			for(int i = 0; i < 4; i++)
-			{
-				Task_allocator->set_object_state(i, Objects_state[i], DObject_State); // all have same derivative...
-			}
-/*
-			Task_allocator->predict_motion();
-			Task_allocator->allocate();
-*/
-			// end patrick
-
-
-
-
-
 			Motion_G->Initialize_the_virtual_object();
 			Motion_G->Update();
 			flag_init[1]=true;

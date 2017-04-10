@@ -51,25 +51,4 @@ void add_robots_task_allocator();
 
 
 
-
-/*
-
-void chatterCallback_obj_pos0( const geometry_msgs::Pose & msg);
-void chatterCallback_obj_pos1( const geometry_msgs::Pose & msg);
-void chatterCallback_obj_pos2( const geometry_msgs::Pose & msg);
-void chatterCallback_obj_pos3( const geometry_msgs::Pose & msg);
-
-
-void chatterCallback_end0( const geometry_msgs::Pose & msg);
-void chatterCallback_end1( const geometry_msgs::Pose & msg);
-void chatterCallback_end2( const geometry_msgs::Pose & msg);
-void chatterCallback_end3( const geometry_msgs::Pose & msg);
-
-void chatterCallback_base0( const geometry_msgs::Pose & msg);
-void chatterCallback_base1( const geometry_msgs::Pose & msg);
-void chatterCallback_base2( const geometry_msgs::Pose & msg);
-void chatterCallback_base3( const geometry_msgs::Pose & msg);
-*/
-
-
 #endif /* IJRR_PATRICK_TASK_ALLOCATION_INCLUDE_ALLOCATION_NODE_H_ */

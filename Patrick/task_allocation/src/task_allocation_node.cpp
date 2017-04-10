@@ -1,6 +1,6 @@
 #include "task_allocation_node.h"
 
-const int N_ROBOTS = 4;
+const int N_ROBOTS = 2;
 const int N_OBJECTS = 4;
 
 const double dt = 0.030; // seconds
@@ -15,6 +15,9 @@ std::vector<Vector3d> rob_ends;
 std::vector<VectorXd> obj_state;
 std::vector<VectorXd> dobj_state;
 */
+
+int start = 42;
+ros::Subscriber start_sub;
 
 std_msgs::Int64 rob_id_msg;
 
@@ -39,6 +42,11 @@ std::vector<Robot_agent> Robots;
 
 Task_allocation* Task_allocator;
 
+void chatter_ready(const std_msgs::Int64 msg)
+{
+	start = msg.data;
+}
+
 
 int main(int argc, char **argv) {
 
@@ -61,14 +69,19 @@ int main(int argc, char **argv) {
 	cout << "done initializing topics" << endl;
 
 
-	// while we haven't received everything, wait..
-
-	// setup the task allocator
-
+	// while we haven't received everything, wait.. This is not very orthodox
+	while(start != 0) // 0 is the value we get from the "init" in the "job init catch" sequence
+	{
+		if(ros::ok())
+		{
+			sleep(1);
+			ros::spinOnce();
+		}
+	}
 
 
 	// loop...
-	ros::Rate r(0.5);
+	ros::Rate r(10);
 	while(ros::ok())
 	{
 
@@ -103,7 +116,7 @@ int main(int argc, char **argv) {
 			rob_target_id_pub[i].publish(rob_id_msg);
 		}
 
-		cout << *Task_allocator << endl;
+//		cout << *Task_allocator << endl;
 		ros::spinOnce();
 		r.sleep();
 	}
@@ -119,6 +132,7 @@ void init_topics()
 {
 	std::ostringstream oss;
 
+	start_sub = n->subscribe("/command", 1, chatter_ready);
 	// robots
 	for(int i = 0; i < Robots.size(); i++)
 	{
