@@ -279,8 +279,10 @@ private :
 	// patrick stuff
 	std::vector<ros::Subscriber> sub_pat_targets;
 	std::vector<ros::Subscriber> sub_pat_coordination;
-	std::vector<double> 		coordinations;
 
+	std::vector<double> 		coordinations;
+	ros::Publisher				pub_base2;
+	ros::Publisher				pub_base3;
 };
 
 

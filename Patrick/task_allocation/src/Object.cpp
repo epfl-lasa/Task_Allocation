@@ -251,7 +251,7 @@ double Object::update_value()
 	{
 		value *=2.2;
 	}
-	if(X_O(0) > 0) // too late to catch
+	if(X_O(0) > 1) // too late to catch
 	{
 		value = 0;
 	//	cout << "object " << id << " is set to 0 because X_O(0) is " << X_O(0) << endl;

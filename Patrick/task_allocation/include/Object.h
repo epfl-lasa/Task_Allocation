@@ -17,7 +17,6 @@
 #include "geometry_msgs/Pose.h"
 #include "ros/ros.h"
 #include "LPV.h"
-//#include "TrajectoryEstimation.h"
 #include <math.h>
 #include  <omp.h>
 #include <string>
@@ -31,10 +30,10 @@ public:
 	Object();
 	Object(int N_state, VectorXd X, VectorXd DX, double max_time, double dt, VectorXd grabbing_states[], int n_grabbing_states, double weight, double value, int id_, Object_prediction_type Object_motion=Object_prediction_type::Straight );
 
-//	Object( const Object &o); // copy construct
 
 	void predict_motion();
 	void dumb_predict_motion();
+	double update_value();
 
 	// setters
 	void set_prediction_parameters(double max_time_, double dt);
@@ -61,7 +60,6 @@ public:
 
 	// various
 	void print_estimator() const;
-	double update_value();
 	friend std::ostream& operator<< (std::ostream& stream, const Object& Object);
 
 private:
@@ -95,9 +93,6 @@ private:
 
 	double 		weight; // weight of the object, aka force required to lift it
 	double		value; // value of the object
-
-
-//	TrajectoryEstimation *predict;
 
 };
 

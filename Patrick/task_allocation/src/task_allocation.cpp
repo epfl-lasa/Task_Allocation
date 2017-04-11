@@ -127,6 +127,7 @@ void Task_allocation::clear_coalitions()
 void Task_allocation::compute_coordination()
 {
 	targets.resize(6, n_robots);
+	targets.setZero();
 	std::vector<int> robId;
 	coordinations.clear();
 	for(auto & coal : active_coalitions)
@@ -148,6 +149,12 @@ void Task_allocation::compute_coordination()
 		//		Multi_ds->Set_coordination(i,1);
 			}
 		}
+	}
+
+	for(auto & rob : Robots)
+	{
+		if(rob->get_assignment() == -1)
+			targets.col(rob->get_id()) = rob->get_intercept();
 	}
 }
 
@@ -345,8 +352,6 @@ void Task_allocation::allocate()
 //		cout << "done building coalitions: " << unallocated_robots.size() << " available robots, making " << n_coal << " coalitions " << endl;
 		if(unallocated_robots.size() < 1)
 		{
-		//	cout << "all robots have been allocated" << endl;
-//			cout << *this << endl;
 			break;
 		}
 
@@ -363,9 +368,7 @@ void Task_allocation::allocate()
 			for(auto& coal : row)
 			{
 				coal.compute_value();
-		//		coal_values.push_back(coal.compute_value()); // not yet implemented, just empty
 				temp_weight = coal.get_weight();
-	//			cout << "temp weight for this coalition " << temp_weight << endl;
 				if(0.0 < temp_weight && temp_weight < lowest_weight)
 				{
 					lowest_weight = temp_weight;
@@ -441,6 +444,14 @@ void Task_allocation::compute_intercepts()
 		if(coal.get_n_robots() == 1)
 		{
 			coal.compute_intercept();
+		}
+	}
+
+	for(auto & rob : Robots)
+	{
+		if(rob->get_assignment() == -1) // robot is not assigned
+		{
+			rob->set_idle_target();
 		}
 	}
 }

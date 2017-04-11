@@ -30,20 +30,9 @@ bool Using_target_moving = false;
 
 
 
+// inverted by patrick, was object0 - primitive 1 and object1-primitive0
 
 void Bi_manual_scenario::chatterCallback_sub_target_object0(const geometry_msgs::Pose & msg)
-{
-	Pfirst_primitive[1](0)=msg.position.x;
-	Pfirst_primitive[1](1)=msg.position.y;
-	Pfirst_primitive[1](2)=msg.position.z;
-	T_G_On_object[1].x()=msg.orientation.x;
-	T_G_On_object[1].y()=msg.orientation.y;
-	T_G_On_object[1].z()=msg.orientation.z;
-	T_G_On_object[1].w()=msg.orientation.w;
-	Ofirst_primitive[1]=T_G_On_object[1].toRotationMatrix();
-
-}
-void Bi_manual_scenario::chatterCallback_sub_target_object1(const geometry_msgs::Pose & msg)
 {
 	Pfirst_primitive[0](0)=msg.position.x;
 	Pfirst_primitive[0](1)=msg.position.y;
@@ -52,7 +41,19 @@ void Bi_manual_scenario::chatterCallback_sub_target_object1(const geometry_msgs:
 	T_G_On_object[0].y()=msg.orientation.y;
 	T_G_On_object[0].z()=msg.orientation.z;
 	T_G_On_object[0].w()=msg.orientation.w;
-	Ofirst_primitive[0]=T_G_On_object[0].toRotationMatrix();
+	Ofirst_primitive[0]=T_G_On_object[1].toRotationMatrix();
+
+}
+void Bi_manual_scenario::chatterCallback_sub_target_object1(const geometry_msgs::Pose & msg)
+{
+	Pfirst_primitive[1](0)=msg.position.x;
+	Pfirst_primitive[1](1)=msg.position.y;
+	Pfirst_primitive[1](2)=msg.position.z;
+	T_G_On_object[1].x()=msg.orientation.x;
+	T_G_On_object[1].y()=msg.orientation.y;
+	T_G_On_object[1].z()=msg.orientation.z;
+	T_G_On_object[1].w()=msg.orientation.w;
+	Ofirst_primitive[1]=T_G_On_object[0].toRotationMatrix();
 }
 
 void Bi_manual_scenario::chatterCallback_catching_state(const std_msgs::Float64MultiArray & msg)
@@ -374,8 +375,17 @@ void Bi_manual_scenario::Topic_initialization()
 		oss << "/robotsPat/target" << i;
 		sub_pat_targets.push_back(n->subscribe(oss.str(), 3, chatterCallback_rob_targets[i]));
 	}
-
 	*/
+
+	pub_base2 = n->advertise<geometry_msgs::Pose>("/robot/base/2", 3);
+	pub_base3 = n->advertise<geometry_msgs::Pose>("/robot/base/3", 3);
+	geometry_msgs::Pose msg;
+	msg.position.x = 1;
+	msg.position.y = 0;
+	msg.position.z = 0;
+	pub_base2.publish(msg);
+	msg.position.y = -1.25;
+	pub_base3.publish(msg);
 }
 
 
@@ -846,15 +856,16 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdate(){
 				Motion_G->Set_the_robot_state(i,End_State[i]);
 				if (Using_target_moving)
 				{
-					Motion_G->Set_the_robot_first_primitive_desired_position(i,Pfirst_primitive[i],handle);
 					Motion_G->Set_coordination(i, coordinations[i]);
+					Motion_G->Set_the_robot_first_primitive_desired_position(i,Pfirst_primitive[i],handle);
+
 				}
 				else
 				{
 					// pat modified here
 				//	Motion_G->Set_the_robot_first_primitive_desired_position(i,End_State[i],handle);
-					Motion_G->Set_the_robot_first_primitive_desired_position(i,Pfirst_primitive[i],handle);
 					Motion_G->Set_coordination(i, coordinations[i]);
+					Motion_G->Set_the_robot_first_primitive_desired_position(i,Pfirst_primitive[i],handle);
 				}
 				Desired_End_State[i]=End_State[i];
 			}
@@ -924,14 +935,22 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 		{
 			prepare_motion_generator(i);
 			// For closed loop
-				Motion_G->Set_the_robot_state(i,End_State[i]);
+			Motion_G->Set_the_robot_state(i,End_State[i]);
+			VectorXd handle;handle.resize(6); handle.setZero();
 			if (Using_target_moving)
 			{
-				VectorXd handle;handle.resize(6); handle.setZero();
+
+				// removed by patrick VectorXd handle;handle.resize(6); handle.setZero();
+				Motion_G->Set_coordination(i, coordinations[i]); // added patrick
 				Motion_G->Set_the_robot_first_primitive_desired_position(i,Pfirst_primitive[i],handle);
-				Motion_G->Set_coordination(i, coordinations[i]);
+
 				//	cout<<"Pfirst_primitive[i] "<<i<<endl<<Pfirst_primitive[i]<<endl;
 			}
+
+
+			Motion_G->Set_coordination(i, coordinations[i]); // added patrick
+			Motion_G->Set_the_robot_first_primitive_desired_position(i,Pfirst_primitive[i],handle); // added patrick
+//			cout << "set robot " << i << " coord to " << coordinations[i] << " and target " << endl << Pfirst_primitive[i] << endl;
 			// For open loop
 			//	Motion_G->Set_the_robot_state(i,Desired_End_State[i]);
 		}
@@ -952,60 +971,15 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 
 		Motion_G->Update();
 
-
-	// patrick
-
-/*		for(int i = 0; i < 4; i++)
+		// patrick to override part of the update.
+/*		for(int i = 0; i < N_robots; i)
 		{
-			Objects_state[i].block(0,0,3,1)=P_objects[i];
-			Objects_state[i].block(3,0,3,1)=V_object;
+			VectorXd handle;handle.resize(6); handle.setZero();
+			Motion_G->Set_coordination(i, coordinations[i]); // added patrick
+			Motion_G->Set_the_robot_first_primitive_desired_position(i,Pfirst_primitive[i],handle); // added patrick
+	//		cout << "set robot " << i << " coord to " << coordinations[i] << " and target " << endl << Pfirst_primitive[i] << endl;
 		}
-
-		for(int i = 0; i < 4; i++)
-		{
-			Task_allocator->set_object_state(i, Objects_state[i], DObject_State); // all have same derivative...
-		}
-
-		for(int i = 0; i < N_robots; i++)
-		{
-			Task_allocator->set_robot_state(i, End_State[i]);
-		}
-
-		Task_allocator->update_objects_value();
-		Task_allocator->predict_motion();
-		Task_allocator->allocate();
-		Task_allocator->compute_intercepts();
-
-
-		targets = Task_allocator->set_coordination();
-
-
-		// publish the targets...
-	//	cout << "publishing" << endl << "i have " << targets.cols() << " targets and " << pub_pat_targets.size() << " publishers" << endl;
-		for(int i = 0; i < targets.cols(); i++)
-		{
-			geometry_msgs::Pose msg;
-			msg.position.x = (targets.col(i))(0);
-			msg.position.y = (targets.col(i))(1);
-			msg.position.z = (targets.col(i))(2);
-			pub_pat_targets[i].publish(msg);
-
-		}
-
-	//	Task_allocator->print_coalitions();
-
-
-		// publish the ids for the coalitions for display
-		rob_id_msg.data = Task_allocator->get_robot_target(0);
-//		cout << "robot 0 target " << rob_id_msg.data << " " ;
-		pub_rob0_id.publish(rob_id_msg);
-
-		rob_id_msg.data = Task_allocator->get_robot_target(1);
-	//	cout << " robot 1 target " << rob_id_msg.data << endl;
-		pub_rob1_id.publish(rob_id_msg);
-
-	// end patrick */
-
+*/
 		for(int i=0;i<N_robots;i++)
 		{
 			Motion_G->Get_the_coordination_allocation(i,msg_coordination.data);

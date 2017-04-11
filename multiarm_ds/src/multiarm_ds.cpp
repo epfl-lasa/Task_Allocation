@@ -399,10 +399,23 @@ void multiarm_ds::Set_index_of_grabbing_posititon_(int index_of_robot,int indext
 
 void multiarm_ds::Set_coordination(int rob, double x)
 {
+
+	// wtf sina ? did you invert the robot IDs once again?!
 //	Vobject_.tau_sum_ = 0;
+	if(rob == 0)
+	{
+		Robots_[1].Dtau_ = 0;
+		Robots_[1].tau_ = x;
+	}
+	else
+	{
+		Robots_[0].Dtau_ = 0;
+		Robots_[0].tau_ = x;
+	}
 
 	Robots_[rob].Dtau_ = 0;
 	Robots_[rob].tau_ = x;
+//	cout << "set robot " << rob << " coordination " << x << endl;
 //	Vobject_.tau_sum_=Vobject_.tau_sum_+Robots_[rob].tau_;
 }
 
@@ -851,8 +864,8 @@ void multiarm_ds::Update()
 	}
 	if (The_catching_pos_is_found)
 	{
-	//	calculate_coordination_parameter();
-	//	calculate_coordination_allocation();
+		calculate_coordination_parameter();
+		calculate_coordination_allocation();
 		assign_the_robots();
 		calculate_ATX();
 		calculate_u();
