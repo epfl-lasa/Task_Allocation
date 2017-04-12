@@ -209,7 +209,10 @@ VectorXd Robot_agent::compute_intercept(const Object& obj)
 	{
 		X_targ = best_pos.block(0,0,3,1);
 	}
-
+	else
+	{
+		X_targ = X.block(0,0,3,1);
+	}
 	return X_targ;
 }
 

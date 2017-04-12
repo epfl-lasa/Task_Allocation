@@ -147,44 +147,45 @@ double Coalition::compute_value()
 	// check for each object
 	for(const auto& obj : Objects)
 	{
-		// check if the object can be done by this coalition
-
-		if(is_feasible(*obj))
+		if(obj->is_done() == false)
 		{
-			temp_cost = 0;
-//			cout << "computing cost ";
-			for(const auto& rob : Robots)
+			// check if the object can be done by this coalition
+			if(is_feasible(*obj))
 			{
-				temp_cost += rob->evaluate_task(*obj);
-	//			cout << temp_cost << " " ;
-			}
-		//	cout << endl;
-//			cout << "evaluated cost " << temp_cost;
-			temp_value = obj->get_value();
-	//		cout << " evaluated value " << temp_value;
-			temp_weight = temp_value - temp_cost;
-			temp_weight /= n_robots;
-			temp_weight = 1/(temp_weight);
-
-	/*		if(n_robots == 1) // robot 1 is at (0,0,0)
-			{
-				if(temp_weight > 0)
+				temp_cost = 0;
+	//			cout << "computing cost ";
+				for(const auto& rob : Robots)
 				{
-					if(Robots[0]->get_id() == 1)
-						cout << " cost " << temp_cost << " for object " << obj->get_id();
+					temp_cost += rob->evaluate_task(*obj);
+		//			cout << temp_cost << " " ;
 				}
-			}//   */
+			//	cout << endl;
+	//			cout << "evaluated cost " << temp_cost;
+				temp_value = obj->get_value();
+		//		cout << " evaluated value " << temp_value;
+				temp_weight = temp_value - temp_cost;
+				temp_weight /= n_robots;
+				temp_weight = 1/(temp_weight);
 
-//			cout << " evaluated weight " << temp_weight << endl;
-			if(0.0 < temp_weight && temp_weight < weight)
-			{
-	//			cout << " updated the desired object" << endl;
-				value = temp_value;
-				weight = temp_weight;
-				cost = 1/value;
-				des_obj = obj;
+		/*		if(n_robots == 1) // robot 1 is at (0,0,0)
+				{
+					if(temp_weight > 0)
+					{
+						if(Robots[0]->get_id() == 1)
+							cout << " cost " << temp_cost << " for object " << obj->get_id();
+					}
+				}//   */
+
+	//			cout << " evaluated weight " << temp_weight << endl;
+				if(0.0 < temp_weight && temp_weight < weight)
+				{
+		//			cout << " updated the desired object" << endl;
+					value = temp_value;
+					weight = temp_weight;
+					cost = 1/value;
+					des_obj = obj;
+				}
 			}
-
 	//		cout << "computed value, the object I want is " << obj->get_id() << endl;
 	//		if(weight < 5)
 		//		weight = -1;

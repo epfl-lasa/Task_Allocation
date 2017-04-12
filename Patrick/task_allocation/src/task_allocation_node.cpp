@@ -92,7 +92,7 @@ int main(int argc, char **argv) {
 		Task_allocator->compute_coordination();
 
 
-/*		// check at what state the robots are
+		// check at what state the robots are
 		for(auto & rob : Robots)
 		{
 			int assign = rob.get_assignment();
@@ -105,12 +105,13 @@ int main(int argc, char **argv) {
 					if( distance < 0.2) // if it reached the object
 					{
 						rob.set_idle(); // set it to idle, ie just throw away the object.
+						Objects[rob.get_assignment()].set_done();
 					}
 				}
 			}
 		}
 
-//   */
+//
 
 
 
