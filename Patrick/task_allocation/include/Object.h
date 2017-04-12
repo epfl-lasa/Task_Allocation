@@ -43,6 +43,7 @@ public:
 	void set_state(VectorXd X, VectorXd DX);
 	void set_prediction_state(VectorXd X,VectorXd X_filtered, double time);
 	void set_assignment(bool val);
+	void set_done();
 
 	// getters
 	VectorXd get_X_O() const;
@@ -57,7 +58,7 @@ public:
 	double get_weight() const;
 	int	get_n_grippers() const;
 	bool get_assignment() const;
-
+	bool is_done() const;
 	// various
 	void print_estimator() const;
 	friend std::ostream& operator<< (std::ostream& stream, const Object& Object);
@@ -72,6 +73,7 @@ private:
 	int id;
 
 	bool is_assigned;
+	bool done;
 
 	int n_state;
 

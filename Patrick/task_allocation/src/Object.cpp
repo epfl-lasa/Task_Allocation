@@ -105,7 +105,7 @@ Object::Object(int N_state_, VectorXd X_, VectorXd DX_, double max_time_, double
 //	predict = new TrajectoryEstimation(gravity, dt, 30, 10);
 
 
-
+	done = false;
 	is_assigned = false;
 }
 
@@ -113,6 +113,17 @@ void Object::set_assignment(bool val)
 {
 	is_assigned = val;
 }
+
+void Object::set_done()
+{
+	done = true;
+}
+
+bool Object::is_done() const
+{
+	return done;
+}
+
 
 void Object::predict_motion()
 {

@@ -113,7 +113,8 @@ void Task_allocation::clear_coalitions()
 	unallocated_robots.clear();
 	for(auto& rob : Robots)
 	{
-		rob->set_assignment(-1);
+	//	if(!(rob->is_busy()))
+			rob->set_assignment(-1);
 	}
 
 
@@ -126,40 +127,55 @@ void Task_allocation::clear_coalitions()
 
 void Task_allocation::compute_coordination()
 {
-	targets.resize(6, n_robots);
-	targets.setZero();
+//	targets.resize(6, n_robots);
+//	targets.setZero();
 	std::vector<int> robId;
 	coordinations.clear();
+	coordinations.resize(n_robots);
 	for(auto & coal : active_coalitions)
 	{
 		robId = coal.get_robots_id();
 		if(coal.get_n_robots() == 1)
 		{
 		//	cout << "robot in this coalition " << robId[0] << endl;
-			targets.col(robId[0]) = get_robot_intercept(robId[0]);
-			coordinations.push_back(0);
-	//		Multi_ds->Set_coordination(robId[0],0);
-		//	Multi_ds->Set_the_robot_first_primitive_desired_position(robId[0], targets.col(robId[0]), zeroVec);
+//			targets.col(robId[0]) = get_robot_intercept(robId[0]);
+			coordinations[robId[0]] = 0;
 		}
 		else
 		{
-			for(auto i : robId)
+			for(auto & i : robId)
 			{
-				coordinations.push_back(1);
-		//		Multi_ds->Set_coordination(i,1);
+				coordinations[i] = 1;
 			}
 		}
 	}
 
-	for(auto & rob : Robots)
+//	for(auto & coord : coordinations)
+	//	cout << "coordination " << coord << endl;
+/*	for(auto & rob : Robots)
 	{
 		if(rob->get_assignment() == -1)
 			targets.col(rob->get_id()) = rob->get_intercept();
 	}
+*/
+}
+
+void Task_allocation::update_rob_business()
+{
+	for(auto & rob : Robots)
+		rob->update_business();
 }
 
 MatrixXd Task_allocation::get_targets()
 {
+	targets.resize(3, n_robots); targets.setZero();
+	for(auto & rob : Robots)
+	{
+	//	cout << "setting target for robot " << rob->get_id() << " to " << endl << rob->get_intercept() << endl;
+		targets.col(rob->get_id()) = rob->get_intercept();
+	}
+
+
 	return targets;
 }
 
@@ -339,16 +355,18 @@ void Task_allocation::allocate()
 
 	clear_coalitions();
 
-	for(int i = 0; i < n_objects; i++) // the boundary should be something else....
+	for(int i = 0; i < n_objects; i++) // the boundary should be something else.... Needed because we need to check until we have all objects allocated.
 	{
 		// *************** build the coalitions
 	//	cout << "building coalitions" << endl;
 		build_coalitions();
 
-		int n_coal = 0;
-		for(auto& row: Coalitions)
-			for(auto& coal : row)
-				n_coal++;
+//		int n_coal = 0;
+//		for(auto& row: Coalitions)
+//			for(auto& coal : row)
+	//			n_coal++;
+
+
 //		cout << "done building coalitions: " << unallocated_robots.size() << " available robots, making " << n_coal << " coalitions " << endl;
 		if(unallocated_robots.size() < 1)
 		{
@@ -392,10 +410,9 @@ void Task_allocation::allocate()
 	//	else
 		//	cout << "didn't find a coalition" << endl;
 	}
-
-
-
 }
+
+
 
 int Task_allocation::get_n_coals() const
 {
@@ -439,6 +456,12 @@ void Task_allocation::print_intercepts() const
 
 void Task_allocation::compute_intercepts()
 {
+	// initialize all robots to idle target
+//	for(auto & rob : Robots)
+//		rob->set_idle();
+
+
+	// modify only the targets of the robots that have a useful target
 	for(auto & coal : active_coalitions)
 	{
 		if(coal.get_n_robots() == 1)
@@ -447,13 +470,13 @@ void Task_allocation::compute_intercepts()
 		}
 	}
 
-	for(auto & rob : Robots)
+/*	for(auto & rob : Robots)
 	{
 		if(rob->get_assignment() == -1) // robot is not assigned
 		{
 			rob->set_idle_target();
 		}
-	}
+	}*/
 }
 
 

@@ -37,9 +37,9 @@ public:
 
 	double evaluate_task(const Object& obj);
 	VectorXd compute_intercept(const Object& obj);
+	void	update_business();
 
-
-	void set_idle_target();
+	void set_idle();
 	void set_base(const geometry_msgs::Pose & msg);
 	void set_end(const geometry_msgs::Pose & msg);
 
@@ -47,6 +47,7 @@ public:
 	void set_assignment(int);
 
 
+	int		is_busy() const;
 	bool get_state_set() const;
 	void get_state(VectorXd& X) const;
 	VectorXd get_base() const;
@@ -56,6 +57,7 @@ public:
 	int get_assignment() const;
 	VectorXd get_intercept() const;
 	Vector3d get_end() const;
+	Vector3d get_idle_pos() const;
 
 	friend std::ostream& operator <<(std::ostream& stream, const Robot_agent& o);
 private:
@@ -63,11 +65,15 @@ private:
 	GMM 		Workspace_model;
 	Vector3d 	X_base; 			//Position of the base of the robot with respect to the world frame
 	Vector3d	X_end;
+	Vector3d 	X_idle;
 	Vector3d 	X_initial_pose; 	// Initial position of the end-effector of the robot with respect to the world frame
 //	LPV			Dynamic;
 	VectorXd 	X; 					//State of the robot in the world frame
 	VectorXd	X_targ;				// target of the robot
 
+
+
+	int			busy; // is the robot busy?
 	int 		id;
 	int 		n_grippers; // number of grippers on this robot, typically 1
 	double 		force; // force of the robot

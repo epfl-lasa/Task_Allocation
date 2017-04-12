@@ -79,7 +79,7 @@ public:
 	bool		set_robot_state(int i, VectorXd X_);
 	VectorXd	get_object_state(int i);
 	void 		predict_motion();
-
+	void		update_rob_business();
 	void		build_coalitions(); //this makes "Coalitions" to hold all coalitions with the currently unallocated robots
 	void		clear_coalitions(); //this resets the coalitions, resets the unallocated robots and active coalitions
 	void		compute_intercepts();
@@ -88,13 +88,13 @@ public:
 	void		multi_frame_allocation();
 
 
-	Object*		get_object(int i);
+
 	double 		get_dt() const;
 	double 		get_max_time() const;
 	int 		get_n_coals() const;
 	int 		get_robot_target(int i) const;
-	Robot_agent* get_robot(int i);
-	friend std::ostream& operator<< (std::ostream& stream, const Task_allocation& Object);
+
+
 
 	void		print_obj() const;
 	void		print_coalitions() const;
@@ -105,6 +105,8 @@ public:
 	void		compute_coordination();
 	MatrixXd	get_targets();
 	std::vector<double> get_coordinations();
+
+	friend std::ostream& operator<< (std::ostream& stream, const Task_allocation& Object);
 
 private:
 

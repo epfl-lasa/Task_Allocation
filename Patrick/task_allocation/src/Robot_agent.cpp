@@ -7,9 +7,6 @@
 
 #include "Robot_agent.h"
 
-//using namespace Eigen; // why do I have to put this here? Odd....
-
-
 
 Robot_agent::Robot_agent()
 {
@@ -45,6 +42,10 @@ Robot_agent::Robot_agent(int Num_LPV_Com, const char *path_A_LPV, const char *pa
 	force = force_;
 
 	assignment = -1;
+
+	busy = 0;
+	X_idle = X_base + Vector3d(-0.5,0,0.6);
+	set_idle();
 	cout << "done" << endl;
 }
 
@@ -142,11 +143,46 @@ VectorXd Robot_agent::get_intercept() const
 	return X_targ;
 }
 
+
+Vector3d Robot_agent::get_idle_pos() const
+{
+	return X_idle;
+}
+
+
+void Robot_agent::update_business()
+{
+//	cout << " end " << endl << X_end << endl;
+//	cout << " target " << endl << X_targ << endl;
+	double delta = (X_end - X_targ).norm();
+	if(delta > 0.1)
+		busy = 1;
+	else
+		busy = 0;
+/*	else
+	{
+		if((X_idle - X_targ).norm() < 0.01) // if the target is the idle position
+			busy = 0;
+		else								// else the robot was grabbing an object, just gonna assume the target here is correct
+		{
+			X_targ = X_idle;
+		}
+
+	}
+*/
+}
+
+int Robot_agent::is_busy() const
+{
+	return busy;
+}
+
+
 VectorXd Robot_agent::compute_intercept(const Object& obj)
 {
 	VectorXd best_pos;
-	X_targ.resize(6); X_targ.setZero();
-	X_targ.block(0,0,3,1) = X_base + Vector3d(0,0,0.5);
+	X_targ.resize(3); X_targ.setZero();
+	X_targ = X_base + Vector3d(0,0,0.5);
 //	X_targ = X_base + Vector3d(0,0,0.8);
 	MatrixXd POG = obj.get_P_O_G_prediction(0);//obj.get_P_O_G_prediction(0);
 //	cout << "trying to get intercept for object " << obj.get_id() << " POG is of size " << POG.rows() << " " << POG.cols()  << endl;// << POG << endl;
@@ -171,16 +207,16 @@ VectorXd Robot_agent::compute_intercept(const Object& obj)
 
 	if(best_prob > 0.1)
 	{
-		X_targ = best_pos;
+		X_targ = best_pos.block(0,0,3,1);
 	}
 
 	return X_targ;
 }
 
-void Robot_agent::set_idle_target()
+void Robot_agent::set_idle()
 {
-	X_targ.resize(6); X_targ.setZero();
-	X_targ.block(0,0,3,1) = X_base + Vector3d(-0.5,0,0.6);
+	X_targ.resize(3); X_targ.setZero();
+	X_targ = X_idle;
 }
 
 void Robot_agent::set_base(const geometry_msgs::Pose & msg)

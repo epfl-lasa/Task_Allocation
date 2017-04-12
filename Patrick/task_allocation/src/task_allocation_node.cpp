@@ -86,34 +86,31 @@ int main(int argc, char **argv) {
 
 		Task_allocator->update_objects_value();
 		Task_allocator->predict_motion();
+		Task_allocator->update_rob_business();
 		Task_allocator->allocate();
 		Task_allocator->compute_intercepts();
-
 		Task_allocator->compute_coordination();
 
 
-
-
-/*
-		// check at what state the robots are
+/*		// check at what state the robots are
 		for(auto & rob : Robots)
 		{
 			int assign = rob.get_assignment();
-			if(assign!= -1) // if it's assigned
+			if(assign != -1) // if it's assigned
 			{
 				if(Objects[assign].get_n_grippers() == 1) // if its object is a "1 robot" object
 				{
 					double distance =(rob.get_end() - Objects[assign].get_X_O().block(0,0,3,1)).norm();
-					cout << "robot " << rob.get_id() << " is at " << distance << " of its target" << endl;
-					if( distance < 0.25) // if it reached the object
+	//				cout << "robot " << rob.get_id() << " is at " << distance << " of its target" << endl;
+					if( distance < 0.2) // if it reached the object
 					{
-						rob.set_idle_target(); // set it to idle, ie just throw away the object.
+						rob.set_idle(); // set it to idle, ie just throw away the object.
 					}
 				}
 			}
 		}
 
-*/
+//   */
 
 
 

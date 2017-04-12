@@ -798,7 +798,7 @@ void multiarm_ds::predict_the_object_position()
 
 					}
 				}
-				cout<<"Catching position likelihood "<<Object_.prob_order_of_grabbing_(index_row,index_column)<<" index_row "<<index_row<<" index_column "<<index_column<<endl;
+	//			cout<<"Catching position likelihood "<<Object_.prob_order_of_grabbing_(index_row,index_column)<<" index_row "<<index_row<<" index_column "<<index_column<<endl;
 				Object_.X_I_C_.block(0,0,3,1)=Object_.P_O_prediction_.row(index_row).transpose();
 				Object_.index_row=index_row;
 				Object_.index_column=index_column;
