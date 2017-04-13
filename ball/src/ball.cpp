@@ -10,15 +10,72 @@
  */
 #include "ball.h"
 
-
+using namespace Eigen;
 
 
 Command COM;
 /*ENUM_State State;*/
 double Postion_VO[3];
 
-
+const int n_rob = 4;
 const int n_obj = 4; // patrick.
+
+int targets[n_rob];
+
+std::vector<geometry_msgs::Pose> rob_ends;
+
+
+void chatterCallback_rob0_end(const geometry_msgs::Pose& msg);
+void chatterCallback_rob1_end(const geometry_msgs::Pose& msg);
+void chatterCallback_rob2_end(const geometry_msgs::Pose& msg);
+void chatterCallback_rob3_end(const geometry_msgs::Pose& msg);
+
+void chatterCallback_rob0_grabbed(const std_msgs::Int64& msg);
+void chatterCallback_rob1_grabbed(const std_msgs::Int64& msg);
+void chatterCallback_rob2_grabbed(const std_msgs::Int64& msg);
+void chatterCallback_rob3_grabbed(const std_msgs::Int64& msg);
+
+
+void (*cb_rob_target[n_rob])( const std_msgs::Int64& msg ) = { chatterCallback_rob0_grabbed, chatterCallback_rob1_grabbed, chatterCallback_rob2_grabbed, chatterCallback_rob3_grabbed};
+void (*cb_rob_end[n_rob])( const geometry_msgs::Pose& msg ) = { chatterCallback_rob0_end, chatterCallback_rob1_end, chatterCallback_rob2_end, chatterCallback_rob3_end};
+
+
+void chatterCallback_rob0_end(const geometry_msgs::Pose& msg)
+{
+	rob_ends[0] = msg;
+}
+
+void chatterCallback_rob1_end(const geometry_msgs::Pose& msg)
+{
+	rob_ends[1] = msg;
+}
+
+void chatterCallback_rob2_end(const geometry_msgs::Pose& msg)
+{
+	rob_ends[2] = msg;
+}
+
+void chatterCallback_rob3_end(const geometry_msgs::Pose& msg)
+{
+	rob_ends[3] = msg;
+}
+
+void chatterCallback_rob0_grabbed(const std_msgs::Int64& msg)
+{
+	targets[0] = msg.data;
+}
+void chatterCallback_rob1_grabbed(const std_msgs::Int64& msg)
+{
+	targets[1] = msg.data;
+}
+void chatterCallback_rob2_grabbed(const std_msgs::Int64& msg)
+{
+	targets[2] = msg.data;
+}
+void chatterCallback_rob3_grabbed(const std_msgs::Int64& msg)
+{
+	targets[3] = msg.data;
+}
 
 
 void chatterCallback_Command(const std_msgs::Int64& msg)
@@ -39,6 +96,8 @@ void chatterCallback_Command(const std_msgs::Int64& msg)
 		break;
 	}
 }
+
+
 double fRand(double fMin, double fMax)
 {
 	double f = (double)rand() / RAND_MAX;
@@ -49,7 +108,6 @@ double fRand(double fMin, double fMax)
 
 void chatterCallback_object(const visualization_msgs::InteractiveMarkerFeedback& msg)
 {
-
 	P_O(0)=msg.pose.position.x;
 	P_O(1)=msg.pose.position.y;
 	P_O(2)=msg.pose.position.z;
@@ -96,8 +154,14 @@ int main(int argc, char **argv) {
 	std::vector<ros::Publisher> pub_obj_vel; // pat
 	std::vector<ros::Publisher> pub_obj_acc; // pat
 
+	std::vector<ros::Subscriber> sub_rob_target;
+	std::vector<ros::Subscriber> sub_rob_end;
 
 
+	for(int i = 0; i < n_rob; i++)
+	{
+		targets[i] = -1;
+	}
 
 	chatter_pub = n.advertise<geometry_msgs::Pose>("/object/raw/position", 3);
 	chatter_pub_f = n.advertise<geometry_msgs::Pose>("/object/filtered/position", 3);
@@ -134,6 +198,22 @@ int main(int argc, char **argv) {
 		oss.clear();
 		oss << "/object/p" << i << "/acceleration";
 		pub_obj_acc.push_back(n.advertise<geometry_msgs::Pose>(oss.str(), 1));
+	}
+
+
+	for(int i = 0; i < n_rob; i++)
+	{
+		rob_ends.push_back(geometry_msgs::Pose());
+
+		oss.str("");
+		oss.clear();
+		oss << "/robotsPat/grabbed/" << i;
+		sub_rob_target.push_back(n.subscribe(oss.str(), 1, cb_rob_target[i]));
+
+		oss.str("");
+		oss.clear();
+		oss << "/robot_real/end" << i;
+		sub_rob_target.push_back(n.subscribe(oss.str(), 1, cb_rob_end[i]));
 	}
 
 
@@ -175,7 +255,6 @@ int main(int argc, char **argv) {
 	ros::Rate r(200);
 	//State=Com_Safe;
 	COM=Com_Ball_INIT;
-
 	double AA=0.1;
 	while ((ros::ok()))
 	{
@@ -307,13 +386,13 @@ int main(int argc, char **argv) {
 
 		// patrick  make our objects here... hard-coded 2 in front, big in middle, one in back
 
-		obj_pos[0] = Object;
-	//	Object_p0 = Object;
+		obj_pos[0] = Object; // the big object will not be carried by the robots
 
 
 		obj_pos[1].position.x = Object.position.x + 0.5;
 		obj_pos[1].position.y = Object.position.y + 0.2;
 		obj_pos[1].position.z = Object.position.z;
+
 
 		obj_pos[2].position.x = Object.position.x + 0.5;
 		obj_pos[2].position.y = Object.position.y - 0.2;
@@ -324,7 +403,58 @@ int main(int argc, char **argv) {
 		obj_pos[3].position.z = Object.position.z;
 
 
-		// all the same atm, but writing like this lets us change them...
+/*		for(int i = 0; i < n_rob; i++)
+		{
+			if(targets[i] != -1)
+			{
+				cout << "object " << targets[i] << " is now following robot " << i << endl;
+				obj_pos[targets[i] ].position.x = rob_ends[i].position.x;
+				obj_pos[targets[i] ].position.y = rob_ends[i].position.y;
+				obj_pos[targets[i] ].position.z = rob_ends[i].position.z;
+			}
+		}
+	/*	for(int j = 0; j < n_obj; j++)
+		{
+			for(int i = 0; i < n_rob; i++)
+			{
+				if(targets[i] == j)
+				{
+	//				Vector3d end(rob_ends[i].position.x, rob_ends[i].position.y, rob_ends[i].position.z);
+		//			Vector3d obj(obj_pos[j].position.x, obj_pos[j].position.y, obj_pos[j].position.z);
+			//		double delta = (end-obj).norm();
+				//
+					//	if(delta < 0.2)
+						//{
+							cout << "object " << j << " is now following robot " << i << endl;
+							obj_pos[j].position.x = rob_ends[i].position.x;
+							obj_pos[j].position.y = rob_ends[i].position.y;
+							obj_pos[j].position.z = rob_ends[i].position.z;
+				//		}
+
+				}
+			}
+		}
+*/
+
+/*
+		if(targets[0] != -1 || targets[1] != -1 || targets[2] != -1 || targets[3] != -1 )
+		{
+			for(int i = 0; i < n_rob; i++)
+			{
+				cout << " " << targets[i] << " ";
+			}
+			cout << endl;
+		}
+/*		for(int i = 0; i < n_rob; i++)
+		{
+			if(targets[i] != -1)
+			{
+				cout << "robot " << i << " has grabbed " << targets[i];
+			}
+		}
+
+		cout << endl;
+*/		// all the same atm, but writing like this lets us change them...
 		obj_vel[0] = Object_vel;
 		obj_vel[1] = Object_vel;
 		obj_vel[2] = Object_vel;
@@ -341,12 +471,6 @@ int main(int argc, char **argv) {
 			pub_obj_vel[i].publish(obj_vel[i]);
 			pub_obj_acc[i].publish(obj_acc[i]);
 		}
-	/*	chatter_pub_p0.publish(Object_p0);
-		chatter_pub_p1.publish(Object_p1);
-		chatter_pub_p2.publish(Object_p2);
-		chatter_pub_p3.publish(Object_p3);
-*/
-
 
 		r.sleep();
 		ros::spinOnce();

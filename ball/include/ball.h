@@ -24,7 +24,7 @@
 #include "visualization_msgs/InteractiveMarkerFeedback.h"
 #include <sstream>
 #include "sg_filter.h"
-
+#include "eigen3/Eigen/Dense"
 
 
 using namespace std;

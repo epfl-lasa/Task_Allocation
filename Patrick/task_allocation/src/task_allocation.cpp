@@ -259,7 +259,7 @@ void Task_allocation::build_coalitions()
 			}
 			for(int k = 0; k < n_objects; k++)
 			{
-				if(Objects[k]->get_assignment() == false)
+				if(Objects[k]->get_assignment() == false && Objects[k]->is_done() == false)
 					test.add_task((Objects[k]));
 			}
 			test.set_id(i*min(MAX_COALITION_SIZE, n_bots)+j);
@@ -349,10 +349,6 @@ void Task_allocation::print_obj()  const
 void Task_allocation::allocate()
 {
 	// **************** reset everything
-
-	// we are beginning, there's no active coalition, all robots are unallocated
-
-
 	clear_coalitions();
 
 	for(int i = 0; i < n_objects; i++) // the boundary should be something else.... Needed because we need to check until we have all objects allocated.
@@ -360,12 +356,6 @@ void Task_allocation::allocate()
 		// *************** build the coalitions
 	//	cout << "building coalitions" << endl;
 		build_coalitions();
-
-//		int n_coal = 0;
-//		for(auto& row: Coalitions)
-//			for(auto& coal : row)
-	//			n_coal++;
-
 
 //		cout << "done building coalitions: " << unallocated_robots.size() << " available robots, making " << n_coal << " coalitions " << endl;
 		if(unallocated_robots.size() < 1)

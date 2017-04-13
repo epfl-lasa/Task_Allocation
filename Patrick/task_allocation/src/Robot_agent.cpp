@@ -43,9 +43,12 @@ Robot_agent::Robot_agent(int Num_LPV_Com, const char *path_A_LPV, const char *pa
 
 	assignment = -1;
 
+	has_grabbed = false;
 	busy = 0;
 	X_idle = X_base + Vector3d(-0.5,0,0.6);
 	set_idle();
+
+
 	cout << "done" << endl;
 }
 
@@ -149,7 +152,15 @@ Vector3d Robot_agent::get_idle_pos() const
 	return X_idle;
 }
 
+void Robot_agent::set_grabbed(bool val)
+{
+	has_grabbed = val;
+}
 
+bool Robot_agent::get_grabbed() const
+{
+	return has_grabbed;
+}
 void Robot_agent::update_business()
 {
 //	cout << " end " << endl << X_end << endl;
@@ -157,20 +168,13 @@ void Robot_agent::update_business()
 	double delta = (X_end - X_targ).norm();
 	if(delta > 0.1)
 		busy = 1;
-	else
-		busy = 0;
-/*	else
-	{
-		if((X_idle - X_targ).norm() < 0.01) // if the target is the idle position
-			busy = 0;
-		else								// else the robot was grabbing an object, just gonna assume the target here is correct
+	else if((X_idle - X_targ).norm() < 0.01) // if the target is the idle position
 		{
-			X_targ = X_idle;
+			busy = 0;
+			has_grabbed = false;
 		}
-
-	}
-*/
 }
+
 
 int Robot_agent::is_busy() const
 {
@@ -182,7 +186,7 @@ VectorXd Robot_agent::compute_intercept(const Object& obj)
 {
 	VectorXd best_pos;
 	X_targ.resize(3); X_targ.setZero();
-	X_targ = X_base + Vector3d(0,0,0.5);
+	X_targ = X_idle;
 //	X_targ = X_base + Vector3d(0,0,0.8);
 	MatrixXd POG = obj.get_P_O_G_prediction(0);//obj.get_P_O_G_prediction(0);
 //	cout << "trying to get intercept for object " << obj.get_id() << " POG is of size " << POG.rows() << " " << POG.cols()  << endl;// << POG << endl;
@@ -211,7 +215,7 @@ VectorXd Robot_agent::compute_intercept(const Object& obj)
 	}
 	else
 	{
-		X_targ = X.block(0,0,3,1);
+		X_targ = X_end;//X.block(0,0,3,1);
 	}
 	return X_targ;
 }
@@ -227,6 +231,8 @@ void Robot_agent::set_base(const geometry_msgs::Pose & msg)
 	X_base(0) = msg.position.x;
 	X_base(1) = msg.position.y;
 	X_base(2) = msg.position.z;
+
+	X_idle = X_base + Vector3d(-0.5,0,0.6);
 }
 
 void Robot_agent::set_end(const geometry_msgs::Pose & msg)

@@ -27,6 +27,7 @@ std::vector<ros::Publisher> rob_target_pub;
 std::vector<ros::Publisher> rob_target_id_pub;
 std::vector<ros::Publisher> rob_coordination_pub;
 
+std::vector<ros::Publisher> rob_grabbed_pub;
 
 std::vector<ros::Subscriber> rob_end_sub;
 std::vector<ros::Subscriber> rob_base_sub;
@@ -34,6 +35,7 @@ std::vector<ros::Subscriber> rob_base_sub;
 std::vector<ros::Subscriber> obj_pos_sub;
 std::vector<ros::Subscriber> obj_vel_sub;
 std::vector<ros::Subscriber> obj_acc_sub;
+
 
 
 std::vector<Object> Objects;
@@ -100,13 +102,28 @@ int main(int argc, char **argv) {
 			{
 				if(Objects[assign].get_n_grippers() == 1) // if its object is a "1 robot" object
 				{
-					double distance =(rob.get_end() - Objects[assign].get_X_O().block(0,0,3,1)).norm();
+					double distance = (rob.get_end() - Objects[assign].get_X_O().block(0,0,3,1)).norm();
 	//				cout << "robot " << rob.get_id() << " is at " << distance << " of its target" << endl;
 					if( distance < 0.2) // if it reached the object
 					{
-						rob.set_idle(); // set it to idle, ie just throw away the object.
-						Objects[rob.get_assignment()].set_done();
+						cout << "robot " << rob.get_id() << " grabbed object " << Objects[assign].get_id() << endl;
+						rob.set_grabbed(true);
+
 					}
+				}
+			}
+
+
+			if(rob.get_grabbed()) // if the robot has grabbed something
+			{
+				rob.set_idle(); // keep sending it to idle position
+	//			rob.update_business();
+		//		if(!(rob.is_busy())) // if it reached its idle position, make it drop the object, mark object as done.
+				if((rob.get_idle_pos() - rob.get_end()).norm() < 0.15)
+				{
+					Objects[rob.get_assignment()].set_done();
+					rob.set_grabbed(false);
+					cout << "robot " << rob.get_id() << " released the object " << Objects[rob.get_assignment()].get_id() << endl;
 				}
 			}
 		}
@@ -118,6 +135,26 @@ int main(int argc, char **argv) {
 		// publish stuff
 		targets = Task_allocator->get_targets();
 		coordinations = Task_allocator->get_coordinations();
+
+		// publish who grabbed what.
+		for(auto & rob : Robots)
+		{
+			int assign = rob.get_assignment();
+			std_msgs::Int64 msg;
+			msg.data = -1;
+			if(assign >= 0)
+			{
+				if(Objects[assign].get_n_grippers() == 1)
+				{
+					if(rob.get_grabbed())
+						msg.data = assign;
+
+				}
+			}
+
+			rob_grabbed_pub[rob.get_id()].publish(msg);
+		}
+
 
 		// publish the desired coordinations...
 		for(int i = 0; i < coordinations.size(); i++)
@@ -134,7 +171,7 @@ int main(int argc, char **argv) {
 			msg.position.x = (targets.col(i))(0);
 			msg.position.y = (targets.col(i))(1);
 			msg.position.z = (targets.col(i))(2);
-
+			msg.orientation.w = 1;
 			rob_target_pub[i].publish(msg);
 		}
 
@@ -148,7 +185,11 @@ int main(int argc, char **argv) {
 
 
 
-
+		for(auto & obj : Objects)
+		{
+//			cout << " object " << obj.get_id() << " is done " << obj.is_done();
+		}
+	//	cout << endl;
 
 
 
@@ -190,6 +231,12 @@ void init_topics()
 
 		oss.str("");
 		oss.clear();
+		oss << "/robotsPat/grabbed/" << i;
+		rob_grabbed_pub.push_back(n->advertise<std_msgs::Int64>(oss.str(), 1));
+
+
+		oss.str("");
+		oss.clear();
 		oss << "/robotsPat/coordination/" << i;
 		rob_coordination_pub.push_back(n->advertise<std_msgs::Float64>(oss.str(), 1));
 
@@ -208,6 +255,8 @@ void init_topics()
 		oss.clear();
 		oss << "/robot_real/end/" << i;
 		rob_end_sub.push_back(n->subscribe(oss.str(), 1, &Robot_agent::set_end, &(Robots[i])));
+
+
 	}
 
 

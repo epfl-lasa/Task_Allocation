@@ -45,7 +45,7 @@ public:
 
 	void set_state(VectorXd X);
 	void set_assignment(int);
-
+	void set_grabbed(bool);
 
 	int		is_busy() const;
 	bool get_state_set() const;
@@ -58,6 +58,7 @@ public:
 	VectorXd get_intercept() const;
 	Vector3d get_end() const;
 	Vector3d get_idle_pos() const;
+	bool	get_grabbed() const;
 
 	friend std::ostream& operator <<(std::ostream& stream, const Robot_agent& o);
 private:
@@ -72,7 +73,7 @@ private:
 	VectorXd	X_targ;				// target of the robot
 
 
-
+	bool		has_grabbed;
 	int			busy; // is the robot busy?
 	int 		id;
 	int 		n_grippers; // number of grippers on this robot, typically 1
