@@ -120,11 +120,6 @@ private :
 	void						prepare_jacobian(int index);
 
 
-/*
-	void						prepare_task_allocator();
-	void						add_robots_task_allocator();
-	void 						add_objects_task_allocator();
-*/
 	bool						flag_init[2];
 	bool						flag_job;
 	bool						Position_of_the_robot_recieved[N_robots];

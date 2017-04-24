@@ -260,7 +260,7 @@ double Object::update_value()
 
 	if(n_grabbing_pos > 1)
 	{
-		value *=2.2;
+		value *= 2.1;
 	}
 	if(X_O(0) > 1) // too late to catch
 	{

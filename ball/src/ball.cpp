@@ -20,7 +20,7 @@ double Postion_VO[3];
 const int n_rob = 4;
 const int n_obj = 4; // patrick.
 
-int targets[n_rob];
+int grabbed[n_rob];
 
 std::vector<geometry_msgs::Pose> rob_ends;
 
@@ -36,7 +36,7 @@ void chatterCallback_rob2_grabbed(const std_msgs::Int64& msg);
 void chatterCallback_rob3_grabbed(const std_msgs::Int64& msg);
 
 
-void (*cb_rob_target[n_rob])( const std_msgs::Int64& msg ) = { chatterCallback_rob0_grabbed, chatterCallback_rob1_grabbed, chatterCallback_rob2_grabbed, chatterCallback_rob3_grabbed};
+void (*cb_rob_grabbed[n_rob])( const std_msgs::Int64& msg ) = { chatterCallback_rob0_grabbed, chatterCallback_rob1_grabbed, chatterCallback_rob2_grabbed, chatterCallback_rob3_grabbed};
 void (*cb_rob_end[n_rob])( const geometry_msgs::Pose& msg ) = { chatterCallback_rob0_end, chatterCallback_rob1_end, chatterCallback_rob2_end, chatterCallback_rob3_end};
 
 
@@ -62,19 +62,19 @@ void chatterCallback_rob3_end(const geometry_msgs::Pose& msg)
 
 void chatterCallback_rob0_grabbed(const std_msgs::Int64& msg)
 {
-	targets[0] = msg.data;
+	grabbed[0] = msg.data;
 }
 void chatterCallback_rob1_grabbed(const std_msgs::Int64& msg)
 {
-	targets[1] = msg.data;
+	grabbed[1] = msg.data;
 }
 void chatterCallback_rob2_grabbed(const std_msgs::Int64& msg)
 {
-	targets[2] = msg.data;
+	grabbed[2] = msg.data;
 }
 void chatterCallback_rob3_grabbed(const std_msgs::Int64& msg)
 {
-	targets[3] = msg.data;
+	grabbed[3] = msg.data;
 }
 
 
@@ -154,13 +154,13 @@ int main(int argc, char **argv) {
 	std::vector<ros::Publisher> pub_obj_vel; // pat
 	std::vector<ros::Publisher> pub_obj_acc; // pat
 
-	std::vector<ros::Subscriber> sub_rob_target;
+	std::vector<ros::Subscriber> sub_rob_grab;
 	std::vector<ros::Subscriber> sub_rob_end;
 
 
 	for(int i = 0; i < n_rob; i++)
 	{
-		targets[i] = -1;
+		grabbed[i] = -1;
 	}
 
 	chatter_pub = n.advertise<geometry_msgs::Pose>("/object/raw/position", 3);
@@ -208,12 +208,12 @@ int main(int argc, char **argv) {
 		oss.str("");
 		oss.clear();
 		oss << "/robotsPat/grabbed/" << i;
-		sub_rob_target.push_back(n.subscribe(oss.str(), 1, cb_rob_target[i]));
+		sub_rob_grab.push_back(n.subscribe(oss.str(), 1, cb_rob_grabbed[i]));
 
 		oss.str("");
 		oss.clear();
-		oss << "/robot_real/end" << i;
-		sub_rob_target.push_back(n.subscribe(oss.str(), 1, cb_rob_end[i]));
+		oss << "/robot_real/end/" << i;
+		sub_rob_end.push_back(n.subscribe(oss.str(), 1, cb_rob_end[i]));
 	}
 
 
@@ -413,28 +413,6 @@ int main(int argc, char **argv) {
 				obj_pos[targets[i] ].position.z = rob_ends[i].position.z;
 			}
 		}
-	/*	for(int j = 0; j < n_obj; j++)
-		{
-			for(int i = 0; i < n_rob; i++)
-			{
-				if(targets[i] == j)
-				{
-	//				Vector3d end(rob_ends[i].position.x, rob_ends[i].position.y, rob_ends[i].position.z);
-		//			Vector3d obj(obj_pos[j].position.x, obj_pos[j].position.y, obj_pos[j].position.z);
-			//		double delta = (end-obj).norm();
-				//
-					//	if(delta < 0.2)
-						//{
-							cout << "object " << j << " is now following robot " << i << endl;
-							obj_pos[j].position.x = rob_ends[i].position.x;
-							obj_pos[j].position.y = rob_ends[i].position.y;
-							obj_pos[j].position.z = rob_ends[i].position.z;
-				//		}
-
-				}
-			}
-		}
-*/
 
 /*
 		if(targets[0] != -1 || targets[1] != -1 || targets[2] != -1 || targets[3] != -1 )
@@ -444,17 +422,20 @@ int main(int argc, char **argv) {
 				cout << " " << targets[i] << " ";
 			}
 			cout << endl;
-		}
-/*		for(int i = 0; i < n_rob; i++)
+		}*/
+		for(int i = 0; i < n_rob; i++)
 		{
-			if(targets[i] != -1)
+			if(grabbed[i] != -1)
 			{
-				cout << "robot " << i << " has grabbed " << targets[i];
+				ROS_INFO("robot %d had grabbed object %d", i, grabbed[i]);
+				obj_pos[grabbed[i]].position.x = rob_ends[i].position.x;
+				obj_pos[grabbed[i]].position.y = rob_ends[i].position.y;
+				obj_pos[grabbed[i]].position.z = rob_ends[i].position.z;
 			}
 		}
 
-		cout << endl;
-*/		// all the same atm, but writing like this lets us change them...
+
+		// all the same atm, but writing like this lets us change them... */
 		obj_vel[0] = Object_vel;
 		obj_vel[1] = Object_vel;
 		obj_vel[2] = Object_vel;

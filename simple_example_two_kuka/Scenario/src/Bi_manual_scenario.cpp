@@ -381,10 +381,10 @@ void Bi_manual_scenario::Topic_initialization()
 	pub_base3 = n->advertise<geometry_msgs::Pose>("/robot/base/3", 3);
 	geometry_msgs::Pose msg;
 	msg.position.x = 1;
-	msg.position.y = 0;
+	msg.position.y = -1.25;
 	msg.position.z = 0;
 	pub_base2.publish(msg);
-	msg.position.y = -1.25;
+	msg.position.y = 0;
 	pub_base3.publish(msg);
 }
 
@@ -971,15 +971,7 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 
 		Motion_G->Update();
 
-		// patrick to override part of the update.
-/*		for(int i = 0; i < N_robots; i)
-		{
-			VectorXd handle;handle.resize(6); handle.setZero();
-			Motion_G->Set_coordination(i, coordinations[i]); // added patrick
-			Motion_G->Set_the_robot_first_primitive_desired_position(i,Pfirst_primitive[i],handle); // added patrick
-	//		cout << "set robot " << i << " coord to " << coordinations[i] << " and target " << endl << Pfirst_primitive[i] << endl;
-		}
-*/
+
 		for(int i=0;i<N_robots;i++)
 		{
 			Motion_G->Get_the_coordination_allocation(i,msg_coordination.data);
@@ -1140,86 +1132,6 @@ int Bi_manual_scenario::RespondToConsoleCommand(const string cmd, const vector<s
 }
 
 
-/*
-// patrick below
-void Bi_manual_scenario::prepare_task_allocator()
-{
-	double dt = 0.030; // seconds
-	double max_time = 2; // seconds
-	int n_state = 6;
-
-	Task_allocator = new Task_allocation(max_time, dt, n_state);
-
-	// adding object(s)
-	add_objects_task_allocator();
-
-	//adding robot(s)
-
-	add_robots_task_allocator();
-
-
-	Task_allocator->clear_coalitions();
-}
-
-
-void Bi_manual_scenario::add_objects_task_allocator()
-{
-	cout << "adding objects" << endl;
-	VectorXd X_O_G[N_grabbing];
-	for(int i = 0; i < N_grabbing; i++)
-	{
-		X_O_G[i] = Object_Grabbing_State[i] - Object_State_raw;
-	}
-
-
-	double weight = 3.14;
-	double value = 15;
-	VectorXd single_grab[1];
-	single_grab[0].resize(Object_State_raw.size()); single_grab[0].setZero();
-
-	Object task0(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), Object_Grabbing_State, 2, weight, value, 0);
-	Object task1(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value, 1);
-	Object task2(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value, 2);
-	Object task3(Object_State_raw.size(),Object_State_raw,DObject_State, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value, 3);
-
-
-	Task_allocator->add_task(task0);
-	Task_allocator->add_task(task1);
-	Task_allocator->add_task(task2);
-	Task_allocator->add_task(task3);
-
-}
-
-
-void Bi_manual_scenario::add_robots_task_allocator()
-{
-
-	cout << "adding robots" << endl;
-	double force = 5;
-	int grippers = 1;
-
-	for(int i = 0; i < 2; i++)
-	{
-
-		Vector3d base;
-		base(0) = X[i];
-		base(1) = Y[i];
-		base(2) = Z[i];
-		Robot_agent Bot(1,addTwochar(Commom_path,"/A_Matrix").c_str(), addTwochar(Commom_path,"/Priors").c_str(),
-						addTwochar(Commom_path,"/Mu").c_str(), addTwochar(Commom_path,"/Sigma").c_str(),
-						6, 3, addTwochar(Commom_path,"/IIWA_workspace_Model_prior").c_str(),
-						addTwochar(Commom_path,"/IIWA_workspace_Model_mu").c_str(),
-						addTwochar(Commom_path,"/IIWA_workspace_Model_Sigma").c_str(),
-						addTwochar(Commom_path,"/IIWA_workspace_Model_Threshold").c_str(), base, i, grippers, force);
-
-		Task_allocator->add_robot(Bot);
-
-	//	cout << "robot " << i << " base " << base << endl;
-	}
-	//Task_allocator->print_bases();
-}
-
-// end patrick */
 extern "C"{
 // These two "C" functions manage the creation and destruction of the class
 Bi_manual_scenario* create(){return new Bi_manual_scenario();}
