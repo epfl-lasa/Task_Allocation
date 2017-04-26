@@ -35,6 +35,8 @@ std::vector<ros::Subscriber> rob_base_sub;
 std::vector<ros::Subscriber> obj_pos_sub;
 std::vector<ros::Subscriber> obj_vel_sub;
 std::vector<ros::Subscriber> obj_acc_sub;
+std::vector<ros::Publisher> obj_done_pub;
+
 
 
 
@@ -183,21 +185,13 @@ int main(int argc, char **argv) {
 		}
 
 
-
-
-		for(auto & obj : Objects)
+		for(int i = 0; i < N_OBJECTS; i++)
 		{
-//			cout << " object " << obj.get_id() << " is done " << obj.is_done();
+			std_msgs::Int64 msg;
+			msg.data = Objects[i].is_done();
+			obj_done_pub[i].publish(msg);
+
 		}
-	//	cout << endl;
-
-
-
-
-
-
-
-
 
 
 
@@ -277,6 +271,11 @@ void init_topics()
 		oss.clear();
 		oss << "/object/p" << i << "/acceleration";
 		obj_acc_sub.push_back(n->subscribe(oss.str(), 1, &Object::set_accel, &(Objects[i])));
+
+		oss.str("");
+		oss.clear();
+		oss << "/object/p" << i << "/done";
+		obj_done_pub.push_back(n->advertise<std_msgs::Int64>(oss.str(), 1));
 	}
 }
 

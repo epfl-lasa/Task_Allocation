@@ -24,10 +24,53 @@ ros::Publisher marker_filter_pub;
 
 
 const int n_bots = 4;
+int obj_done[4];
 int rob_id[n_bots];
 visualization_msgs::Marker marker_rob[n_bots];
 ros::Publisher marker_rob_pub[n_bots];
 double B_t_U=0.0;
+
+
+void cb_done_0(const std_msgs::Int64 & msg)
+{
+	obj_done[0] = msg.data;
+	if(obj_done[0])
+	{
+		marker.action = visualization_msgs::Marker::DELETE;
+		marker_pub.publish(marker);
+	}
+}
+
+void cb_done_1(const std_msgs::Int64 & msg)
+{
+	obj_done[1] = msg.data;
+	if(obj_done[1])
+	{
+		marker_p1.action = visualization_msgs::Marker::DELETE;
+		marker_p1_pub.publish(marker_p1);
+	}
+}
+
+void cb_done_2(const std_msgs::Int64 & msg)
+{
+	obj_done[2] = msg.data;
+	if(obj_done[2])
+	{
+		marker_p2.action = visualization_msgs::Marker::DELETE;
+		marker_p2_pub.publish(marker_p2);
+	}
+}
+
+void cb_done_3(const std_msgs::Int64 & msg)
+{
+	obj_done[3] = msg.data;
+	if(obj_done[3])
+	{
+		marker_p3.action = visualization_msgs::Marker::DELETE;
+		marker_p3_pub.publish(marker_p3);
+	}
+}
+
 
 void chatterCallback_object(const geometry_msgs::Pose & msg)
 {
@@ -323,6 +366,11 @@ int main( int argc, char** argv )
 	ros::Subscriber	sub_object_p1 = n.subscribe("/object/p1/position", 1, chatterCallback_object_P1);
 	ros::Subscriber	sub_object_p2 = n.subscribe("/object/p2/position", 1, chatterCallback_object_P2);
 	ros::Subscriber	sub_object_p3 = n.subscribe("/object/p3/position", 1, chatterCallback_object_P3);
+
+	ros::Subscriber sub_obj_done_0 = n.subscribe("/object/p0/done", 1, cb_done_0);
+	ros::Subscriber sub_obj_done_1 = n.subscribe("/object/p1/done", 1, cb_done_1);
+	ros::Subscriber sub_obj_done_2 = n.subscribe("/object/p2/done", 1, cb_done_2);
+	ros::Subscriber sub_obj_done_3 = n.subscribe("/object/p3/done", 1, cb_done_3);
 
 
 	// Set our initial shape type to be a cube

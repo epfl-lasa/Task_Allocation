@@ -436,15 +436,23 @@ int main(int argc, char **argv) {
 
 
 		// all the same atm, but writing like this lets us change them... */
+//		for(auto& vel : obj_vel)
+//			obj_vel = Object_vel;
+
 		obj_vel[0] = Object_vel;
 		obj_vel[1] = Object_vel;
 		obj_vel[2] = Object_vel;
 		obj_vel[3] = Object_vel;
 
+//		for(auto& acc : obj_acc)
+	//		acc = Object_acc;
+
 		obj_acc[0] = Object_acc;
 		obj_acc[1] = Object_acc;
 		obj_acc[2] = Object_acc;
 		obj_acc[3] = Object_acc;
+
+
 
 		for(int i = 0; i < n_obj; i++)
 		{
