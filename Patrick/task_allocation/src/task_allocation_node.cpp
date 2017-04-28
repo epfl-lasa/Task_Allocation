@@ -106,7 +106,7 @@ int main(int argc, char **argv) {
 				{
 					double distance = (rob.get_end() - Objects[assign].get_X_O().block(0,0,3,1)).norm();
 	//				cout << "robot " << rob.get_id() << " is at " << distance << " of its target" << endl;
-					if( distance < 0.2) // if it reached the object
+					if( distance < 0.3) // if it reached the object
 					{
 						cout << "robot " << rob.get_id() << " grabbed object " << Objects[assign].get_id() << endl;
 						rob.set_grabbed(true);
@@ -121,7 +121,7 @@ int main(int argc, char **argv) {
 				rob.set_idle(); // keep sending it to idle position
 	//			rob.update_business();
 		//		if(!(rob.is_busy())) // if it reached its idle position, make it drop the object, mark object as done.
-				if((rob.get_idle_pos() - rob.get_end()).norm() < 0.15)
+				if((rob.get_idle_pos() - rob.get_end()).norm() < 0.3)
 				{
 					Objects[rob.get_assignment()].set_done();
 					rob.set_grabbed(false);
