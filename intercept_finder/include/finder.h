@@ -135,7 +135,7 @@ void reset_the_bool()
 	cout<<"reset all the bools"<<endl;
 	for (int i=0;i<2*N_robots;i++)
 	{
-		Position_of_the_robot_recieved[i]=false;
+		Position_of_the_robot_recieved[i]=false; // this might segfault pat
 	}
 	for (int i=0;i<N_grabbing+2;i++)
 	{

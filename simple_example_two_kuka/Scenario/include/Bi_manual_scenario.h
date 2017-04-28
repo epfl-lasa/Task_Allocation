@@ -40,9 +40,9 @@ double IK_ORIENTATIONCONTROLSTART=0.01;
 double Gain_velocity_limit=500; //50 on the real robot
 double Gain=50;
 SGF::real sample_time = 0.002;
-double X[2];
-double Y[2];
-double Z[2];
+double X[4];
+double Y[4];
+double Z[4];
 enum ENUM_AXIS{AXIS_X=0, AXIS_Y, AXIS_Z};
 enum ENUM_PLANNER{PLANNER_CARTESIAN=0, PLANNER_JOINT,PLANNER_NONE};
 
@@ -83,8 +83,10 @@ private :
 	void						chatterCallback_rob1_coordination(const std_msgs::Float64 & msg);
 
 
-	void 						chatterCallback_left_position(const sensor_msgs::JointState & msg);
-	void 						chatterCallback_right_position(const sensor_msgs::JointState & msg);
+	void 						chatterCallback_first_position(const sensor_msgs::JointState & msg);
+	void 						chatterCallback_second_position(const sensor_msgs::JointState & msg);
+	void 						chatterCallback_third_position(const sensor_msgs::JointState & msg);
+	void 						chatterCallback_fourth_position(const sensor_msgs::JointState & msg);
 	void						chatterCallback_ObjectPosition(const geometry_msgs::Pose & msg);
 	void						chatterCallback_ObjectPosition_raw(const geometry_msgs::Pose & msg);
 	void						chatterCallback_ObjectVelocity(const geometry_msgs::Pose & msg);

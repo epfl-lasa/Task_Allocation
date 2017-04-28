@@ -312,7 +312,7 @@ void multiarm_ds::Set_the_initial_robot_state(int index,Vector3d X)
 	 * 								*/
 
 	Robots_[index].X_Initial_pose_=X;
-	cout<<"The  initial position of "<<index<<"th robot is:"<<endl<<Robots_[index].X_Initial_pose_<<endl;
+	cout<<"The initial position of "<<index<<"th robot is:"<<endl<<Robots_[index].X_Initial_pose_<<endl;
 }
 
 

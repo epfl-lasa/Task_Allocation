@@ -39,3 +39,42 @@ second_arm_vel:
     second_arm_4_joint: *pid_gains
     second_arm_5_joint: *pid_gains
     second_arm_6_joint: *pid_gains
+
+third_arm_vel:
+  type: "iai_robot_mechanism_controllers/MultiJointVelocityImpedanceController"
+  joints:
+    - third_arm_0_joint
+    - third_arm_1_joint
+    - third_arm_2_joint
+    - third_arm_3_joint
+    - third_arm_4_joint
+    - third_arm_5_joint
+    - third_arm_6_joint
+  gains:
+    third_arm_0_joint: *pid_gains
+    third_arm_1_joint: *pid_gains
+    third_arm_2_joint: *pid_gains
+    third_arm_3_joint: *pid_gains
+    third_arm_4_joint: *pid_gains
+    third_arm_5_joint: *pid_gains
+    third_arm_6_joint: *pid_gains
+
+fourth_arm_vel:
+  type: "iai_robot_mechanism_controllers/MultiJointVelocityImpedanceController"
+  joints:
+    - fourth_arm_0_joint
+    - fourth_arm_1_joint
+    - fourth_arm_2_joint
+    - fourth_arm_3_joint
+    - fourth_arm_4_joint
+    - fourth_arm_5_joint
+    - fourth_arm_6_joint
+  gains:
+    fourth_arm_0_joint: *pid_gains
+    fourth_arm_1_joint: *pid_gains
+    fourth_arm_2_joint: *pid_gains
+    fourth_arm_3_joint: *pid_gains
+    fourth_arm_4_joint: *pid_gains
+    fourth_arm_5_joint: *pid_gains
+    fourth_arm_6_joint: *pid_gains
+

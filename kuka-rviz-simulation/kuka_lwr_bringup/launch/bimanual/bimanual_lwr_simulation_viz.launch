@@ -1,9 +1,10 @@
 <?xml version="1.0" ?>
 <launch>
-  
+
   <!-- Set Robot model/rviz configuration path-->
   <arg name="urdf-name"                   default="kuka_bimanual_lwr_lasa.urdf.xacro"/>
   <arg name="load-rviz"                   default="true"/>
+  <arg name="urdf-path" 	  	          default="$(find kuka_lwr_description)/robots/$(arg urdf-name)"/>
   <arg name="rviz-config-path"            default="$(find kuka_lwr_bringup)/rviz-config/bimanual-rviz-config.rviz"/>
 
   <!-- some global variables -->
@@ -11,11 +12,11 @@
   <param name="/use_sim_time" value="false"/>
 
   <!-- load up urdf to the parameter server -->
-  <include file="$(find kuka_lwr_bringup)/launch/upload_bimanual_lwr.launch">
+  <include file="$(find kuka_lwr_bringup)/launch/bimanual/upload_bimanual_lwr.launch">
     <!-- Override Argument to desired robot model -->
     <arg name="urdf-name"                   value="$(arg urdf-name)"/>
     <arg name="load-rviz"                   value="$(arg load-rviz)"/>
-    <arg name="rviz-config-path"            value="$(arg rviz-config-path)"/>  
+    <arg name="rqt-config-path"            value="$(arg rviz-config-path)"/>  
   </include>
   
   <!-- start loopback controller manager -->
@@ -31,11 +32,10 @@
    
   <node name="loopback_controllers" type="loopback_controller_manager" pkg="loopback_controller_manager" output="screen">
       <!-- for perfect sim: chose p=m/dt with damping=0 -->
-      <param name="dt" value="0.002" /> <!-- in [s], default: 0.01 -->
+      <param name="dt" value="0.001" /> <!-- in [s], default: 0.01 -->
       <param name="damping" value="0.0" /> <!-- default: 0.1 -->
       <param name="mass" value="0.01" /> <!-- default: 0.1 -->
   </node>
-  
 
   <!-- IAI Velocity Controllers -->
   <include file="$(find kuka_lwr_bringup)/launch/controllers/bimanual_lwr_sim_vel_controllers.launch"/>
@@ -44,6 +44,8 @@
   <include file="$(find kuka_lwr_bringup)/launch/controllers/bimanual_lwr_sim_pos_controllers.launch"/>
 
   <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="log" />
+
+
   
   <!-- Upload Kinect-Robot Base Calibrated Transform -->
   <include file="$(find kuka_lwr_bringup)/launch/calibration/upload_frames4calibration.launch"/>

@@ -16,7 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   svm_grad
   hand_commands
   motion_generators
-  #task_allocation
+  task_allocation
 )
 include(CheckCXXCompilerFlag)
 set(CMAKE_CXX_FLAGS "-std=c++11")

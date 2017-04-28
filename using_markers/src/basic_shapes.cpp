@@ -514,7 +514,7 @@ int main( int argc, char** argv )
 	marker_rob[0].id = 6;
 	marker_rob[0].type = visualization_msgs::Marker::SPHERE;
 	marker_rob[0].pose.position.x = 0;
-	marker_rob[0].pose.position.y = -1.25;
+	marker_rob[0].pose.position.y = -0;
 	marker_rob[0].pose.position.z = -0.25;
 	marker_rob[0].pose.orientation.x = 0.0;
 	marker_rob[0].pose.orientation.y = 0.0;
@@ -535,7 +535,7 @@ int main( int argc, char** argv )
 	marker_rob[1].id = 7;
 	marker_rob[1].type = visualization_msgs::Marker::SPHERE;
 	marker_rob[1].pose.position.x = 0;
-	marker_rob[1].pose.position.y = -0;
+	marker_rob[1].pose.position.y = -1.25;
 	marker_rob[1].pose.position.z = -0.25;
 	marker_rob[1].pose.orientation.x = 0.0;
 	marker_rob[1].pose.orientation.y = 0.0;
@@ -555,8 +555,8 @@ int main( int argc, char** argv )
 	marker_rob[2].ns = "basic_shapes";
 	marker_rob[2].id = 8;
 	marker_rob[2].type = visualization_msgs::Marker::SPHERE;
-	marker_rob[2].pose.position.x = 1;
-	marker_rob[2].pose.position.y = -1.25;
+	marker_rob[2].pose.position.x = 2;
+	marker_rob[2].pose.position.y = -0;
 	marker_rob[2].pose.position.z = -0.25;
 	marker_rob[2].pose.orientation.x = 0.0;
 	marker_rob[2].pose.orientation.y = 0.0;
@@ -577,8 +577,8 @@ int main( int argc, char** argv )
 	marker_rob[3].ns = "basic_shapes";
 	marker_rob[3].id = 9;
 	marker_rob[3].type = visualization_msgs::Marker::SPHERE;
-	marker_rob[3].pose.position.x = 1;
-	marker_rob[3].pose.position.y = -0;
+	marker_rob[3].pose.position.x = 2;
+	marker_rob[3].pose.position.y = -1.25;
 	marker_rob[3].pose.position.z = -0.25;
 	marker_rob[3].pose.orientation.x = 0.0;
 	marker_rob[3].pose.orientation.y = 0.0;

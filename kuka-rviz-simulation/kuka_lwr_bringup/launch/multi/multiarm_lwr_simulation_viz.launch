@@ -2,7 +2,7 @@
 <launch>
 
   <!-- Set Robot model/rviz configuration path-->
-  <arg name="urdf-name"                   default="kuka_bimanual_lwr_lasa_collision_test.urdf.xacro"/>
+  <arg name="urdf-name"                   default="kuka_multiarm_lwr_lasa.urdf.xacro"/>
   <arg name="load-rviz"                   default="true"/>
   <arg name="urdf-path" 	  	          default="$(find kuka_lwr_description)/robots/$(arg urdf-name)"/>
   <arg name="rviz-config-path"            default="$(find kuka_lwr_bringup)/rviz-config/bimanual-rviz-config.rviz"/>
@@ -12,7 +12,7 @@
   <param name="/use_sim_time" value="false"/>
 
   <!-- load up urdf to the parameter server -->
-  <include file="$(find kuka_lwr_bringup)/launch/upload_bimanual_lwr.launch">
+  <include file="$(find kuka_lwr_bringup)/launch/multi/upload_multiarm_lwr.launch">
     <!-- Override Argument to desired robot model -->
     <arg name="urdf-name"                   value="$(arg urdf-name)"/>
     <arg name="load-rviz"                   value="$(arg load-rviz)"/>
@@ -25,7 +25,7 @@
   <!-- conditionally upload start configuration of PR2 to parameter server -->
   <group if="$(arg default-starting-config)">
     <rosparam command="load"
-      file="$(find kuka_lwr_bringup)/config/bimanual_lwr_start_config.yaml"
+      file="$(find kuka_lwr_bringup)/config/multiarm_lwr_start_config.yaml"
        ns="loopback_controllers"/> 
    </group>
    
@@ -38,10 +38,10 @@
   </node>
 
   <!-- IAI Velocity Controllers -->
-  <include file="$(find kuka_lwr_bringup)/launch/controllers/bimanual_lwr_sim_vel_controllers.launch"/>
+  <include file="$(find kuka_lwr_bringup)/launch/controllers/multiarm_lwr_sim_vel_controllers.launch"/>
   
   <!-- IAI Position Controllers -->
-  <include file="$(find kuka_lwr_bringup)/launch/controllers/bimanual_lwr_sim_pos_controllers.launch"/>
+  <include file="$(find kuka_lwr_bringup)/launch/controllers/multiarm_lwr_sim_pos_controllers.launch"/>
 
   <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="log" />
 
