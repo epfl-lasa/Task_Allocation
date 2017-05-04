@@ -22,7 +22,7 @@ using namespace Eigen;
 
 
 bool						Position_of_the_object_recieved[N_grabbing+2];
-bool 						Position_of_the_robot_recieved[2*N_grabbing];
+bool 						Position_of_the_robot_recieved[2*N_robots];
 
 ros::Subscriber 			sub_position_object_raw;
 ros::Subscriber 			sub_position_object;
@@ -50,7 +50,7 @@ MatrixXd					predicted_object[N_grabbing];
 
 std::thread* 				the_thread;
 multiarm_ds					*Motion_G;
-ros::Publisher 				pub_pos_prediction[N_robots];
+ros::Publisher 				pub_pos_prediction[N_grabbing];
 
 ros::Publisher 				pub_pos_catching;
 std_msgs::Float64MultiArray	msg_float;
@@ -58,15 +58,15 @@ std_msgs::Float64MultiArray	msg_float;
 ENUM_COMMAND 				mCommand;
 
 
-double X_end[2];
-double Y_end[2];
-double Z_end[2];
+double X_end[N_robots];
+double Y_end[N_robots];
+double Z_end[N_robots];
 
 
 
-double X_base[2];
-double Y_base[2];
-double Z_base[2];
+double X_base[N_robots];
+double Y_base[N_robots];
+double Z_base[N_robots];
 
 
 
@@ -135,7 +135,7 @@ void reset_the_bool()
 	cout<<"reset all the bools"<<endl;
 	for (int i=0;i<2*N_robots;i++)
 	{
-		Position_of_the_robot_recieved[i]=false; // this might segfault pat
+        Position_of_the_robot_recieved[i]=false;
 	}
 	for (int i=0;i<N_grabbing+2;i++)
 	{

@@ -70,17 +70,22 @@ int main(int argc, char **argv) {
 
 	cout << "done initializing task allocation" << endl;
 
+	cout << "allocating " << N_ROBOTS << " robots to " << N_OBJECTS << " objects" << endl;
 	cout << "waiting for simulator start" << endl;
 	// while we haven't received everything, wait.. This is not very orthodox
 	while(start != 0) // 0 is the value we get from the "init" in the "job init catch" sequence
 	{
 		if(ros::ok())
 		{
-			sleep(1);
 			ros::spinOnce();
 		}
 	}
 
+    for(auto & rob : Robots)
+    {
+
+        cout << rob << endl;
+    }
 	cout << "starting allocating in a loop" << endl;
 
 	// loop...

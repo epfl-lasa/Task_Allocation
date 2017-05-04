@@ -80,7 +80,7 @@ protected :
 	void 						Parameter_initialization();
 	void						initKinematics(int index);
 	void 						initKinematics();
-	void						prepare_sovlve_IK(int index);
+	void						prepare_solve_IK(int index);
 	void						reset_the_bool();
 	bool						everythingisreceived();
 	void						pubish_on_tf(Vector3d  X,Quaterniond  Q,std::string n);

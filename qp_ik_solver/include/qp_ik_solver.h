@@ -82,7 +82,7 @@ enum Solver_level{Velocity_level=0,Acceleration_level};
 enum Solver_type{Numerical=0,Dynamical};
 enum Solver_Numerical{Nlopt,CVXgen1,CVXgen2};
 
-int Max_N_robot=3;
+int Max_N_robot=4;
 
 bool save_the_performace=true;
 

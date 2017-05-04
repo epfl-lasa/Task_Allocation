@@ -452,8 +452,8 @@ void multiarm_ds::Set_the_grabbing_state(int index,VectorXd X_G,VectorXd X_O)
 }
 void multiarm_ds::Set_pos_of_grabbing_posititon_for_object_(bool catching_pos_is_found,double likelihood, Vector3d X_I_C)
 {
-	The_catching_pos_is_found=catching_pos_is_found;
-	Object_.Max_liklihood=likelihood;
+    The_catching_pos_is_found=true;
+    Object_.Max_liklihood=0.5;
 	Object_.X_I_C_.block(0,0,3,1)=X_I_C;
 
 	//	cout<<"Object_.Max_liklihood "<<Object_.Max_liklihood<<endl;
@@ -632,6 +632,8 @@ void multiarm_ds::calculate_coordination_parameter()
 		Vobject_.Dgamma_=0;
 	}
 
+    Vobject_.gamma_ = 1;
+    Vobject_.Dgamma_ = 0;
 
 	//	cout<<"Vobject_.gamma "<<Vobject_.gamma_<<" "<<Vobject_.Dgamma_<<endl;
 
@@ -693,10 +695,11 @@ void multiarm_ds::predict_the_object_position()
 {
 	if ((Object_.predict_->mReadyToPredict)&&(Object_.X_O_(0)<4*minPos[0]))
 	{
+        cout<<"inside big if "<<endl;
 		int nFrame =0;
 		nFrame = Object_.predict_->PredictNextPosVel(Object_.MAX_PREDICTIONTIME_,dt_, Object_.P_O_prediction_,true,0,maxPos[0]);
 		//	cout<<"frame "<<nFrame<<" a "<<Object_.P_O_prediction_.cols()<<" "<<Object_.P_O_prediction_.rows()<<endl;
-		//	cout<<"frame "<<nFrame<<endl;
+        cout<<"Start "<<endl;
 
 		if 	(nFrame==-1)
 		{
@@ -707,6 +710,7 @@ void multiarm_ds::predict_the_object_position()
 		}
 		else
 		{
+            cout<<"inside else "<<endl;
 			for (int i=0;i<Object_.N_grabbing_pos_;i++)
 			{
 				for (int j=0;j<nFrame;j++)
@@ -727,16 +731,28 @@ void multiarm_ds::predict_the_object_position()
 				//				cout<<"Robots_[i].Probability_of_catching "<<i<<endl<<Robots_[i].Probability_of_catching_<<endl;
 			}
 
+            cout<<"after for loops "<<endl;
 			Object_.prob_order_of_grabbing_.resize(nFrame,Object_.order_of_grabbing_.rows());Object_.prob_order_of_grabbing_.setOnes();
 			int pointer_robot=-1;
 			for (int i=0;i<Object_.order_of_grabbing_.rows();i++)
 			{
 				for (int j=0;j<Object_.order_of_grabbing_.cols();j++)
 				{
+                    ROS_INFO_STREAM("begin of loop i " << i << " j " << j );
+                    ROS_INFO_STREAM("Object_order_of_grabbing" << endl << Object_.order_of_grabbing_);
 					pointer_robot=Object_.order_of_grabbing_(i,j);
-					Object_.prob_order_of_grabbing_.col(i)=Object_.prob_order_of_grabbing_.col(i).cwiseProduct(Robots_[pointer_robot].Probability_of_catching_.col(j));
+
+                    ROS_INFO_STREAM("pointer robot " << pointer_robot);
+
+                    ROS_INFO_STREAM("size of prob order cols " << Object_.prob_order_of_grabbing_.cols() << " and will access column " << i);// << " " << Object_.prob_order_of_grabbing_.cols());
+                    ROS_INFO_STREAM("size of prob order rows " << Object_.prob_order_of_grabbing_.rows());
+                    ROS_INFO_STREAM("probab of catching cols " <<  Robots_[pointer_robot].Probability_of_catching_.cols() << " and will access column " << j);
+                    ROS_INFO_STREAM("probab of catching rows " <<  Robots_[pointer_robot].Probability_of_catching_.rows());
+
+                    Object_.prob_order_of_grabbing_.col(i)=Object_.prob_order_of_grabbing_.col(i).cwiseProduct(Robots_[pointer_robot].Probability_of_catching_.col(j));
 				}
 			}
+            cout<<"after pointer robot shit "<<endl;
 
 			//	cout<<"Object_.prob_order_of_grabbing "<<endl<<Object_.prob_order_of_grabbing_<<endl;
 			int index_row=0;
@@ -752,6 +768,9 @@ void multiarm_ds::predict_the_object_position()
 			{
 				Robots_[i].index_of_grabbing_posititon_=-2;
 			}
+
+
+
 			if (Object_.Max_liklihood>0.00001)
 			{
 				for (int i=0;i<Object_.N_grabbing_pos_;i++)
@@ -807,12 +826,15 @@ void multiarm_ds::predict_the_object_position()
 			{
 				Object_.Max_liklihood=-1;
 			}
+
+            cout<<"after big if max_likelihood "<<endl;
 		}
 
 	}
 	else if ( ((Object_.X_O_(0)>2*minPos[0]) &&  (Object_.X_O_(0)<maxPos[0] ) ) &&
 			( (Object_.X_O_(2)>minPos[2] ) &&  (Object_.X_O_(2)<maxPos[2] ) ))
 	{
+        cout<<"inside big else if "<<endl;
 		Object_.Max_liklihood=10;
 		int handle=0;
 		for (int i=0;i<Object_.N_grabbing_pos_;i++)

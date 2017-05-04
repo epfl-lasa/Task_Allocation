@@ -222,7 +222,7 @@ void test::initKinematics(int index)
 	}
 	//	Jacobian_R[index].Jacobian_Full.resize(3,28);Jacobian_R[index].Jacobian_Full.setZero();
 }
-void test::prepare_sovlve_IK(int index)
+void test::prepare_solve_IK(int index)
 {
 
 	prepare_jacobian(index);
@@ -440,7 +440,7 @@ RobotInterface::Status test::RobotUpdateCore(){
 		for(int i=0;i<N_robots;i++)
 		{
 
-			prepare_sovlve_IK(i);
+			prepare_solve_IK(i);
 			IK_Solver->set_jacobian_links(i,Jacobian_R[i]);
 			IK_Solver->set_jacobian(i,Jacobian9[i]);
 			Desired_Velocity[i].block(0,0,3,1)=(Desired_Pos_End[i]-RPos_End[i])/dt;

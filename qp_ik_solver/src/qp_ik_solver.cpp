@@ -78,6 +78,9 @@ void qp_ik_solver::Initialize(int N_robots,double dt,Solver_type type,Solver_lev
 	if (save_the_performace){	myfile.open ("IK_solver_performace_Dynamical.txt");}
 	considerCollision = false;
 
+
+    restart_the_robots(); // pat
+
 }
 
 
@@ -157,6 +160,7 @@ void qp_ik_solver::Initialize_robot(int index,int N_links,int N_constraints,Matr
 		cout<<"index "<<index<<" Max robot Number "<<N_robots_-1<<endl;
 		ERROR();
 	}
+    cout << "init robot " << index << " N links " << N_links << " constraints " << N_constraints << endl;
 
 	Robots_[index].index=index;
 	Robots_[index].N_links=N_links;
@@ -214,6 +218,7 @@ void qp_ik_solver::Finalize_Initialization()
 	/*	Initializing the variable of the main solver
 	 * 	 												*/
 	int Dimension_q=0;
+ //   cout << "finalize initialization " << N_robots_ << endl;
 	for (int i=0;i<N_robots_;i++)
 	{
 		Dimension_q=Dimension_q+Robots_[i].N_links;
@@ -223,6 +228,7 @@ void qp_ik_solver::Finalize_Initialization()
 	{
 		Dimension_constraint=Dimension_constraint+Robots_[i].N_constraints;
 	}
+  //  cout << "dimension q " << Dimension_q << "dimension constraint " << Dimension_constraint << endl;
 	Dimension_constraint_=Dimension_constraint;
 	Dimension_q_=Dimension_q;
 	W_.resize(Dimension_q_,Dimension_q_);															W_.setZero();
@@ -283,12 +289,19 @@ void qp_ik_solver::Finalize_Initialization()
 	outp.resize(Dimension_q_);
 	cout<<"Dimension_constraint "<<Dimension_constraint_<<endl;
 	cout<<"Dimension q "<<Dimension_q_<<endl;
+
+
+	for(int i = 0; i < N_robots_; i++)
+	{
+		Print_Robot(Robots_[i]);
+	}
 }
 void qp_ik_solver::set_jacobian(int index,MatrixXd Jacobian)
 {
 	/* Setting the current jacobian
 	 * 								*/
 
+ //   cout << "setting jacobian " << index << "jacobian is set " << Robots_[index].jacobian_is_set << endl;
 	if ((Robots_[index].Jacobian.cols()!=Jacobian.cols())||(Robots_[index].Jacobian.rows()!=Jacobian.rows()))
 	{
 		cout<<"Jacobian of "<<index<<"th robot is wrong."<<endl;
@@ -477,14 +490,20 @@ void qp_ik_solver::Solve()
 	{
 		int counter_N=0;
 		int counter_q=0;
+  //      cout << "beginning numerical solve" << endl;
 		for (int i=0;i<N_robots_;i++)
 		{
+    //        cout << "CE_QP size " << CE_QP_.rows() << " " << CE_QP_.cols() << endl;
+   //         cout << "counter N " << counter_N << " counter_q " << counter_q << endl;
+   //         cout << "Robots_ " << i << " N_constraints " << Robots_[i].N_constraints << " N_links " <<  Robots_[i].N_links << endl;
+   //         cout << "Robots_ " << i << " jacobian size " << Robots_[i].Jacobian.rows() << " " << Robots_[i].Jacobian.cols() << endl;
+   //         cout << "ce0_QP_ size " << ce0_QP_.rows() << " " << ce0_QP_.cols() << endl;
 			CE_QP_.block(counter_N,counter_q,Robots_[i].N_constraints,Robots_[i].N_links)=Robots_[i].Jacobian;
 			ce0_QP_.block(counter_N,0,Robots_[i].N_constraints,1)=Robots_[i].Desired_end;
 			counter_q=counter_q+Robots_[i].N_links;
 			counter_N=counter_N+Robots_[i].N_constraints;
 		}
-
+  //      cout << "added robots to whatever matrices" << endl;
 		if (Solver_N_Type==Nlopt)
 		{
 			t1 = clock();
@@ -534,7 +553,7 @@ void qp_ik_solver::Solve()
 				ERROR();*/
 		else if (Solver_N_Type==CVXgen1)
 		{
-
+  //          cout << "begin solving CVXgen" << endl;
 			t1 = clock();
 			load_default_data();
 			settings.verbose =0;
@@ -557,6 +576,7 @@ void qp_ik_solver::Solve()
 			}
 			myfile<<" "<<endl;
 		}
+ //       cout << "done solving " << endl;
 		//printf ("It took me %d clicks (%f seconds).\n",duration,((float)duration)/CLOCKS_PER_SEC);
 		restart_the_robots();
 	}

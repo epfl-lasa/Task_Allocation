@@ -29,8 +29,8 @@ std::string Common_path  = "/home/patrick/lasa-project/catkin_ws/src/IJRR/simple
 // Path to SVM Collision Model
 std::string svm_filename = "/home/patrick/lasa-project/catkin_ws/src/IJRR/SVMGrad/SVMGrad/matlab/models/FenderwHands/36D-29k-Optimal-Model-FenderwHands.txt";
 
-const int N_robots=4;	//You need to do some changes if you want to put it 1!
-const int N_grabbing=2; //You need to do some changes if you want to put it 1!
+const int N_robots   = 4;	//You need to do some changes if you want to put it 1!
+const int N_grabbing = 2; //You need to do some changes if you want to put it 1!
 
 enum ENUM_COMMAND{COMMAND_INITIAL=0,COMMAND_JOB,COMMAND_Grab,COMMAND_NONE};
 double dt=0.002;

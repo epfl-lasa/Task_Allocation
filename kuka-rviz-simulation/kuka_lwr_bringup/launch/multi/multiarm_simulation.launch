@@ -12,7 +12,7 @@
   
   <!-- node pkg="object_recognition" type="data_listener.py" name="a" /-->
 
-  <node pkg="intercept_finder" type="intercept_finder_node" name="intercept_finder_node" />
+  <node pkg="intercept_finder" type="intercept_finder_node" name="intercept_finder_node" output="screen"/>
 
 
   <!-- Load LASA to IAI joint state parser -->

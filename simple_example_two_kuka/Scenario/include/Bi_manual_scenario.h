@@ -112,7 +112,7 @@ private :
 	void 						Parameter_initialization();
 	void						initKinematics(int index);
 	void 						initKinematics();
-	void						prepare_sovlve_IK(int index);
+	void						prepare_solve_IK(int index);
 	void 						prepare_motion_generator(int index);
 	void 						sendCommand(int _command);
 	void						reset_the_bool();
@@ -283,8 +283,6 @@ private :
 	std::vector<ros::Subscriber> sub_pat_coordination;
 
 	std::vector<double> 		coordinations;
-	ros::Publisher				pub_base2;
-	ros::Publisher				pub_base3;
 };
 
 

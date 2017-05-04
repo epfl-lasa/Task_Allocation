@@ -103,6 +103,14 @@ void chatterCallback_Command(const std_msgs::Int64& msg)
 		Motion_G= new multiarm_ds();
 		Motion_G->Initialize_motion_predication_only(N_robots,N_grabbing,50*dt,6);
 		reset_the_bool();
+
+        Position_of_the_robot_recieved[4] = true;
+        Position_of_the_robot_recieved[5] = true;
+        Position_of_the_robot_recieved[6] = true;
+        Position_of_the_robot_recieved[7] = true;
+
+
+
 		while ((ros::ok())&&(!everythingisreceived()))
 		{
 			//cout<<"waiting for data"<<endl;
@@ -160,6 +168,25 @@ void chatterCallback_Command(const std_msgs::Int64& msg)
 
 int main(int argc, char **argv) {
 
+    X_base[2] = 2;
+    Y_base[2] = 0;
+    Z_base[2] = 0;
+    X_base[3] = 2;
+    Y_base[3] = -1.25;
+    Z_base[3] = 0;
+
+
+    X_end[2] = 1.5;
+    Y_end[2] = 0;
+    Z_end[2] = 0.3;
+    X_end[3] = 1.5;
+    Y_end[3] = -1.25;
+    Z_end[3] = 0.3;
+
+    Position_of_the_robot_recieved[4] = true;
+    Position_of_the_robot_recieved[5] = true;
+    Position_of_the_robot_recieved[6] = true;
+    Position_of_the_robot_recieved[7] = true;
 	// Communication service with robot module
 
 	mCommand=COMMAND_NONE;
@@ -192,7 +219,7 @@ int main(int argc, char **argv) {
 
 	//the_thread = new std::thread(Thread_prediction);
 
-	ros::Rate r(100);
+    ros::Rate r(200);
 	initial_time=ros::Time::now().toSec();
 	while (ros::ok())
 	{
@@ -205,27 +232,32 @@ int main(int argc, char **argv) {
 			Motion_G= new multiarm_ds();
 			break;
 		case COMMAND_Grab:
-			Motion_G->Set_the_object_state_for_prediction(P_object_filtered,P_object_filtered,ros::Time::now().toSec()-initial_time);
 
-			Motion_G->Set_the_object_state_for_prediction(P_object_raw,P_object_raw,ros::Time::now().toSec()-initial_time);
-			if (Motion_G->Get_prediction_state())
+    //		Motion_G->Set_the_object_state_for_prediction(P_object_filtered,P_object_filtered,ros::Time::now().toSec()-initial_time);
+
+    //		Motion_G->Set_the_object_state_for_prediction(P_object_raw,P_object_raw,ros::Time::now().toSec()-initial_time);
+        //	if (Motion_G->Get_prediction_state())
 			{
-				Motion_G->predict_the_object_position();
+    //            ROS_INFO_STREAM("In prediction if..");
+        //		Motion_G->predict_the_object_position();
 
 
 				for (int i=0; i<N_grabbing;i++)
 				{
-					Motion_G->Get_predict_the_object_position(i,predicted_object[i]);
-					pubish_on_point_cloud(i,predicted_object[i]);
+       //             ROS_INFO_STREAM("In N_grabbing for..");
+            //        Motion_G->Get_predict_the_object_position(i,predicted_object[i]);
+            //		pubish_on_point_cloud(i,predicted_object[i]);
 				}
 				for(int i=0;i<N_robots;i++)
 				{
-					Motion_G->Get_index_of_grabbing_posititon_(i,index_of_grabbing[i],Intercept_point_State[i]);
-					pubish_on_tf(Intercept_point_State[i].block(0,0,3,1),O_object_raw,addTwostring("Desired","intercept_point",i));
+     //               ROS_INFO_STREAM("In N_robots for..");
+            //		Motion_G->Get_index_of_grabbing_posititon_(i,index_of_grabbing[i],Intercept_point_State[i]);
+            //		pubish_on_tf(Intercept_point_State[i].block(0,0,3,1),O_object_raw,addTwostring("Desired","intercept_point",i));
 				}
-				if (Motion_G->Get_catching_state())
+    //			if (Motion_G->Get_catching_state())
 				{
-					bool state=Motion_G->Get_pos_of_grabbing_posititon_for_object_(likelihood, X_I_C);
+      //              ROS_INFO_STREAM("In get_catching_state if..");
+                //	bool state=Motion_G->Get_pos_of_grabbing_posititon_for_object_(likelihood, X_I_C);
 					int index_of_grabbing=-2;
 					msg_float.data.resize(1+1+3+1+1+3+1+1+3);
 					// 0 indicates the catching state
@@ -237,7 +269,7 @@ int main(int argc, char **argv) {
 					// 10 indicates index of the robot
 					// 11 indicates index of the grabbing position for the 1 st robot
 					// 12-13-14 indicates index of the catching position
-					msg_float.data[0]=state;
+    /*				msg_float.data[0]=state;
 					msg_float.data[1]=likelihood;
 					msg_float.data[2]=X_I_C(0);	msg_float.data[3]=X_I_C(1);	msg_float.data[4]=X_I_C(2);
 					index_of_grabbing=-2;
@@ -248,7 +280,29 @@ int main(int argc, char **argv) {
 
 					Motion_G->Get_index_of_grabbing_posititon_(1,index_of_grabbing,X_I_C);
 					msg_float.data[10]=1; msg_float.data[11]=index_of_grabbing;
-					msg_float.data[12]=X_I_C(0);	msg_float.data[13]=X_I_C(1);	msg_float.data[14]=X_I_C(2);					
+                    msg_float.data[12]=X_I_C(0);	msg_float.data[13]=X_I_C(1);	msg_float.data[14]=X_I_C(2);
+
+*/
+
+                    msg_float.data[0] = 0; // catching state?
+                    msg_float.data[1] = 0.5; // likelihood
+                    msg_float.data[2] = 1; // X
+                    msg_float.data[3] = -0.6; // Y
+                    msg_float.data[4] = 0.4; // Z
+                    msg_float.data[5] = 0;
+                    msg_float.data[6] = 0;
+                    msg_float.data[7] = 1; // X
+                    msg_float.data[8] = -0.6; // Y
+                    msg_float.data[9] = 0.4; // Z
+                    msg_float.data[10] = 1;
+                    msg_float.data[11] = 1;
+                    msg_float.data[12] = 1;
+                    msg_float.data[13] = -0.6;
+                    msg_float.data[14] = 0.4;
+
+
+
+
 					pub_pos_catching.publish(msg_float);
 /*					for (int i=0;i<1+1+3+1+1+3+1+1+3;i++)
 					{
