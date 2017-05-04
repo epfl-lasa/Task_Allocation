@@ -26,7 +26,7 @@ Command COM;
 ros::Subscriber sub_command;
 ros::Subscriber sub_handJoint;
 ros::Subscriber sub_G_On_object[2];
-ros::Subscriber sub_traget_of_robots[2];
+ros::Subscriber sub_target_of_robots[N_robots]; // was 2
 ros::Subscriber sub_allocation_robots;
 ros::Subscriber sub_end_pos[2];
 ros::Subscriber sub_c_target;
@@ -67,7 +67,7 @@ bool Position_of_the_object_recieved[2];
 bool Position_of_the_end_recieved[2];
 double time_initial;
 
-MathLib::Vector	Pfirst_primitive[2];
+MathLib::Vector	Pfirst_primitive[N_robots]; // was 2, switched to N_robots
 
 int Target_selector[2];
 

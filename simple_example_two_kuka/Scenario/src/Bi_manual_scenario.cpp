@@ -42,7 +42,7 @@ void Bi_manual_scenario::chatterCallback_sub_target_object0(const geometry_msgs:
 	T_G_On_object[0].z()=msg.orientation.z;
 	T_G_On_object[0].w()=msg.orientation.w;
 	Ofirst_primitive[0]=T_G_On_object[1].toRotationMatrix();
-
+//	cout << "received primitive for robot 0 " << endl << Pfirst_primitive[0] << endl;
 }
 void Bi_manual_scenario::chatterCallback_sub_target_object1(const geometry_msgs::Pose & msg)
 {
@@ -54,6 +54,33 @@ void Bi_manual_scenario::chatterCallback_sub_target_object1(const geometry_msgs:
 	T_G_On_object[1].z()=msg.orientation.z;
 	T_G_On_object[1].w()=msg.orientation.w;
 	Ofirst_primitive[1]=T_G_On_object[0].toRotationMatrix();
+//	cout << "received primitive for robot 1 " << endl << Pfirst_primitive[1] << endl;
+}
+
+void Bi_manual_scenario::chatterCallback_sub_target_object2(const geometry_msgs::Pose & msg)
+{
+	Pfirst_primitive[2](0)=msg.position.x;
+	Pfirst_primitive[2](1)=msg.position.y;
+	Pfirst_primitive[2](2)=msg.position.z;
+//	T_G_On_object[2].x()=msg.orientation.x;
+//	T_G_On_object[2].y()=msg.orientation.y;
+//	T_G_On_object[2].z()=msg.orientation.z;
+//	T_G_On_object[2].w()=msg.orientation.w;
+	Ofirst_primitive[2]=T_G_On_object[0].toRotationMatrix();
+	cout << "received primitive for robot 2 " << endl << Pfirst_primitive[2] << endl;
+}
+
+void Bi_manual_scenario::chatterCallback_sub_target_object3(const geometry_msgs::Pose & msg)
+{
+	Pfirst_primitive[3](0)=msg.position.x;
+	Pfirst_primitive[3](1)=msg.position.y;
+	Pfirst_primitive[3](2)=msg.position.z;
+//	T_G_On_object[3].x()=msg.orientation.x;
+//	T_G_On_object[3].y()=msg.orientation.y;
+//	T_G_On_object[3].z()=msg.orientation.z;
+//	T_G_On_object[3].w()=msg.orientation.w;
+	Ofirst_primitive[3]=T_G_On_object[0].toRotationMatrix();
+//	cout << "received primitive for robot 3 " << endl << Pfirst_primitive[3] << endl;
 }
 
 void Bi_manual_scenario::chatterCallback_catching_state(const std_msgs::Float64MultiArray & msg)
@@ -117,35 +144,15 @@ void Bi_manual_scenario::chatterCallback_rob1_coordination(const std_msgs::Float
 	coordinations[1] = msg.data;
 }
 
-
-
-
-/*
-void Bi_manual_scenario::chatterCallback_rob_target_0(const geometry_msgs::Pose & msg)
+void Bi_manual_scenario::chatterCallback_rob2_coordination(const std_msgs::Float64 & msg)
 {
-
+	coordinations[2] = msg.data;
 }
 
-
-void Bi_manual_scenario::chatterCallback_rob_target_1(const geometry_msgs::Pose & msg)
+void Bi_manual_scenario::chatterCallback_rob3_coordination(const std_msgs::Float64 & msg)
 {
-
+	coordinations[3] = msg.data;
 }
-
-
-void Bi_manual_scenario::chatterCallback_rob_target_2(const geometry_msgs::Pose & msg)
-{
-
-}
-
-
-void Bi_manual_scenario::chatterCallback_rob_target_3(const geometry_msgs::Pose & msg)
-{
-
-}
-*/
-
-
 
 
 void Bi_manual_scenario::sendCommand(int _command)
@@ -308,7 +315,8 @@ void Bi_manual_scenario::Send_Postion_To_Robot(int index,VectorXd Position)
 	}
 	pub_command_robot_gazebo[index].publish(msg_gazebo);
 
-
+	if( index == 2)
+			cout << "sent robot " << index << " to position " << endl << Position << endl;
 
 }
 void Bi_manual_scenario::Topic_initialization()
@@ -325,10 +333,18 @@ void Bi_manual_scenario::Topic_initialization()
 	}
 	else
 	{
-		sub_position_robot[0] = n->subscribe("/first_arm_pos_controller/joint_states", 3, & Bi_manual_scenario::chatterCallback_first_position,this);
-		sub_position_robot[1]  = n->subscribe("/second_arm_pos_controller/joint_states", 3, & Bi_manual_scenario::chatterCallback_second_position,this);
-		sub_position_robot[2] = n->subscribe("/third_arm_pos_controller/joint_states", 3, & Bi_manual_scenario::chatterCallback_third_position,this);
-		sub_position_robot[3]  = n->subscribe("/fourth_arm_pos_controller/joint_states", 3, & Bi_manual_scenario::chatterCallback_fourth_position,this);
+		for(int i = 0; i < N_robots; i++)
+		{
+			// this is an incredibly moronic way of doing it, but the names are retarded and cant be automated..........
+			if(i == 0)
+				sub_position_robot[i] = n->subscribe("/first_arm_pos_controller/joint_states", 3, & Bi_manual_scenario::chatterCallback_first_position,this);
+			else if(i == 1)
+				sub_position_robot[i]  = n->subscribe("/second_arm_pos_controller/joint_states", 3, & Bi_manual_scenario::chatterCallback_second_position,this);
+			else if(i == 2)
+				sub_position_robot[i] = n->subscribe("/third_arm_pos_controller/joint_states", 3, & Bi_manual_scenario::chatterCallback_third_position,this);
+			else if(i == 3)
+				sub_position_robot[i]  = n->subscribe("/fourth_arm_pos_controller/joint_states", 3, & Bi_manual_scenario::chatterCallback_fourth_position,this);
+		}
 	}
 
 
@@ -347,8 +363,11 @@ void Bi_manual_scenario::Topic_initialization()
 	// pat commented thse out and made the 2 below instead.
 //	sub_traget_of_robots[0]=n->subscribe("/object/KUKA7_target/position", 3, & Bi_manual_scenario::chatterCallback_sub_target_object0,this);
 //	sub_traget_of_robots[1]=n->subscribe("/object/KUKA14_target/position", 3, & Bi_manual_scenario::chatterCallback_sub_target_object1,this);
-	sub_traget_of_robots[0]=n->subscribe("/robotsPat/target/0", 3, & Bi_manual_scenario::chatterCallback_sub_target_object0,this);
-	sub_traget_of_robots[1]=n->subscribe("/robotsPat/target/1", 3, & Bi_manual_scenario::chatterCallback_sub_target_object1,this);
+	// cant put these on a for loop because of the function pointer...
+	sub_target_of_robots[0]=n->subscribe("/robotsPat/target/0", 3, & Bi_manual_scenario::chatterCallback_sub_target_object0,this);
+	sub_target_of_robots[1]=n->subscribe("/robotsPat/target/1", 3, & Bi_manual_scenario::chatterCallback_sub_target_object1,this);
+	sub_target_of_robots[2]=n->subscribe("/robotsPat/target/2", 3, & Bi_manual_scenario::chatterCallback_sub_target_object2,this);
+	sub_target_of_robots[3]=n->subscribe("/robotsPat/target/3", 3, & Bi_manual_scenario::chatterCallback_sub_target_object3,this);
 
 
 	for(int i = 0; i < N_robots; i++)
@@ -372,6 +391,7 @@ void Bi_manual_scenario::Topic_initialization()
 		oss << "/coordination/allocation/" << i;
 		pub_allocation_robot[i] = n->advertise<std_msgs::Float64>(oss.str(), 3);
 
+
 	/*	oss.str("");
 		oss.clear();
 		oss << "/coordination/allocation/" << i;
@@ -379,17 +399,32 @@ void Bi_manual_scenario::Topic_initialization()
 */
 	}
 
-	pub_command_robot[0] = n->advertise<kuka_fri_bridge::JointStateImpedance>("/first_arm_controller/joint_imp_cmd", 3);
-	pub_command_robot[1] = n->advertise<kuka_fri_bridge::JointStateImpedance>("/second_arm_controller/joint_imp_cmd", 3);
-	pub_command_robot[2] = n->advertise<kuka_fri_bridge::JointStateImpedance>("/third_arm_controller/joint_imp_cmd", 3);
-	pub_command_robot[3] = n->advertise<kuka_fri_bridge::JointStateImpedance>("/fourth_arm_controller/joint_imp_cmd", 3);
+	for(int i = 0; i < N_robots; i++)
+	{
+		if(i == 0)
+			pub_command_robot[i] = n->advertise<kuka_fri_bridge::JointStateImpedance>("/first_arm_controller/joint_imp_cmd", 3);
+		else if(i == 1)
+			pub_command_robot[i] = n->advertise<kuka_fri_bridge::JointStateImpedance>("/second_arm_controller/joint_imp_cmd", 3);
+		else if(i == 2)
+			pub_command_robot[i] = n->advertise<kuka_fri_bridge::JointStateImpedance>("/third_arm_controller/joint_imp_cmd", 3);
+		else if(i == 3)
+			pub_command_robot[i] = n->advertise<kuka_fri_bridge::JointStateImpedance>("/fourth_arm_controller/joint_imp_cmd", 3);
+	}
+
 
 	/*	if (True_robot)
 	{*/
-	pub_command_robot_real[0] =  n->advertise<kuka_fri_bridge::JointStateImpedance>("/first_arm_controller/joint_imp_cmd", 3);
-	pub_command_robot_real[1] =  n->advertise<kuka_fri_bridge::JointStateImpedance>("/second_arm_controller/joint_imp_cmd", 3);
-	pub_command_robot_real[2] =  n->advertise<kuka_fri_bridge::JointStateImpedance>("/third_arm_controller/joint_imp_cmd", 3);
-	pub_command_robot_real[3] =  n->advertise<kuka_fri_bridge::JointStateImpedance>("/fourth_arm_controller/joint_imp_cmd", 3);
+	for(int i = 0; i < N_robots; i++)
+	{
+		if(i == 0)
+			pub_command_robot_real[i] =  n->advertise<kuka_fri_bridge::JointStateImpedance>("/first_arm_controller/joint_imp_cmd", 3);
+		else if(i == 1)
+			pub_command_robot_real[i] =  n->advertise<kuka_fri_bridge::JointStateImpedance>("/second_arm_controller/joint_imp_cmd", 3);
+		else if(i == 2)
+			pub_command_robot_real[i] =  n->advertise<kuka_fri_bridge::JointStateImpedance>("/third_arm_controller/joint_imp_cmd", 3);
+		else if(i == 3)
+			pub_command_robot_real[i] =  n->advertise<kuka_fri_bridge::JointStateImpedance>("/fourth_arm_controller/joint_imp_cmd", 3);
+	}
 	//	}
 
 
@@ -406,10 +441,21 @@ void Bi_manual_scenario::Topic_initialization()
 	pub_allocation_robot[1] = n->advertise<std_msgs::Float64>("/coordination/allocation/1", 3);*/
 	pub_coordination_parameter= n->advertise<std_msgs::Float64>("/coordination/parameter", 3);
 
-	pub_command_robot_gazebo[0] = n->advertise<std_msgs::Float64MultiArray>("/KUKA/Left/in", 3);
-	pub_command_robot_gazebo[1] = n->advertise<std_msgs::Float64MultiArray>("/KUKA/Right/in", 3);
-	pub_command_robot_gazebo[2] = n->advertise<std_msgs::Float64MultiArray>("/KUKA/Right/in", 3);
-	pub_command_robot_gazebo[3] = n->advertise<std_msgs::Float64MultiArray>("/KUKA/Right/in", 3);
+	for(int i = 0; i < N_robots; i++)
+	{
+		if(i == 0)
+			pub_command_robot_gazebo[i] = n->advertise<std_msgs::Float64MultiArray>("/KUKA/Left/in", 3);
+		else if(i == 1)
+			pub_command_robot_gazebo[i] = n->advertise<std_msgs::Float64MultiArray>("/KUKA/Right/in", 3);
+		else if(i == 2)
+			pub_command_robot_gazebo[i] = n->advertise<std_msgs::Float64MultiArray>("/KUKA/backLeft/in", 3);
+		else if(i == 3)
+			pub_command_robot_gazebo[i] = n->advertise<std_msgs::Float64MultiArray>("/KUKA/backRight/in", 3);
+	}
+
+
+
+
 
 
 	sub_handState = n->subscribe("/Hand_state", 3, & Bi_manual_scenario::chatterCallback_hand_state,this);
@@ -427,8 +473,11 @@ void Bi_manual_scenario::Topic_initialization()
 
 	// patrick stuff
 	sub_pat_coordination.clear();
+
 	sub_pat_coordination.push_back(n->subscribe("/robotsPat/coordination/0", 3, &Bi_manual_scenario::chatterCallback_rob0_coordination, this));
 	sub_pat_coordination.push_back(n->subscribe("/robotsPat/coordination/1", 3, &Bi_manual_scenario::chatterCallback_rob1_coordination, this));
+	sub_pat_coordination.push_back(n->subscribe("/robotsPat/coordination/2", 3, &Bi_manual_scenario::chatterCallback_rob2_coordination, this));
+	sub_pat_coordination.push_back(n->subscribe("/robotsPat/coordination/3", 3, &Bi_manual_scenario::chatterCallback_rob3_coordination, this));
 
 }
 
@@ -515,8 +564,10 @@ void Bi_manual_scenario::Parameter_initialization()
 	//IK_Solver->Initialize(N_robots,dt,Numerical,Velocity_level,true);
 
 	// Initialize IK Solver with Self-Collision Avoidance
-	IK_Solver->Initialize(N_robots,dt,Numerical,Velocity_level, true, svm_filename);
+	IK_Solver->Initialize(N_robots,dt,Numerical,Velocity_level, true);//, svm_filename); // 2 was first N_robots
 
+	IK_Solver_pat = new qp_ik_solver();
+	IK_Solver_pat->Initialize(2,dt,Numerical,Velocity_level, true);
 
 	cout<<"IK_Solver->Initialize is done"<<endl;
 	Motion_G= new multiarm_ds();
@@ -638,8 +689,10 @@ void Bi_manual_scenario::initKinematics(int index)
 	}
 
 
-	IK_Solver->Initialize_robot(index,KUKA_DOF,IK_CONSTRAINTS,W,U_p,-U_p,U_Dp,-U_Dp);
-
+//	if(index == 0 || index == 1)
+		IK_Solver->Initialize_robot(index,KUKA_DOF,IK_CONSTRAINTS,W,U_p,-U_p,U_Dp,-U_Dp);
+//	else if(index == 2 || index == 3)
+//		IK_Solver_pat->Initialize_robot(index-2,KUKA_DOF,IK_CONSTRAINTS,W,U_p,-U_p,U_Dp,-U_Dp);
 	// variable for ik
 	Jacobian3[index].resize(3,KUKA_DOF);
 	lJacobianDirY[index].resize(3,KUKA_DOF);
@@ -855,6 +908,8 @@ Bi_manual_scenario::Bi_manual_scenario()
 :RobotInterface(){
 	coordinations.push_back(0);
 	coordinations.push_back(0);
+	coordinations.push_back(0);
+	coordinations.push_back(0);
 }
 Bi_manual_scenario::~Bi_manual_scenario(){
 }
@@ -877,7 +932,8 @@ RobotInterface::Status Bi_manual_scenario::RobotInit(){
 	counter_Savinging=0;
 
 	IK_Solver->Finalize_Initialization();
-
+//	if(N_robots > 1)
+//		IK_Solver_pat->Finalize_Initialization();
 	mPlanner=PLANNER_NONE;
 	mCommand=COMMAND_NONE;
 
@@ -906,12 +962,8 @@ RobotInterface::Status Bi_manual_scenario::RobotStart(){
 	for (int i=0;i<N_robots;i++)
 	{
 		Desired_JointPos[i]=JointPos[i];
+		cout << "JointPos " << i << endl << JointPos[i] << endl;
 	}
-	cout<<"JointPos 0"<<endl;cout<<JointPos[0]<<endl;
-	cout<<"JointPos 1"<<endl;cout<<JointPos[1]<<endl;
-	cout<<"JointPos 2"<<endl;cout<<JointPos[2]<<endl;
-	cout<<"JointPos 3"<<endl;cout<<JointPos[3]<<endl;
-
 	Topic_initialization();
 
 
@@ -938,6 +990,8 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdate(){
 			}
 			cout<<"initKinematics is done"<<endl;
 			IK_Solver->Finalize_Initialization();
+//			if(N_robots > 1)
+//				IK_Solver_pat->Finalize_Initialization();
 			cout<<"Finalize_Initialization is done"<<endl;
 			ros::spinOnce();
 			flag_init[0]=true;
@@ -1040,12 +1094,14 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 				Motion_G->Set_coordination(i, coordinations[i]); // added patrick
 				Motion_G->Set_the_robot_first_primitive_desired_position(i,Pfirst_primitive[i],handle);
 
+
 				//	cout<<"Pfirst_primitive[i] "<<i<<endl<<Pfirst_primitive[i]<<endl;
 			}
 
 
 			Motion_G->Set_coordination(i, coordinations[i]); // added patrick
 			Motion_G->Set_the_robot_first_primitive_desired_position(i,Pfirst_primitive[i],handle); // added patrick
+//			cout << "robot " << i << " coordination " << coordinations[i] << " primitive " << endl << Pfirst_primitive[i] << endl;
 //			cout << "set robot " << i << " coord to " << coordinations[i] << " and target " << endl << Pfirst_primitive[i] << endl;
 			// For open loop
 			//	Motion_G->Set_the_robot_state(i,Desired_End_State[i]);
@@ -1138,8 +1194,16 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 			{
 
 				prepare_sovlve_IK(i);
-				IK_Solver->set_jacobian_links(i,Jacobian_R[i]);
-				IK_Solver->set_jacobian(i,Jacobian9[i]);
+//				if(i == 0 || i == 1)
+				{
+					IK_Solver->set_jacobian_links(i,Jacobian_R[i]);
+					IK_Solver->set_jacobian(i,Jacobian9[i]);
+				}
+//				else if(i == 2 || i == 3)
+//				{
+//					IK_Solver_pat->set_jacobian_links(i-2,Jacobian_R[i]);
+//					IK_Solver_pat->set_jacobian(i-2,Jacobian9[i]);
+//				}
 				Desired_Velocity[i].block(0,0,3,1)=(Desired_End_State[i].block(0,0,3,1)-RPos_End[i])/dt;
 				/*				cout<<"(Desired_End_State[i].block(0,0,3,1)-RPos_End[i])/dt "<<((Desired_End_State[i].block(0,0,3,1)-RPos_End[i])/dt).norm()<<endl;
 				cout<<"(Desired_DirY[i]-lDirY[i])/(10*dt) "<<((Desired_DirY[i]-lDirY[i])/(10*dt)).norm()<<endl;
@@ -1149,12 +1213,22 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 					c*/
 				Desired_Velocity[i].block(3,0,3,1)=(Desired_DirY[i]-lDirY[i])/(10*dt);
 				Desired_Velocity[i].block(6,0,3,1)=(Desired_DirZ[i]-lDirZ[i])/(10*dt);
-				IK_Solver->set_desired(i,Desired_Velocity[i]);
-				IK_Solver->set_state(i,JointPos[i],JointVel[i]);
+//				if(i == 0 || i == 1)
+				{
+					IK_Solver->set_desired(i,Desired_Velocity[i]);
+					IK_Solver->set_state(i,JointPos[i],JointVel[i]);
+				}
+//				else if(i == 2 || i == 3)
+//				{
+//					IK_Solver_pat->set_desired(i-2,Desired_Velocity[i]);
+//					IK_Solver_pat->set_state(i-2,JointPos[i],JointVel[i]);
+//				}
 			}
 
 
 			IK_Solver->Solve();
+//			if(N_robots > 1)
+//				IK_Solver_pat->Solve();
 			//	IK_Solver->Solve_QP();
 
 			// Publishing Gamma to Visualize on RQT_PLOT FOR SELF-COLLISION AVOIDANCE
@@ -1164,7 +1238,10 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 			for(int i=0;i<N_robots;i++)
 			{
 				Desired_JointPos[i]=JointPos[i];
-				IK_Solver->get_state(i,JointDesVel[i]);
+//				if(i < 2)
+					IK_Solver->get_state(i,JointDesVel[i]);
+//				else
+//					IK_Solver_pat->get_state(i-2, JointDesVel[i]);
 				Desired_JointPos[i]=Desired_JointPos[i]+JointDesVel[i]*dt;
 				JointVel[i]=JointDesVel[i];
 			}

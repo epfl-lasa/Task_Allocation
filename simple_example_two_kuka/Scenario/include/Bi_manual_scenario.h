@@ -74,13 +74,11 @@ public:
 	virtual int                 RespondToConsoleCommand(const string cmd, const vector<string> &args);
 private :
 
-/*	void						chatterCallback_rob_target_0(const geometry_msgs::Pose & msg);
-	void						chatterCallback_rob_target_1(const geometry_msgs::Pose & msg);
-	void						chatterCallback_rob_target_2(const geometry_msgs::Pose & msg);
-	void						chatterCallback_rob_target_3(const geometry_msgs::Pose & msg);
-*/
+
 	void						chatterCallback_rob0_coordination(const std_msgs::Float64 & msg);
 	void						chatterCallback_rob1_coordination(const std_msgs::Float64 & msg);
+	void						chatterCallback_rob2_coordination(const std_msgs::Float64 & msg);
+	void						chatterCallback_rob3_coordination(const std_msgs::Float64 & msg);
 
 
 	void 						chatterCallback_first_position(const sensor_msgs::JointState & msg);
@@ -98,6 +96,10 @@ private :
 	void						chatterCallback_catching_state(const std_msgs::Float64MultiArray & msg);
 	void 						chatterCallback_hand_state(const std_msgs::Int64 & msg);
 	void 						Send_Postion_To_Robot(int index,VectorXd Position);
+
+	void						chatterCallback_sub_target_object2(const geometry_msgs::Pose & msg); // pat hack
+	void						chatterCallback_sub_target_object3(const geometry_msgs::Pose & msg); // pat hack
+
 
 	void						chatterCallback_ObjectPositionP1(const geometry_msgs::Pose & msg); // patrick
 	void						chatterCallback_ObjectPositionP2(const geometry_msgs::Pose & msg); // patrick
@@ -147,7 +149,7 @@ private :
 	ros::Subscriber 			sub_acc_object;
 	ros::Subscriber 			sub_position_robot[N_robots];
 	ros::Subscriber 			sub_G_On_object[N_grabbing];
-	ros::Subscriber 			sub_traget_of_robots[N_robots];
+	ros::Subscriber 			sub_target_of_robots[N_robots];
 /*	ros::Subscriber 			sub_Orientation_On_object[N_grabbing];*/
 	ros::Subscriber 			sub_pos_catching;
 
@@ -228,6 +230,9 @@ private :
 
 	sKinematics                 *mSKinematicChain[N_robots];
 	qp_ik_solver				*IK_Solver;
+
+	qp_ik_solver				*IK_Solver_pat;
+
 	double						lDirWeight;
 
     ros::Publisher              pub_gamma;

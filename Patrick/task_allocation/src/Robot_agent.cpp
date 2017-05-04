@@ -233,6 +233,7 @@ void Robot_agent::set_base(const geometry_msgs::Pose & msg)
 	X_base(2) = msg.position.z;
 
 	X_idle = X_base + Vector3d(-0.5,0,0.6);
+	cout << "x base received for robot " << id << endl << X_base << endl << "x_idle is " << endl << X_idle << endl;
 }
 
 void Robot_agent::set_end(const geometry_msgs::Pose & msg)

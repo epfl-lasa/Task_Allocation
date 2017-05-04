@@ -567,7 +567,7 @@ int main(int argc, char **argv)
 	{
 		ros::spinOnce();
 	}
-	ros::Rate r(10); // was 240
+	ros::Rate r(240);
 
 	Target_selector=0;
 
