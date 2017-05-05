@@ -102,8 +102,6 @@ Object::Object(int N_state_, VectorXd X_, VectorXd DX_, double max_time_, double
 		gravity[2]=0;
 	}
 
-//	predict = new TrajectoryEstimation(gravity, dt, 30, 10);
-
 
 	done = false;
 	is_assigned = false;
@@ -374,7 +372,7 @@ std::ostream& operator <<(std::ostream& stream, const Object& o)
 
 
 
-	cout << "******DONE PRINTING AN OBJECT******" << endl;
+    return cout << "******DONE PRINTING AN OBJECT******" << endl;
 }
 
 

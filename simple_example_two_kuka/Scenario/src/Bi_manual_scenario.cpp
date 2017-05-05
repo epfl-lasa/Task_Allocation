@@ -42,7 +42,7 @@ void Bi_manual_scenario::chatterCallback_sub_target_object0(const geometry_msgs:
 	T_G_On_object[0].y()=msg.orientation.y;
 	T_G_On_object[0].z()=msg.orientation.z;
 	T_G_On_object[0].w()=msg.orientation.w;
-	Ofirst_primitive[0]=T_G_On_object[1].toRotationMatrix();
+    Ofirst_primitive[0]=T_G_On_object[0].toRotationMatrix();
 //	cout << "received primitive for robot 0 " << endl << Pfirst_primitive[0] << endl;
 }
 void Bi_manual_scenario::chatterCallback_sub_target_object1(const geometry_msgs::Pose & msg)
@@ -54,9 +54,10 @@ void Bi_manual_scenario::chatterCallback_sub_target_object1(const geometry_msgs:
 	T_G_On_object[1].y()=msg.orientation.y;
 	T_G_On_object[1].z()=msg.orientation.z;
 	T_G_On_object[1].w()=msg.orientation.w;
-	Ofirst_primitive[1]=T_G_On_object[0].toRotationMatrix();
+    Ofirst_primitive[1]=T_G_On_object[1].toRotationMatrix();
 //	cout << "received primitive for robot 1 " << endl << Pfirst_primitive[1] << endl;
 }
+
 
 void Bi_manual_scenario::chatterCallback_sub_target_object2(const geometry_msgs::Pose & msg)
 {
@@ -67,9 +68,11 @@ void Bi_manual_scenario::chatterCallback_sub_target_object2(const geometry_msgs:
 //	T_G_On_object[2].y()=msg.orientation.y;
 //	T_G_On_object[2].z()=msg.orientation.z;
 //	T_G_On_object[2].w()=msg.orientation.w;
-	Ofirst_primitive[2]=T_G_On_object[0].toRotationMatrix();
+
+    Ofirst_primitive[2]=T_G_On_object[0].toRotationMatrix(); // careful here, the orientation still uses
 //	cout << "received primitive for robot 2 " << endl << Pfirst_primitive[2] << endl;
 }
+
 
 void Bi_manual_scenario::chatterCallback_sub_target_object3(const geometry_msgs::Pose & msg)
 {
@@ -80,9 +83,10 @@ void Bi_manual_scenario::chatterCallback_sub_target_object3(const geometry_msgs:
 //	T_G_On_object[3].y()=msg.orientation.y;
 //	T_G_On_object[3].z()=msg.orientation.z;
 //	T_G_On_object[3].w()=msg.orientation.w;
-	Ofirst_primitive[3]=T_G_On_object[0].toRotationMatrix();
+    Ofirst_primitive[3]=T_G_On_object[1].toRotationMatrix();
 //	cout << "received primitive for robot 3 " << endl << Pfirst_primitive[3] << endl;
 }
+
 
 void Bi_manual_scenario::chatterCallback_catching_state(const std_msgs::Float64MultiArray & msg)
 {
@@ -493,7 +497,7 @@ void Bi_manual_scenario::Topic_initialization()
 	sub_pat_coordination.clear();
 
 	sub_pat_coordination.push_back(n->subscribe("/robotsPat/coordination/0", 3, &Bi_manual_scenario::chatterCallback_rob0_coordination, this));
-	sub_pat_coordination.push_back(n->subscribe("/robotsPat/coordination/1", 3, &Bi_manual_scenario::chatterCallback_rob1_coordination, this));
+    sub_pat_coordination.push_back(n->subscribe("/robotsPat/coordination/1", 3, &Bi_manual_scenario::chatterCallback_rob1_coordination, this));
 	sub_pat_coordination.push_back(n->subscribe("/robotsPat/coordination/2", 3, &Bi_manual_scenario::chatterCallback_rob2_coordination, this));
 	sub_pat_coordination.push_back(n->subscribe("/robotsPat/coordination/3", 3, &Bi_manual_scenario::chatterCallback_rob3_coordination, this));
 
@@ -578,11 +582,18 @@ void Bi_manual_scenario::Parameter_initialization()
 	*/
 
 	// Desired Target for KUKA 14
-	Desired_DirY[0](0)=0;		Desired_DirY[0](1)=1;			Desired_DirY[0](2)=0;
-	Desired_DirZ[0](0)=0;		Desired_DirZ[0](1)=0;			Desired_DirZ[0](2)=1;
+    Desired_DirY[0](0)=0;		Desired_DirY[0](1)=0;			Desired_DirY[0](2)=1;
+    Desired_DirZ[0](0)=0;		Desired_DirZ[0](1)=-1;			Desired_DirZ[0](2)=0;
 	// Desired Target for KUKA 7
 	Desired_DirY[1](0)=0;		Desired_DirY[1](1)=0;			Desired_DirY[1](2)=1;
-	Desired_DirZ[1](0)=0;		Desired_DirZ[1](1)=-1;			Desired_DirZ[1](2)=0;
+    Desired_DirZ[1](0)=0;		Desired_DirZ[1](1)=1;			Desired_DirZ[1](2)=0;
+
+    // Desired Target for KUKA 14
+    Desired_DirY[2](0)=0;		Desired_DirY[2](1)=0;			Desired_DirY[2](2)=1;
+    Desired_DirZ[2](0)=0;		Desired_DirZ[2](1)=-1;			Desired_DirZ[2](2)=0;
+    // Desired Target for KUKA 7
+    Desired_DirY[3](0)=0;		Desired_DirY[3](1)=0;			Desired_DirY[3](2)=1;
+    Desired_DirZ[3](0)=0;		Desired_DirZ[3](1)=1;			Desired_DirZ[3](2)=0;
 
 
 	IK_Solver= new qp_ik_solver();
@@ -777,7 +788,7 @@ void Bi_manual_scenario::initKinematics(int index)
 
 
 
-	for (int i=0;i<7;i++)
+    for (int i=0;i<7;i++)
 	{
 		Jacobian_R[index].Jacobian[i].resize(3,1+i);Jacobian_R[index].Jacobian[i].setZero();
 		Jacobian_R[index].Jacobian_7[i].resize(3,7);Jacobian_R[index].Jacobian_7[i].setZero();
@@ -1033,7 +1044,7 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdate(){
 			for(int i=0;i<N_robots;i++)
 			{
 				prepare_motion_generator(i);
-				Motion_G->Set_the_robot_state(i,End_State[i]);
+                Motion_G->Set_the_robot_state(i,End_State[i]);
 				if (Using_target_moving)
 				{
 					Motion_G->Set_coordination(i, coordinations[i]);
@@ -1086,7 +1097,6 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdate(){
 		{
 			prepare_motion_generator(i);
 			prepare_jacobian(i);
-			//	Motion_G->Set_the_robot_state(i,End_State[i]);
 
 			cout<<"RPos_End "<<i<<endl;cout<<RPos_End[i]<<endl;
 		}
@@ -1115,7 +1125,7 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 		{
 			prepare_motion_generator(i);
 			// For closed loop
-			Motion_G->Set_the_robot_state(i,End_State[i]);
+        //	Motion_G->Set_the_robot_state(i,End_State[i]);
 			VectorXd handle;handle.resize(6); handle.setZero();
 			if (Using_target_moving)
 			{
@@ -1134,7 +1144,7 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 //			cout << "robot " << i << " coordination " << coordinations[i] << " primitive " << endl << Pfirst_primitive[i] << endl;
 //			cout << "set robot " << i << " coord to " << coordinations[i] << " and target " << endl << Pfirst_primitive[i] << endl;
 			// For open loop
-			//	Motion_G->Set_the_robot_state(i,Desired_End_State[i]);
+            Motion_G->Set_the_robot_state(i,Desired_End_State[i]);
 		}
 		if (State==S_Open)
 		{
@@ -1208,8 +1218,8 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 			{
 
 				Motion_G->Get_the_robot_state(i,Desired_End_State[i]);
-				Desired_DirY[i]=Robot_grasp_final[i].block(0,1,3,1);
-				Desired_DirZ[i]=Robot_grasp_final[i].block(0,2,3,1);
+         //       Desired_DirY[i]=Robot_grasp_final[i].block(0,1,3,1);
+          //      Desired_DirZ[i]=Robot_grasp_final[i].block(0,2,3,1);
 				O_object=Robot_grasp[i];
 
 				if (State==S_Open)
@@ -1238,12 +1248,12 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
                     IK_Solver_pat->set_jacobian(i-2,Jacobian9[i]);
                 }
 				Desired_Velocity[i].block(0,0,3,1)=(Desired_End_State[i].block(0,0,3,1)-RPos_End[i])/dt;
-				/*				cout<<"(Desired_End_State[i].block(0,0,3,1)-RPos_End[i])/dt "<<((Desired_End_State[i].block(0,0,3,1)-RPos_End[i])/dt).norm()<<endl;
-				cout<<"(Desired_DirY[i]-lDirY[i])/(10*dt) "<<((Desired_DirY[i]-lDirY[i])/(10*dt)).norm()<<endl;
-				cout<<"((Desired_DirZ[i]-lDirZ[i])/(10*dt) "<<((Desired_DirZ[i]-lDirZ[i])/(10*dt)).norm()<<endl;*/
+     //           cout<<"(Desired_End_State[i].block(0,0,3,1)-RPos_End[i])/dt "<<Desired_End_State[i].block(0,0,3,1)<<" i "<<i<<endl;
+
 				/*	cout<<"Desired_End_State[i] "<<i<<endl<<Desired_End_State[i].block(0,0,3,1)<<endl;
 					Desired_Velocity[i].block(0,0,3,1)=Desired_End_State[i].block(3,0,3,1);
 					c*/
+
 				Desired_Velocity[i].block(3,0,3,1)=(Desired_DirY[i]-lDirY[i])/(10*dt);
 				Desired_Velocity[i].block(6,0,3,1)=(Desired_DirZ[i]-lDirZ[i])/(10*dt);
           //      cout << "trying to set desired state for robot " << i << endl;

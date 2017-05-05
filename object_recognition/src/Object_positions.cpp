@@ -548,10 +548,10 @@ int main(int argc, char **argv)
 
 
 	/*chatter_pub_object_left = n.advertise<geometry_msgs::Pose>("/object/raw/right/position", 3);
-	chatter_pub_object_right = n.advertise<geometry_msgs::Pose>("/object/raw/left/position", 3);*/
+    chatter_pub_object_right = n.advertise<geometry_msgs::Pose>("/object/raw/left/position", 3);*/
 
-	chatter_pub_object_left_f = n.advertise<geometry_msgs::Pose>("/object/filtered/right/position", 3);
-	chatter_pub_object_right_f = n.advertise<geometry_msgs::Pose>("/object/filtered/left/position", 3);
+    chatter_pub_object_left_f = n.advertise<geometry_msgs::Pose>("/object/filtered/right/position", 3);
+    chatter_pub_object_right_f = n.advertise<geometry_msgs::Pose>("/object/filtered/left/position", 3);
 
 
 
@@ -560,13 +560,13 @@ int main(int argc, char **argv)
 	chatter_pub_acc_f = n.advertise<geometry_msgs::Pose>("/object/filtered/acceleration", 3);
 
 
-	Position_7.setZero();
+    Position_7.setZero();
 
 
-	while (Position_7.norm()==0)
-	{
-		ros::spinOnce();
-	}
+    while (Position_7.norm()==0)
+    {
+        ros::spinOnce();
+    }
 	ros::Rate r(10); // was 240
 
 	Target_selector=0;

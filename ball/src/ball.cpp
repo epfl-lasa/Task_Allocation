@@ -233,8 +233,8 @@ int main(int argc, char **argv) {
 	DDP_O.Resize(3);
 	dt=0.005;
 
-    Shift_left_P_O(1)=-0.10;
-    Shift_right_P_O(1)=0.10;
+    Shift_left_P_O(1)=0.10; // was -0.1
+    Shift_right_P_O(1)=-0.10; // was 0.1
 
 	P_I[0]=-3.5;P_I[1]=-0.45;P_I[2]=0.8;
 	DP_I[0]=0.1;DP_I[1]=0.0;DP_I[2]=0.0; //DP_I[0]=1.2;DP_I[1]=0.0;DP_I[2]=1.1;
@@ -380,8 +380,8 @@ int main(int argc, char **argv) {
 		chatter_pub_f.publish(Object_f);
 		chatter_pub_vel_f.publish(Object_vel);
 		chatter_pub_acc_f.publish(Object_acc);
-		chatter_pub_object_left.publish(Object_left);
-		chatter_pub_object_right.publish(Object_right);
+        chatter_pub_object_left.publish(Object_left);
+        chatter_pub_object_right.publish(Object_right);
 
 
 		// patrick  make our objects here... hard-coded 2 in front, big in middle, one in back
@@ -403,26 +403,6 @@ int main(int argc, char **argv) {
 		obj_pos[3].position.z = Object.position.z;
 
 
-/*		for(int i = 0; i < n_rob; i++)
-		{
-			if(targets[i] != -1)
-			{
-				cout << "object " << targets[i] << " is now following robot " << i << endl;
-				obj_pos[targets[i] ].position.x = rob_ends[i].position.x;
-				obj_pos[targets[i] ].position.y = rob_ends[i].position.y;
-				obj_pos[targets[i] ].position.z = rob_ends[i].position.z;
-			}
-		}
-
-/*
-		if(targets[0] != -1 || targets[1] != -1 || targets[2] != -1 || targets[3] != -1 )
-		{
-			for(int i = 0; i < n_rob; i++)
-			{
-				cout << " " << targets[i] << " ";
-			}
-			cout << endl;
-		}*/
 		for(int i = 0; i < n_rob; i++)
 		{
 			if(grabbed[i] != -1)
@@ -436,23 +416,17 @@ int main(int argc, char **argv) {
 
 
 		// all the same atm, but writing like this lets us change them... */
-//		for(auto& vel : obj_vel)
-//			obj_vel = Object_vel;
 
 		obj_vel[0] = Object_vel;
 		obj_vel[1] = Object_vel;
 		obj_vel[2] = Object_vel;
 		obj_vel[3] = Object_vel;
 
-//		for(auto& acc : obj_acc)
-	//		acc = Object_acc;
 
 		obj_acc[0] = Object_acc;
 		obj_acc[1] = Object_acc;
 		obj_acc[2] = Object_acc;
 		obj_acc[3] = Object_acc;
-
-
 
 		for(int i = 0; i < n_obj; i++)
 		{

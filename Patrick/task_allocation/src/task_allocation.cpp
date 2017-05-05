@@ -27,7 +27,6 @@ Task_allocation::Task_allocation()
 
 Task_allocation::Task_allocation(double max_time_, double dt_, int n_state_, Object_prediction_type Object_motion)
 {
-
 	n_robots = 0;
 	n_objects = 0;
 	n_coalitions = 0;
@@ -35,8 +34,6 @@ Task_allocation::Task_allocation(double max_time_, double dt_, int n_state_, Obj
 	Objects.clear();
 	active_coalitions.clear();
 	Coalitions.clear();
-//	Multi_ds = DS_;
-
 
 	n_state = n_state_;
 
@@ -46,31 +43,6 @@ Task_allocation::Task_allocation(double max_time_, double dt_, int n_state_, Obj
 	Prediction_model = Object_motion;
 
 }
-
-
-/*
-Robot_agent* Task_allocation::get_robot(int i)
-{
-	if(i >= 0 && i < Robots.size())
-		{
-			return &(Robots[i]);
-		}
-		cout << "wrong parameter given to task_allocation::get_object(i), I might segfault. i = " << i << endl;
-		return &(Robots[0]); // just pray that there is one....
-}
-*/
-/*
-Object* Task_allocation::get_object(int i)
-{
-	if(i >= 0 && i < Objects.size())
-	{
-		return &(Objects[i]);
-	}
-	cout << "wrong parameter given to task_allocation::get_object(i), I might segfault. i = " << i << endl;
-	return &(Objects[0]); // just pray that there is one....
-//	return (Object*)nullptr;
-}
-*/
 
 VectorXd Task_allocation::get_object_state(int i)
 {
@@ -99,10 +71,8 @@ VectorXd Task_allocation::get_robot_intercept(int i) const
 
 void Task_allocation::predict_motion()
 {
-
 	for(auto & obj : Objects)
 		obj->dumb_predict_motion();
-
 }
 
 
@@ -116,7 +86,6 @@ void Task_allocation::clear_coalitions()
 	//	if(!(rob->is_busy()))
 			rob->set_assignment(-1);
 	}
-
 
 	for(auto& obj : Objects)
 	{
@@ -149,15 +118,6 @@ void Task_allocation::compute_coordination()
 			}
 		}
 	}
-
-//	for(auto & coord : coordinations)
-	//	cout << "coordination " << coord << endl;
-/*	for(auto & rob : Robots)
-	{
-		if(rob->get_assignment() == -1)
-			targets.col(rob->get_id()) = rob->get_intercept();
-	}
-*/
 }
 
 void Task_allocation::update_rob_business()
@@ -206,8 +166,12 @@ void Task_allocation::build_coalitions()
 // ****** make all the possible coalitions
 //cout << "build_coalitions: making the coalitions ..." << endl;
 	int n_bots = unallocated_robots.size();
+    int n_coals = 0;
+    cout << "made ";
 	for(int i = 0; i < min(MAX_COALITION_SIZE, n_bots); i++)
 	{
+
+
 
 		// ************* make the matrix with all permutations of the available robots
 		unsigned long int number_of_coalitions;
@@ -221,8 +185,10 @@ void Task_allocation::build_coalitions()
 		for(int j = 0; j < n_rows; j++)
 			to_remove[j] = -1;
 
+
+
 		// remove the duplicates, as the order does not matter in our case
-//		cout << "perm matrix for i = " << i << " and n_bots = " << n_bots << endl << perm << endl;
+  //      cout << "perm matrix for i = " << i << " and n_bots = " << n_bots << endl << perm << endl;
 		for(int u = 0; u < perm.rows() - 1; u++)
 		{
 
@@ -240,10 +206,11 @@ void Task_allocation::build_coalitions()
 		}
 
 
-	//	cout << "perm matrix for i = " << i << " and n_bots = " << n_bots << " without dupes " << endl << perm << endl;
+        cout << "perm matrix for i = " << i << " and n_bots = " << n_bots << " without dupes " << endl << perm << endl;
 
 		number_of_coalitions = perm.rows();
-
+      //  n_coals += number_of_coalitions;
+       // cout << n_coals << " ";
 		Coalitions.push_back( std::vector<Coalition>() );
 //		Coalitions[i].reserve(number_of_coalitions);
 
@@ -267,6 +234,19 @@ void Task_allocation::build_coalitions()
 //			cout << "Coalition of size " << i+1 << " number " << j << endl << Coalitions[i][j] << endl;
 		}
 	}
+
+
+   // for(int i = 0; i < Coalitions.size(); i++)
+   //     for(int j = 0; j < Coalitions[i].size(); j++)
+   //         n_coals++;
+  //  cout << "made ";
+/*    for(const auto & coal_col : Coalitions)
+    {
+        for(const auto & coal : coal_col)
+            n_coals ++;
+        cout << n_coals << " ";
+    }*/
+ //   cout << n_coals << " coalitions out of " << n_bots << " robots " << endl;
 
 
 	// some tests on pointers and addresses and stuff in this part. This is just to confirm something
@@ -615,6 +595,17 @@ std::ostream& operator<< (std::ostream& stream, const Task_allocation& o)
 		cout << coal;
 		cout << endl << "***** END OF COALITION  *****" << endl;
 	}
-	cout << endl << "**************** END OF TASK ALLOCATION ****************" << endl;
+
+    cout << "printing all coalitions" << endl;
+    for(const auto& row : o.Coalitions)
+    {
+        for(const auto& coal : row)
+        {
+            cout << endl << "***** BEGIN OF COALITION  *****" << endl;
+            cout << coal;
+            cout << endl << "***** END OF COALITION  *****" << endl;
+        }
+    }
+    return cout << endl << "**************** END OF TASK ALLOCATION ****************" << endl;
 }
 

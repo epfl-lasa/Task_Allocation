@@ -1,7 +1,11 @@
 #include "task_allocation_node.h"
+#include <ctime>
+
 
 const int N_ROBOTS = 4;
 const int N_OBJECTS = 4;
+const double TASK_ALLOCATION_RATE = 20.0; // Hz, frequency at which to run the node
+
 
 const double dt = 0.030; // seconds
 const double max_time = 2; // seconds
@@ -88,10 +92,16 @@ int main(int argc, char **argv) {
     }
 	cout << "starting allocating in a loop" << endl;
 
+
+
 	// loop...
-	ros::Rate r(5);
+    ros::Rate r(TASK_ALLOCATION_RATE);
 	while(ros::ok())
-	{
+    {
+
+  //      cout << *Task_allocator << endl;
+
+        clock_t begin = clock();
 
 		Task_allocator->update_objects_value();
 		Task_allocator->predict_motion();
@@ -136,6 +146,9 @@ int main(int argc, char **argv) {
 		}
 
 //
+
+
+        clock_t end = clock();
 
 
 
@@ -199,12 +212,30 @@ int main(int argc, char **argv) {
 		}
 
 
+        clock_t end_pub = clock();
 
 
+ /*       Coalition test;
+        test.add_robot(&(Robots[2]));
+        test.add_robot(&(Robots[3]));
+        test.add_task(&Objects[0]);
+        test.compute_value();
+        cout << "test coalition cost " << test.get_cost() << " value " << test.get_value() << " weight " << test.get_weight() << " feasible "<< test.is_feasible(Objects[0]) << endl;
+        cout << "Value of object 0 " << Objects[0].get_value() << " assigned " << Objects[0].get_assignment() <<  " done " << Objects[0].is_done() << endl;
+        cout << "Robot 2 cost for task 0 " << Robots[2].evaluate_task(Objects[0]) << endl;
+        cout << "Robot 3 cost for task 0 " << Robots[3].evaluate_task(Objects[0]) << endl;
+*/
 
-//		cout << *Task_allocator << endl;
+
 		ros::spinOnce();
 		r.sleep();
+
+
+        // warning if we're too slow
+        if(r.cycleTime().toNSec() > r.expectedCycleTime().toNSec())
+        {
+            ROS_INFO_STREAM("Task allocation node is not reaching it's desired frequency! Cycletime " << r.cycleTime() << " expected cycletime " << r.expectedCycleTime());
+        }
 	}
 }
 
@@ -287,8 +318,8 @@ void init_topics()
 
 void prepare_task_allocator()
 {
-	double dt = 0.030; // seconds
-	double max_time = 2; // seconds
+    double dt = 0.050; // seconds was 0.3
+    double max_time = 3; // seconds was 2
 	int n_state = 6;
 
 	Task_allocator = new Task_allocation(max_time, dt, n_state);

@@ -282,22 +282,22 @@ int main(int argc, char **argv) {
 					msg_float.data[10]=1; msg_float.data[11]=index_of_grabbing;
                     msg_float.data[12]=X_I_C(0);	msg_float.data[13]=X_I_C(1);	msg_float.data[14]=X_I_C(2);
 
-*/
 
+*/
                     msg_float.data[0] = 0; // catching state?
                     msg_float.data[1] = 0.5; // likelihood
                     msg_float.data[2] = 1; // X
                     msg_float.data[3] = -0.6; // Y
-                    msg_float.data[4] = 0.4; // Z
+                    msg_float.data[4] = 0.6; // Z
                     msg_float.data[5] = 0;
                     msg_float.data[6] = 0;
                     msg_float.data[7] = 1; // X
-                    msg_float.data[8] = -0.6; // Y
+                    msg_float.data[8] = -0.4; // Y
                     msg_float.data[9] = 0.4; // Z
                     msg_float.data[10] = 1;
                     msg_float.data[11] = 1;
                     msg_float.data[12] = 1;
-                    msg_float.data[13] = -0.6;
+                    msg_float.data[13] = -0.8; // Y slightly on the right
                     msg_float.data[14] = 0.4;
 
 

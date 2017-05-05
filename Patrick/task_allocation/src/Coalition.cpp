@@ -163,10 +163,15 @@ double Coalition::compute_value()
 	//			cout << "evaluated cost " << temp_cost;
 				temp_value = obj->get_value();
 		//		cout << " evaluated value " << temp_value;
-				temp_weight = temp_value - temp_cost;
+                temp_weight = temp_value - temp_cost;
 				temp_weight /= n_robots;
 				temp_weight = 1/(temp_weight);
 
+     /*           if((Robots[0]->get_id() == 2 && Robots[1]->get_id() == 3) || (Robots[0]->get_id() == 3 && Robots[0]->get_id() == 2))
+                {
+                    if(obj->get_id() == 0)
+                        cout << "temp_cost " << temp_cost << " temp weight " << temp_weight << endl;
+                }
 		/*		if(n_robots == 1) // robot 1 is at (0,0,0)
 				{
 					if(temp_weight > 0)
@@ -212,12 +217,11 @@ void Coalition::compute_intercept()
 	Robots[0]->compute_intercept(*des_obj);
 }
 
-bool Coalition::is_feasible(Object& obj)
+bool Coalition::is_feasible(Object& obj) const
 {
 	bool feasible = false;
 	if(n_grippers == obj.get_n_grippers())
 		if(force >= obj.get_weight())
-			if(obj.get_assignment() == false)
 				feasible = true;
 
 	return feasible;

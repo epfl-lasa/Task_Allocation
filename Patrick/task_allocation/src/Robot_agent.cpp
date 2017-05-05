@@ -23,19 +23,17 @@ Robot_agent::Robot_agent(int Num_LPV_Com, const char *path_A_LPV, const char *pa
 
 	cout << "begin creating a robot " << endl;
 	Workspace_model.initialize(Num_GMM_Com,Num_GMM_state);
-	//Dynamic.initialize(Num_LPV_Com,n_state);
+    //Dynamic.initialize(Num_LPV_Com,n_state);
 
 	Workspace_model.initialize_GMM(path_prior_GMM,path_mu_GMM,path_sigma_GMM,path_threshold);
-	//Dynamic.initialize_theta(path_prior_LPV,path_mu_LPV,path_sigma_LPV);
-	//Dynamic.initialize_A(path_A_LPV);
+    //Dynamic.initialize_theta(path_prior_LPV,path_mu_LPV,path_sigma_LPV);
+    //Dynamic.initialize_A(path_A_LPV);
 	X_base = X_Base;
 
 	X.resize(n_state); X.setZero();
 
-//	workspace_model_is_set = true;
-	//LPV_is_set = true;
-	//tau = 0.0001;
-	//Dtau = 0;
+    //tau = 0.0001;
+    //Dtau = 0;
 
 	id = ID;
 	n_grippers = grip;
@@ -47,7 +45,6 @@ Robot_agent::Robot_agent(int Num_LPV_Com, const char *path_A_LPV, const char *pa
 	busy = 0;
 	X_idle = X_base + Vector3d(-0.5,0,0.6);
 	set_idle();
-
 
 	cout << "done" << endl;
 }
@@ -116,27 +113,61 @@ double Robot_agent::evaluate_task(const Object& obj)
 	Vector3d delta[n_grips];
 	double delta_norm = 1000000;
 	double temp_delta;
-	MatrixXd POG[n_grips];
-/*	for(int i = 0; i < n_grips; i++)
+
+    double cost;
+    MatrixXd POG[n_grips];
+
+    double temp_prob[n_grips];
+    double best_prob[n_grips];
+    Vector3d best_pos[n_grips];
+    double best_prob_overall;
+
+
+
+    // probability of being in workspace in future
+    for(int i = 0; i < n_grips; i++)
 	{
 		POG[i] = obj.get_P_O_G_prediction(i);
+        for(int j = 0; j < POG[i].cols(); j++)
+        {
+            temp_prob[i] = Workspace_model.PDF((POG[i].col(j).block(0,0,3,1) - X_base));
+            if(temp_prob[i] > best_prob[i])
+            {
+                best_prob[i] = temp_prob[i];
+                best_pos[i] = POG[i].col(j).block(0,0,3,1);
+                best_prob_overall = temp_prob[i];
+            }
+        }
+    }
+
 	//	cout << " POG " << i << endl << POG[i] << endl;
 	//	cout << " POG " << i  << " has " << POG[i].cols() << " columns" << endl;
 	//	cout << "last column is " << endl << POG[i].col(POG[i].cols()-1) << endl;
-		temp_delta = (X_base.block(0,0,3,1) - (POG[i].col(0)).block(0,0,3,1)).norm();
-		if(temp_delta < delta_norm)
-			delta_norm = temp_delta;
-	}
-*/
+//		temp_delta = (X_base.block(0,0,3,1) - (POG[i].col(0)).block(0,0,3,1)).norm();
+    //	if(temp_delta < delta_norm)
+        //	delta_norm = temp_delta;
+//	}
+
+    // distance of object
 	temp_delta = (X_base.block(0,0,3,1) - obj.get_X_O().block(0,0,3,1)).norm();
 	delta_norm = temp_delta;
 
 
+
+    if(best_prob_overall > 0) // avoid dividing by 0
+        cost = delta_norm / best_prob_overall;
+    else
+        cost = 1000000;
+
+
+
 	// check feasibility somehow
-	if(delta_norm > 20 || obj.get_X_O()(0) >= X_base(0)) // either too far, or object is past the robot
-		delta_norm = 1000000;
-//	cout << "delta norm = " << delta_norm << endl;
-	return delta_norm;
+    if(delta_norm > 20 || obj.get_X_O()(0) >= X_base(0)) // either too far, or object is past the robot
+        delta_norm = 1000000;
+ //   cout << "delta norm = " << delta_norm << endl;
+
+     cost = delta_norm;
+    return cost;
 }
 
 
@@ -233,6 +264,7 @@ void Robot_agent::set_base(const geometry_msgs::Pose & msg)
 	X_base(2) = msg.position.z;
 
 	X_idle = X_base + Vector3d(-0.5,0,0.6);
+    set_idle();
 	cout << "x base received for robot " << id << endl << X_base << endl << "x_idle is " << endl << X_idle << endl;
 }
 
@@ -252,6 +284,6 @@ std::ostream& operator <<(std::ostream& stream, const Robot_agent& o)
 	cout << "X " << endl << o.X << endl;
 	cout << "n grippers " << o.n_grippers << endl;
 	cout << "force " << o.force << endl;
-	cout << "assigned to task " << o.assignment << endl;
+    return cout << "assigned to task " << o.assignment << endl;
 
 }
