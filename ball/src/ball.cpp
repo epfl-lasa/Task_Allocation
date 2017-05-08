@@ -20,6 +20,11 @@ double Postion_VO[3];
 const int n_rob = 4;
 const int n_obj = 4; // patrick.
 
+const double SIM_VELOCITY = 2;
+const double X_INIT = -2;
+const double Y_INIT = -0.6;
+const double Z_INIT = 0.5;
+
 int grabbed[n_rob];
 
 std::vector<geometry_msgs::Pose> rob_ends;
@@ -94,7 +99,13 @@ void chatterCallback_Command(const std_msgs::Int64& msg)
 	case COMMAND_Grab:
 		COM=Com_Ball_Move;
 		break;
+    case COMMAND_STOP:
+        if(COM==Com_Ball_Move)
+            COM=Com_Ball_Stop;
+        else
+            COM=Com_Ball_Move;
 	}
+    ROS_INFO_STREAM("Ball received command " << COM);
 }
 
 
@@ -119,10 +130,6 @@ int main(int argc, char **argv) {
 	ros::init(argc, argv, "talker");
 	ros::NodeHandle n;
 	ros::Publisher chatter_pub;
-	ros::Publisher chatter_pub_p0; // pat
-	ros::Publisher chatter_pub_p1; // pat
-	ros::Publisher chatter_pub_p2;// pat
-	ros::Publisher chatter_pub_p3;// pat
 	ros::Publisher chatter_pub_f;
 	ros::Publisher chatter_pub_acc_f;
 	ros::Publisher chatter_pub_vel_f;
@@ -131,14 +138,9 @@ int main(int argc, char **argv) {
 	ros::Subscriber sub_command;
 	ros::Subscriber sub_state;
 	ros::Subscriber object_state;
-	ros::Subscriber object_state_p1; // pat
-	ros::Subscriber object_state_p2;// pat
-	ros::Subscriber object_state_p3;// pat
+
 	geometry_msgs::Pose Object;
-	geometry_msgs::Pose Object_p0; // pat
-	geometry_msgs::Pose Object_p1;// pat
-	geometry_msgs::Pose Object_p2;// pat
-	geometry_msgs::Pose Object_p3;// pat
+
 	geometry_msgs::Pose Object_f;
 	geometry_msgs::Pose Object_vel;
 	geometry_msgs::Pose Object_acc;
@@ -174,7 +176,7 @@ int main(int argc, char **argv) {
 
 	sub_command = n.subscribe("/command", 3, chatterCallback_Command);
 	//sub_state = n.subscribe("/catch/state", 3, chatterCallback_State);
-	object_state = n.subscribe("/target_interaction/feedback", 3, chatterCallback_object);
+//	object_state = n.subscribe("/target_interaction/feedback", 3, chatterCallback_object);
 
 	// pat
 	std::ostringstream oss;
@@ -216,18 +218,12 @@ int main(int argc, char **argv) {
 		sub_rob_end.push_back(n.subscribe(oss.str(), 1, cb_rob_end[i]));
 	}
 
-
-	chatter_pub_p0 = n.advertise<geometry_msgs::Pose>("/object/p0/position", 3);
-	chatter_pub_p1 = n.advertise<geometry_msgs::Pose>("/object/p1/position", 3);
-	chatter_pub_p2 = n.advertise<geometry_msgs::Pose>("/object/p2/position", 3);
-	chatter_pub_p3 = n.advertise<geometry_msgs::Pose>("/object/p3/position", 3);
-
 	filter	 = new SGF::SavitzkyGolayFilter(dim,order, winlen, sample_time);
 
 	double P_I[3];
 	double DP_I[3];
 	P_O.Resize(3);
-	Shift_left_P_O.Resize(3);Shift_left_P_O.Zero();
+    Shift_left_P_O.Resize(3);Shift_left_P_O.Zero();
 	Shift_right_P_O.Resize(3);Shift_right_P_O.Zero();
 	DP_O.Resize(3);
 	DDP_O.Resize(3);
@@ -280,25 +276,52 @@ int main(int argc, char **argv) {
 			Object.position.y=P_O(1)+fRand(-0.05*AA,0.05*AA);
 			Object.position.z=P_O(2)+fRand(-0.05*AA,0.05*AA);*/
 
-			Object.position.x=P_O(0);
-			Object.position.y=P_O(1);
-			Object.position.z=P_O(2);
+//			Object.position.x=P_O(0);  commented out by patrick
+//			Object.position.y=P_O(1);
+//			Object.position.z=P_O(2);
+
+            // patrick
+            P_O(0) = Object.position.x;
+            P_O(1) = Object.position.y;
+            P_O(2) = Object.position.z;
+
+
+            Object.position.x = Object.position.x + r.cycleTime().toSec()*SIM_VELOCITY;
+            Object.position.y = Object.position.y;
+            Object.position.z = Object.position.z;
+
+            ROS_INFO_STREAM("moved object by " << r.cycleTime().toSec()*SIM_VELOCITY << endl);
+            // end patrick
+
+
 			Object.orientation.x=0;
 			Object.orientation.y=0;
 			Object.orientation.z=0;
 			Object.orientation.w=1;
 
-			Object_left.position.x=P_O(0)+Shift_left_P_O(0);
-			Object_left.position.y=P_O(1)+Shift_left_P_O(1);
-			Object_left.position.z=P_O(2)+Shift_left_P_O(2);
+            Object_left.position.x=P_O(0)+Shift_left_P_O(0);
+            Object_left.position.y=P_O(1)+Shift_left_P_O(1);
+            Object_left.position.z=P_O(2)+Shift_left_P_O(2);
+
+            Object_left.position.x=Object.position.x+Shift_left_P_O(0); // pat
+            Object_left.position.y=Object.position.y+Shift_left_P_O(1); // pat
+            Object_left.position.z=Object.position.z+Shift_left_P_O(2); // pat
+
+
 			Object_left.orientation.x=0;
 			Object_left.orientation.y=0;
 			Object_left.orientation.z=0;
 			Object_left.orientation.w=1;
 
-			Object_right.position.x=P_O(0)+Shift_right_P_O(0);
-			Object_right.position.y=P_O(1)+Shift_right_P_O(1);
-			Object_right.position.z=P_O(2)+Shift_right_P_O(2);
+            Object_right.position.x=P_O(0)+Shift_right_P_O(0);
+            Object_right.position.y=P_O(1)+Shift_right_P_O(1);
+            Object_right.position.z=P_O(2)+Shift_right_P_O(2);
+
+            Object_right.position.x=Object.position.x+Shift_right_P_O(0); // pat
+            Object_right.position.y=Object.position.y+Shift_right_P_O(1); // pat
+            Object_right.position.z=Object.position.z+Shift_right_P_O(2); // pat
+
+
 			Object_right.orientation.x=0;
 			Object_right.orientation.y=0;
 			Object_right.orientation.z=0;
@@ -318,6 +341,11 @@ int main(int argc, char **argv) {
 			Object.position.y=P_O(1);
 			Object.position.z=P_O(2);
 
+
+            // patrick
+            Object.position.x = X_INIT;
+            Object.position.y = Y_INIT;
+            Object.position.z = Z_INIT;
 			/*			Object.position.x=P_O(0)+fRand(-0.05*AA,0.05*AA);
 			Object.position.y=P_O(1)+fRand(-0.05*AA,0.05*AA);
 			Object.position.z=P_O(2)+fRand(-0.05*AA,0.05*AA);*/
@@ -327,9 +355,13 @@ int main(int argc, char **argv) {
 			Object.orientation.z=0;
 			Object.orientation.w=1;
 
-			Object_left.position.x=P_O(0)+Shift_left_P_O(0);
+            Object_left.position.x=P_O(0)+Shift_left_P_O(0);
 			Object_left.position.y=P_O(1)+Shift_left_P_O(1);
 			Object_left.position.z=P_O(2)+Shift_left_P_O(2);
+
+            Object_left.position.x=Object.position.x+Shift_left_P_O(0); // pat
+            Object_left.position.y=Object.position.y+Shift_left_P_O(1); // pat
+            Object_left.position.z=Object.position.z+Shift_left_P_O(2); // pat
 
 			/*			Object_left.position.x=P_O(0)+Shift_left_P_O(0)+fRand(-0.05*AA,0.05*AA);
 			Object_left.position.y=P_O(1)+Shift_left_P_O(1)+fRand(-0.05*AA,0.05*AA);
@@ -345,6 +377,10 @@ int main(int argc, char **argv) {
 			Object_right.position.y=P_O(1)+Shift_right_P_O(1);
 			Object_right.position.z=P_O(2)+Shift_right_P_O(2);
 
+            Object_right.position.x=Object.position.x+Shift_right_P_O(0); // pat
+            Object_right.position.y=Object.position.y+Shift_right_P_O(1); // pat
+            Object_right.position.z=Object.position.z+Shift_right_P_O(2); // pat
+
 			/*Object_right.position.x=P_O(0)+Shift_right_P_O(0)+fRand(-0.05*AA,0.05*AA);
 			Object_right.position.y=P_O(1)+Shift_right_P_O(1)+fRand(-0.05*AA,0.05*AA);
 			Object_right.position.z=P_O(2)+Shift_right_P_O(2)+fRand(-0.05*AA,0.05*AA);*/
@@ -357,6 +393,7 @@ int main(int argc, char **argv) {
 		//	State=Com_Safe;
 
 		}
+
 
 
 		inp(0) = Object.position.x;
@@ -403,6 +440,18 @@ int main(int argc, char **argv) {
 		obj_pos[3].position.z = Object.position.z;
 
 
+        obj_vel[0] = Object_vel;
+        obj_vel[1] = Object_vel;
+        obj_vel[2] = Object_vel;
+        obj_vel[3] = Object_vel;
+
+
+        obj_acc[0] = Object_acc;
+        obj_acc[1] = Object_acc;
+        obj_acc[2] = Object_acc;
+        obj_acc[3] = Object_acc;
+
+
 		for(int i = 0; i < n_rob; i++)
 		{
 			if(grabbed[i] != -1)
@@ -411,22 +460,16 @@ int main(int argc, char **argv) {
 				obj_pos[grabbed[i]].position.x = rob_ends[i].position.x;
 				obj_pos[grabbed[i]].position.y = rob_ends[i].position.y;
 				obj_pos[grabbed[i]].position.z = rob_ends[i].position.z;
+                obj_vel[grabbed[i]].position.x = 0;
+                obj_vel[grabbed[i]].position.y = 0;
+                obj_vel[grabbed[i]].position.z = 0;
 			}
 		}
 
 
 		// all the same atm, but writing like this lets us change them... */
 
-		obj_vel[0] = Object_vel;
-		obj_vel[1] = Object_vel;
-		obj_vel[2] = Object_vel;
-		obj_vel[3] = Object_vel;
 
-
-		obj_acc[0] = Object_acc;
-		obj_acc[1] = Object_acc;
-		obj_acc[2] = Object_acc;
-		obj_acc[3] = Object_acc;
 
 		for(int i = 0; i < n_obj; i++)
 		{

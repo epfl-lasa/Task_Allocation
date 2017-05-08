@@ -33,7 +33,7 @@ void chatterCallback_sub_G_On_object0(const geometry_msgs::Pose & msg)
 	O_G_On_object[0](2)=msg.orientation.z;
 	O_G_On_object[0](3)=msg.orientation.w;
 	Position_of_the_object_recieved[0]=true;
-	pubish_on_tf(P_G_On_object[0],O_G_On_object[0],addTwostring("Grabbing","On_object",0));
+    publish_on_tf(P_G_On_object[0],O_G_On_object[0],addTwostring("Grabbing","On_object",0));
 
 }
 void chatterCallback_sub_G_On_object1(const geometry_msgs::Pose & msg)
@@ -46,7 +46,7 @@ void chatterCallback_sub_G_On_object1(const geometry_msgs::Pose & msg)
 	O_G_On_object[1](2)=msg.orientation.z;
 	O_G_On_object[1](3)=msg.orientation.w;
 	Position_of_the_object_recieved[1]=true;
-	pubish_on_tf(P_G_On_object[1],O_G_On_object[1],addTwostring("Grabbing","On_object",1));
+    publish_on_tf(P_G_On_object[1],O_G_On_object[1],addTwostring("Grabbing","On_object",1));
 
 }
 void chatterCallback_ObjectPosition(const geometry_msgs::Pose & msg)
@@ -246,13 +246,13 @@ int main(int argc, char **argv) {
 				{
        //             ROS_INFO_STREAM("In N_grabbing for..");
             //        Motion_G->Get_predict_the_object_position(i,predicted_object[i]);
-            //		pubish_on_point_cloud(i,predicted_object[i]);
+            //		publish_on_point_cloud(i,predicted_object[i]);
 				}
 				for(int i=0;i<N_robots;i++)
 				{
      //               ROS_INFO_STREAM("In N_robots for..");
             //		Motion_G->Get_index_of_grabbing_posititon_(i,index_of_grabbing[i],Intercept_point_State[i]);
-            //		pubish_on_tf(Intercept_point_State[i].block(0,0,3,1),O_object_raw,addTwostring("Desired","intercept_point",i));
+            //		publish_on_tf(Intercept_point_State[i].block(0,0,3,1),O_object_raw,addTwostring("Desired","intercept_point",i));
 				}
     //			if (Motion_G->Get_catching_state())
 				{

@@ -4,23 +4,15 @@
 
 const int N_ROBOTS = 4;
 const int N_OBJECTS = 4;
-const double TASK_ALLOCATION_RATE = 20.0; // Hz, frequency at which to run the node
+const double TASK_ALLOCATION_RATE = 20; // Hz, frequency at which to run the node
 
 
-const double dt = 0.030; // seconds
-const double max_time = 2; // seconds
+const double dt = 0.30; // seconds
+const double max_time = 10; // seconds
 const int n_state = 6;
-int countpp = 0;
 
 
-/*
-std::vector<Vector3d> rob_bases;
-std::vector<Vector3d> rob_ends;
-std::vector<VectorXd> obj_state;
-std::vector<VectorXd> dobj_state;
-*/
-
-int start = 42;
+bool run = false;
 ros::Subscriber start_sub;
 
 std_msgs::Int64 rob_id_msg;
@@ -52,7 +44,16 @@ Task_allocation* Task_allocator;
 
 void chatter_ready(const std_msgs::Int64 msg)
 {
-	start = msg.data;
+    if(msg.data == 0)
+        run = 1;
+    if(msg.data == 4)
+    {
+        if(run == false)
+            run = true;
+        else
+            run = false;
+    }
+
 }
 
 
@@ -77,7 +78,8 @@ int main(int argc, char **argv) {
 	cout << "allocating " << N_ROBOTS << " robots to " << N_OBJECTS << " objects" << endl;
 	cout << "waiting for simulator start" << endl;
 	// while we haven't received everything, wait.. This is not very orthodox
-	while(start != 0) // 0 is the value we get from the "init" in the "job init catch" sequence
+
+    while(run == false) // 0 is the value we get from the "init" in the "job init catch" sequence
 	{
 		if(ros::ok())
 		{
@@ -99,136 +101,136 @@ int main(int argc, char **argv) {
 	while(ros::ok())
     {
 
-  //      cout << *Task_allocator << endl;
+        if(run == true)
+        {
+      //      cout << *Task_allocator << endl;
 
-        clock_t begin = clock();
+            clock_t begin = clock();
 
-		Task_allocator->update_objects_value();
-		Task_allocator->predict_motion();
-		Task_allocator->update_rob_business();
-		Task_allocator->allocate();
-		Task_allocator->compute_intercepts();
-		Task_allocator->compute_coordination();
-
-
-		// check at what state the robots are
-		for(auto & rob : Robots)
-		{
-			int assign = rob.get_assignment();
-			if(assign != -1) // if it's assigned
-			{
-				if(Objects[assign].get_n_grippers() == 1) // if its object is a "1 robot" object
-				{
-					double distance = (rob.get_end() - Objects[assign].get_X_O().block(0,0,3,1)).norm();
-	//				cout << "robot " << rob.get_id() << " is at " << distance << " of its target" << endl;
-					if( distance < 0.3) // if it reached the object
-					{
-						cout << "robot " << rob.get_id() << " grabbed object " << Objects[assign].get_id() << endl;
-						rob.set_grabbed(true);
-
-					}
-				}
-			}
+            Task_allocator->update_objects_value();
+            Task_allocator->predict_motion();
+            Task_allocator->update_rob_business();
+            Task_allocator->allocate();
+            Task_allocator->compute_intercepts(); // is actually done in "allocate()".
+            Task_allocator->compute_coordination();
 
 
-			if(rob.get_grabbed()) // if the robot has grabbed something
-			{
-				rob.set_idle(); // keep sending it to idle position
-	//			rob.update_business();
-		//		if(!(rob.is_busy())) // if it reached its idle position, make it drop the object, mark object as done.
-				if((rob.get_idle_pos() - rob.get_end()).norm() < 0.3)
-				{
-					Objects[rob.get_assignment()].set_done();
-					rob.set_grabbed(false);
-					cout << "robot " << rob.get_id() << " released the object " << Objects[rob.get_assignment()].get_id() << endl;
-				}
-			}
-		}
-
-//
-
-
-        clock_t end = clock();
-
+            // check at what state the robots are
+            for(auto & rob : Robots)
+            {
+                int assign = rob.get_assignment();
+                if(assign != -1) // if it's assigned
+                {
+                    if(Objects[assign].get_n_grippers() == 1) // if its object is a "1 robot" object
+                    {
+                        double distance = (rob.get_end() - Objects[assign].get_X_O().block(0,0,3,1)).norm();
+        //				cout << "robot " << rob.get_id() << " is at " << distance << " of its target" << endl;
+                        if( distance < 0.3) // if it reached the object
+                        {
+                            cout << "robot " << rob.get_id() << " grabbed object " << Objects[assign].get_id() << endl;
+                            rob.set_grabbed();
+                        }
+                    }
+                }
 
 
-		// publish stuff
-		targets = Task_allocator->get_targets();
-		coordinations = Task_allocator->get_coordinations();
+                if(rob.has_grabbed()) // if the robot has grabbed something
+                {
+                    rob.set_idle(); // keep sending it to idle position
 
-		// publish who grabbed what.
-		for(auto & rob : Robots)
-		{
-			int assign = rob.get_assignment();
-			std_msgs::Int64 msg;
-			msg.data = -1;
-			if(assign >= 0)
-			{
-				if(Objects[assign].get_n_grippers() == 1)
-				{
-					if(rob.get_grabbed())
-						msg.data = assign;
+                    if((rob.get_idle_pos() - rob.get_end()).norm() < 0.3)
+                    {
+                        Objects[rob.get_assignment()].set_done();
+                        cout << "robot " << rob.get_id() << " released the object " << Objects[rob.get_assignment()].get_id() << endl;
+                    }
+                }
+            }
 
-				}
-			}
-
-			rob_grabbed_pub[rob.get_id()].publish(msg);
-		}
+    //
 
 
-		// publish the desired coordinations...
-		for(int i = 0; i < coordinations.size(); i++)
-		{
-			std_msgs::Float64 msg;
-			msg.data = coordinations[i];
-			rob_coordination_pub[i].publish(msg);
-		}
-
-		// publish the targets...
-		for(int i = 0; i < targets.cols(); i++)
-		{
-			geometry_msgs::Pose msg;
-			msg.position.x = (targets.col(i))(0);
-			msg.position.y = (targets.col(i))(1);
-			msg.position.z = (targets.col(i))(2);
-			msg.orientation.w = 1;
-			rob_target_pub[i].publish(msg);
-		}
-
-		// publish the ids for the coalitions for display
-		for(int i = 0; i < N_ROBOTS; i++)
-		{
-			rob_id_msg.data = Task_allocator->get_robot_target(i);
-			rob_target_id_pub[i].publish(rob_id_msg);
-		}
+            clock_t end = clock();
 
 
-		for(int i = 0; i < N_OBJECTS; i++)
-		{
-			std_msgs::Int64 msg;
-			msg.data = Objects[i].is_done();
-			obj_done_pub[i].publish(msg);
 
-		}
+            // publish stuff
+            targets = Task_allocator->get_targets();
+
+            coordinations = Task_allocator->get_coordinations();
+
+            // publish who grabbed what.
+            for(auto & rob : Robots)
+            {
+                int assign = rob.get_assignment();
+                std_msgs::Int64 msg;
+                msg.data = -1;
+                if(assign >= 0)
+                {
+                    if(Objects[assign].get_n_grippers() == 1)
+                    {
+                        if(rob.has_grabbed())
+                            msg.data = assign;
+
+                    }
+                }
+
+                rob_grabbed_pub[rob.get_id()].publish(msg);
+            }
 
 
-        clock_t end_pub = clock();
+            // publish the desired coordinations...
+            for(int i = 0; i < coordinations.size(); i++)
+            {
+                std_msgs::Float64 msg;
+                msg.data = coordinations[i];
+                rob_coordination_pub[i].publish(msg);
+            }
+
+            // publish the targets...
+            for(int i = 0; i < targets.cols(); i++)
+            {
+                geometry_msgs::Pose msg;
+                msg.position.x = (targets.col(i))(0);
+                msg.position.y = (targets.col(i))(1);
+                msg.position.z = (targets.col(i))(2);
+                msg.orientation.w = 1;
+                rob_target_pub[i].publish(msg);
+            }
+
+            // publish the ids for the coalitions for display
+            for(int i = 0; i < N_ROBOTS; i++)
+            {
+                rob_id_msg.data = Task_allocator->get_robot_target(i);
+                rob_target_id_pub[i].publish(rob_id_msg);
+            }
 
 
- /*       Coalition test;
-        test.add_robot(&(Robots[2]));
-        test.add_robot(&(Robots[3]));
-        test.add_task(&Objects[0]);
-        test.compute_value();
-        cout << "test coalition cost " << test.get_cost() << " value " << test.get_value() << " weight " << test.get_weight() << " feasible "<< test.is_feasible(Objects[0]) << endl;
-        cout << "Value of object 0 " << Objects[0].get_value() << " assigned " << Objects[0].get_assignment() <<  " done " << Objects[0].is_done() << endl;
-        cout << "Robot 2 cost for task 0 " << Robots[2].evaluate_task(Objects[0]) << endl;
-        cout << "Robot 3 cost for task 0 " << Robots[3].evaluate_task(Objects[0]) << endl;
-*/
+            for(int i = 0; i < N_OBJECTS; i++)
+            {
+                std_msgs::Int64 msg;
+                msg.data = Objects[i].is_done();
+                obj_done_pub[i].publish(msg);
+
+            }
 
 
-		ros::spinOnce();
-		r.sleep();
+            clock_t end_pub = clock();
+
+
+     /*       Coalition test;
+            test.add_robot(&(Robots[2]));
+            test.add_robot(&(Robots[3]));
+            test.add_task(&Objects[0]);
+            test.compute_value();
+            cout << "test coalition cost " << test.get_cost() << " value " << test.get_value() << " weight " << test.get_weight() << " feasible "<< test.is_feasible(Objects[0]) << endl;
+            cout << "Value of object 0 " << Objects[0].get_value() << " assigned " << Objects[0].get_assignment() <<  " done " << Objects[0].is_done() << endl;
+            cout << "Robot 2 cost for task 0 " << Robots[2].evaluate_task(Objects[0]) << endl;
+            cout << "Robot 3 cost for task 0 " << Robots[3].evaluate_task(Objects[0]) << endl;
+    */
+
+        }
+        ros::spinOnce();
+        r.sleep();
 
 
         // warning if we're too slow
@@ -318,8 +320,6 @@ void init_topics()
 
 void prepare_task_allocator()
 {
-    double dt = 0.050; // seconds was 0.3
-    double max_time = 3; // seconds was 2
 	int n_state = 6;
 
 	Task_allocator = new Task_allocation(max_time, dt, n_state);

@@ -83,7 +83,6 @@ public:
 	void		build_coalitions(); //this makes "Coalitions" to hold all coalitions with the currently unallocated robots
 	void		clear_coalitions(); //this resets the coalitions, resets the unallocated robots and active coalitions
 	void		compute_intercepts();
-	VectorXd 	get_robot_intercept(int i) const;
 	void		allocate();
 	void		multi_frame_allocation();
 
@@ -107,13 +106,13 @@ public:
 	std::vector<double> get_coordinations();
 
 	friend std::ostream& operator<< (std::ostream& stream, const Task_allocation& Object);
-
+    bool        check_dupe(const VectorXd& rowA, const VectorXd& rowB) const;
 private:
 
 	void 	ERROR();
 	void	restart_everything();
 	void	evaluate_coalitions();
-	bool 	check_dupe(const VectorXd& rowA, const VectorXd& rowB);
+
 	void	assign_the_robots();
 	int 	factorial(int n);
 

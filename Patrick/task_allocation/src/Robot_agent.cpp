@@ -41,7 +41,6 @@ Robot_agent::Robot_agent(int Num_LPV_Com, const char *path_A_LPV, const char *pa
 
 	assignment = -1;
 
-	has_grabbed = false;
 	busy = 0;
 	X_idle = X_base + Vector3d(-0.5,0,0.6);
 	set_idle();
@@ -107,6 +106,7 @@ Vector3d Robot_agent::get_end() const
 	return X_end;
 }
 
+
 double Robot_agent::evaluate_task(const Object& obj)
 {
 	int n_grips = obj.get_n_grippers();
@@ -120,7 +120,7 @@ double Robot_agent::evaluate_task(const Object& obj)
     double temp_prob[n_grips];
     double best_prob[n_grips];
     Vector3d best_pos[n_grips];
-    double best_prob_overall;
+    double best_prob_overall = 0;
 
 
 
@@ -130,17 +130,47 @@ double Robot_agent::evaluate_task(const Object& obj)
 		POG[i] = obj.get_P_O_G_prediction(i);
         for(int j = 0; j < POG[i].cols(); j++)
         {
-            temp_prob[i] = Workspace_model.PDF((POG[i].col(j).block(0,0,3,1) - X_base));
-            if(temp_prob[i] > best_prob[i])
+
+            if((POG[i].col(j)(0)-X_base(0)) < 1.5)
             {
-                best_prob[i] = temp_prob[i];
-                best_pos[i] = POG[i].col(j).block(0,0,3,1);
-                best_prob_overall = temp_prob[i];
+                temp_prob[i] = Workspace_model.PDF((POG[i].col(j).block(0,0,3,1) - X_base));
+                if(temp_prob[i] > best_prob[i])
+                {
+                    best_prob[i] = temp_prob[i];
+                    best_pos[i] = POG[i].col(j).block(0,0,3,1);
+                    if(best_prob[i] > 0.3) // pat hack value.
+                        break;
+                //    best_prob_overall = temp_prob[i];
+                }
             }
         }
     }
 
-	//	cout << " POG " << i << endl << POG[i] << endl;
+    for(int i = 0; i < n_grips; i++)
+    {
+        if(best_prob[i] > best_prob_overall && best_prob[i] > 0)
+        {
+            best_prob_overall = best_prob[i];
+            X_targ = best_pos[i];
+        }
+    }
+
+    if(best_prob_overall == 0)
+        X_targ = X_end;
+
+
+   /* if(id == 1)
+    {
+        if(obj.get_id() == 2)
+        {
+
+            ROS_INFO_STREAM("Robot " << id << " done computing probability for object " << obj.get_id() << " p=" << best_prob_overall << " target " << X_targ.transpose() << "  object is at " << obj.get_X_O().block(0,0,3,1).transpose() << endl);
+            ROS_INFO_STREAM("Robot " << id << " base " << X_base.transpose() << " idle " << X_idle.transpose() << " end " << X_end.transpose());
+        }
+    }
+*/
+
+    //	cout << " POG " << i << endl << POG[i] << endl;
 	//	cout << " POG " << i  << " has " << POG[i].cols() << " columns" << endl;
 	//	cout << "last column is " << endl << POG[i].col(POG[i].cols()-1) << endl;
 //		temp_delta = (X_base.block(0,0,3,1) - (POG[i].col(0)).block(0,0,3,1)).norm();
@@ -149,7 +179,7 @@ double Robot_agent::evaluate_task(const Object& obj)
 //	}
 
     // distance of object
-	temp_delta = (X_base.block(0,0,3,1) - obj.get_X_O().block(0,0,3,1)).norm();
+    temp_delta = (X_end.block(0,0,3,1) - obj.get_X_O().block(0,0,3,1)).norm();
 	delta_norm = temp_delta;
 
 
@@ -162,17 +192,17 @@ double Robot_agent::evaluate_task(const Object& obj)
 
 
 	// check feasibility somehow
-    if(delta_norm > 20 || obj.get_X_O()(0) >= X_base(0)) // either too far, or object is past the robot
-        delta_norm = 1000000;
+ //   if(delta_norm > 20 || obj.get_X_O()(0) >= X_base(0)) // either too far, or object is past the robot
+ //       delta_norm = 1000000;
  //   cout << "delta norm = " << delta_norm << endl;
 
-     cost = delta_norm;
+ //    cost = delta_norm;
     return cost;
 }
 
 
 
-VectorXd Robot_agent::get_intercept() const
+VectorXd Robot_agent::get_target() const
 {
 	return X_targ;
 }
@@ -183,33 +213,30 @@ Vector3d Robot_agent::get_idle_pos() const
 	return X_idle;
 }
 
-void Robot_agent::set_grabbed(bool val)
+void Robot_agent::set_grabbed()
 {
-	has_grabbed = val;
+    status = Robot_status::Grabbed;
 }
 
-bool Robot_agent::get_grabbed() const
-{
-	return has_grabbed;
-}
-void Robot_agent::update_business()
+void Robot_agent::update_status()
 {
 //	cout << " end " << endl << X_end << endl;
 //	cout << " target " << endl << X_targ << endl;
-	double delta = (X_end - X_targ).norm();
-	if(delta > 0.1)
-		busy = 1;
-	else if((X_idle - X_targ).norm() < 0.01) // if the target is the idle position
-		{
-			busy = 0;
-			has_grabbed = false;
-		}
+    double delta = (X_end - X_targ.block(0,0,3,1)).norm();
+
+    if(status == Robot_status::Grabbed)
+    {
+        if((X_idle - X_targ).norm() < 0.01)
+        {
+            status = Robot_status::Unallocated;
+        }
+    }
 }
 
 
-int Robot_agent::is_busy() const
+bool Robot_agent::has_grabbed() const
 {
-	return busy;
+    return status == Robot_status::Grabbed;
 }
 
 
@@ -223,7 +250,6 @@ VectorXd Robot_agent::compute_intercept(const Object& obj)
 //	cout << "trying to get intercept for object " << obj.get_id() << " POG is of size " << POG.rows() << " " << POG.cols()  << endl;// << POG << endl;
 	double best_prob = -1;
 	double temp_prob = -1;
-	int best_i = 0;
 	for(int i = 0; i < POG.cols(); i++)
 	{
 //		cout << "vector " << i << endl << POG.col(i) << endl;
@@ -232,14 +258,21 @@ VectorXd Robot_agent::compute_intercept(const Object& obj)
 		{
 			best_prob = temp_prob;
 			best_pos = POG.col(i);//.block(0,0,3,1);
-			best_i = i;
+            if(best_prob > 0.2)
+                break;
 		}
 	}
 
-//	if(id == 1)
-	//	if(best_prob > 0.1)
-		//	cout << "best catching position for robot " << id << " of object " << obj.get_id() << " with probability " << best_prob << " is frame " << best_i << " at pos "<< endl << best_pos <<  endl;
+/*    if(id == 1)
+    {
+        if(obj.get_id() == 2)
+        {
 
+            ROS_INFO_STREAM("Robot " << id << " done computing probability for object " << obj.get_id() << " p=" << best_prob<< " target " << X_targ.transpose() << "  object is at " << obj.get_X_O().block(0,0,3,1).transpose() << endl);
+            ROS_INFO_STREAM("Robot " << id << " base " << X_base.transpose() << " idle " << X_idle.transpose() << " end " << X_end.transpose());
+        }
+    }
+*/
 	if(best_prob > 0.1)
 	{
 		X_targ = best_pos.block(0,0,3,1);

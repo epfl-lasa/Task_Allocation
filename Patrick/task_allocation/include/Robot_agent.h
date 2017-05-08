@@ -27,6 +27,8 @@
 
 using namespace Eigen;
 
+enum class Robot_status{Unallocated, Allocated, Grabbed};
+
 class Robot_agent {
 
 public:
@@ -37,17 +39,17 @@ public:
 
 	double evaluate_task(const Object& obj);
 	VectorXd compute_intercept(const Object& obj);
-	void	update_business();
+    void	update_status();
 
 	void set_idle();
 	void set_base(const geometry_msgs::Pose & msg);
 	void set_end(const geometry_msgs::Pose & msg);
-
 	void set_state(VectorXd X);
 	void set_assignment(int);
-	void set_grabbed(bool);
+    void set_grabbed();
 
-	int		is_busy() const;
+    bool has_grabbed() const;
+    Robot_status get_status() const;
 	bool get_state_set() const;
 	void get_state(VectorXd& X) const;
 	VectorXd get_base() const;
@@ -55,14 +57,16 @@ public:
 	double get_force() const;
 	int	get_id() const;
 	int get_assignment() const;
-	VectorXd get_intercept() const;
+    VectorXd get_target() const;
 	Vector3d get_end() const;
 	Vector3d get_idle_pos() const;
-	bool	get_grabbed() const;
+
 
 	friend std::ostream& operator <<(std::ostream& stream, const Robot_agent& o);
 private:
 
+
+    Robot_status status;
 	GMM 		Workspace_model;
 	Vector3d 	X_base; 			//Position of the base of the robot with respect to the world frame
 	Vector3d	X_end;
@@ -73,7 +77,6 @@ private:
 	VectorXd	X_targ;				// target of the robot
 
 
-	bool		has_grabbed;
 	int			busy; // is the robot busy?
 	int 		id;
 	int 		n_grippers; // number of grippers on this robot, typically 1

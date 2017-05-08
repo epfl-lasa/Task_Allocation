@@ -32,7 +32,7 @@ std::string svm_filename = "/home/patrick/lasa-project/catkin_ws/src/IJRR/SVMGra
 const int N_robots   = 4;	//You need to do some changes if you want to put it 1!
 const int N_grabbing = 2; //You need to do some changes if you want to put it 1!
 
-enum ENUM_COMMAND{COMMAND_INITIAL=0,COMMAND_JOB,COMMAND_Grab,COMMAND_NONE};
+enum ENUM_COMMAND{COMMAND_INITIAL=0,COMMAND_JOB,COMMAND_Grab,COMMAND_NONE, COMMAND_STOP};
 double dt=0.002;
 
 

@@ -57,7 +57,7 @@ void Coalition::assign()
 		rob->set_assignment(des_obj->get_id());
 	}
 
-	des_obj->set_assignment(true);
+    des_obj->set_assigned();
 }
 
 void Coalition::print_pointer() const
@@ -206,16 +206,19 @@ double Coalition::compute_value()
 }
 
 
+/*   // debug stuff
 void Coalition::print_intercept() const
 {
 	Robots[0]->compute_intercept(*des_obj);
 	cout << "intercept for robot " << Robots[0]->get_id() << " is " << endl <<  Robots[0]->get_intercept() << endl;
 }
-
+*/
+// debug stuff
 void Coalition::compute_intercept()
 {
 	Robots[0]->compute_intercept(*des_obj);
 }
+
 
 bool Coalition::is_feasible(Object& obj) const
 {

@@ -102,24 +102,23 @@ Object::Object(int N_state_, VectorXd X_, VectorXd DX_, double max_time_, double
 		gravity[2]=0;
 	}
 
-
-	done = false;
-	is_assigned = false;
+    status = Object_status::Unallocated;
 }
 
-void Object::set_assignment(bool val)
+void Object::set_assigned()
 {
-	is_assigned = val;
+    status = Object_status::Allocated;
 }
 
 void Object::set_done()
 {
-	done = true;
+    status = Object_status::Done;
 }
 
 bool Object::is_done() const
 {
-	return done;
+    return (status == Object_status::Done);
+
 }
 
 
@@ -159,10 +158,58 @@ void Object::predict_motion()
 */
 }
 
+void Object::set_status(Object_status stat)
+{
+    status = stat;
+}
+
+Object_status Object::get_status() const
+{
+    return status;
+}
+
 void Object::dumb_predict_motion()
 {
+    if(DX_O(0) > 0.1)
+    {
+        double dist = 3.5 - X_O(0); // pat hack... 3.5 is maximum in x that we should predict
+        int frames = dist/(DX_O(0)*0.2); // pat... let's compute with dt=0.2, so the number of frames = distance/(velocity*dt)
 
-	P_O_prediction.resize(X_O.size(), n_frames+1);
+        P_O_prediction.resize(X_O.size(), frames+1); // pat hack. Need to find a better way.
+        P_O_prediction.setZero();
+
+        //	cout << "P_O_prediction " << endl << P_O_prediction << endl;
+        //	cout << "X_O " << endl << X_O << endl;
+        //	cout << "DX_O " << endl << DX_O << endl;
+
+            for(int i = 0; i <= frames; i++)
+            {
+                P_O_prediction.col(i) = X_O + i*dt*DX_O;
+            }
+
+        //	cout << "P_O predicted " << endl << P_O_prediction << endl;
+
+            for(int j = 0; j < n_grabbing_pos; j++)
+            {
+                P_O_G_prediction[j].resize(X_O.size(), frames+1);
+                P_O_G_prediction[j].setZero();
+
+        //		cout << "P_O_G prediction " << j << endl << P_O_G_prediction[j] << endl;
+        //		cout << "X_O_G " << j << endl << X_O_G[j] << endl;
+                for(int k = 0; k <= frames; k++)
+                {
+                    P_O_G_prediction[j].col(k) = P_O_prediction.col(k)+X_O_G[j];//.block(0,0,3,1).transpose();
+                }
+        //		cout << "for grabbing pos " << j << endl << P_O_G_prediction[j] << endl;
+            }
+
+        //	cout << "P_O predicted for " << n_frames << " frames" << endl << P_O_prediction << endl;
+
+    }
+
+
+    // old functionning way but sub-optimal.
+/*	P_O_prediction.resize(X_O.size(), n_frames+1);
 	P_O_prediction.setZero();
 //	cout << "P_O_prediction " << endl << P_O_prediction << endl;
 //	cout << "X_O " << endl << X_O << endl;
@@ -190,6 +237,7 @@ void Object::dumb_predict_motion()
 	}
 
 //	cout << "P_O predicted for " << n_frames << " frames" << endl << P_O_prediction << endl;
+*/
 }
 
 
@@ -243,7 +291,7 @@ void Object::set_prediction_state(VectorXd X,VectorXd X_filtered, double time)
 // getters
 bool Object::get_assignment() const
 {
-	return is_assigned;
+    return ((status == Object_status::Allocated) || (status == Object_status::Grabbed));
 }
 
 
@@ -347,7 +395,7 @@ std::ostream& operator <<(std::ostream& stream, const Object& o)
 	cout << "value " << o.value << endl;
 	cout << "dt " << o.dt << endl;
 	cout << "object id " << o.id << endl;
-	cout << "is assigned " << o.is_assigned << endl;
+    cout << "status " << static_cast<typename std::underlying_type<Object_status>::type>(o.status) << endl;
 	for(int i = 0; i < 3; i++)
 	{
 		cout << "minPos i " << i << " value " << o.minPos[i] << endl;

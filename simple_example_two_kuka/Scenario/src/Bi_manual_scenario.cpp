@@ -134,7 +134,7 @@ void Bi_manual_scenario::chatterCallback_ObjectPosition_raw(const geometry_msgs:
 	O_objects[0].z()=msg.orientation.z;
 	O_objects[0].w()=msg.orientation.w;*/
 
-	pubish_on_tf(P_object_raw,O_object_raw,"ObjectPosition_raw");
+    publish_on_tf(P_object_raw,O_object_raw,"ObjectPosition_raw");
 }
 
 
@@ -246,7 +246,7 @@ void Bi_manual_scenario::chatterCallback_sub_G_On_object0(const geometry_msgs::P
 	O_G_On_object[0].z()=msg.orientation.z;
 	O_G_On_object[0].w()=msg.orientation.w;
 	Position_of_the_object_recieved[0]=true;
-	pubish_on_tf(P_G_On_object[0],O_G_On_object[0],addTwostring("Grabbing","On_object",0));
+    publish_on_tf(P_G_On_object[0],O_G_On_object[0],addTwostring("Grabbing","On_object",0));
 	Object_ori[0]=O_G_On_object[0].toRotationMatrix();
 
 	/*	Z_robot=Y_object
@@ -269,7 +269,7 @@ void Bi_manual_scenario::chatterCallback_sub_G_On_object1(const geometry_msgs::P
 	O_G_On_object[1].z()=msg.orientation.z;
 	O_G_On_object[1].w()=msg.orientation.w;
 	Position_of_the_object_recieved[1]=true;
-	pubish_on_tf(P_G_On_object[1],O_G_On_object[1],addTwostring("Grabbing","On_object",1));
+    publish_on_tf(P_G_On_object[1],O_G_On_object[1],addTwostring("Grabbing","On_object",1));
 	Object_ori[1]=O_G_On_object[1].toRotationMatrix();
 
 	/*	X_robot=-Z_object
@@ -892,7 +892,7 @@ bool Bi_manual_scenario::everythingisreceived()
 
 	return flag;
 }
-/*void Bi_manual_scenario::pubish_on_tf(Vector3d  X,Quaterniond  Q,std::string n)
+/*void Bi_manual_scenario::publish_on_tf(Vector3d  X,Quaterniond  Q,std::string n)
 {
 	tf_transform.setOrigin( tf::Vector3(X(0),X(1), X(2)) );
 	tf_q.setX(Q.x());tf_q.setY(Q.y());tf_q.setZ(Q.z());tf_q.setW(Q.w());
@@ -900,7 +900,7 @@ bool Bi_manual_scenario::everythingisreceived()
 	tf_br->sendTransform(tf::StampedTransform(tf_transform, ros::Time::now(), "world_frame", n));
 }*/
 
-void Bi_manual_scenario::pubish_on_tf(VectorXd  X,Quaterniond  Q,std::string n)
+void Bi_manual_scenario::publish_on_tf(VectorXd  X,Quaterniond  Q,std::string n)
 {
 	tf_transform.setOrigin( tf::Vector3(X(0),X(1), X(2)) );
 	tf_q.setX(Q.x());tf_q.setY(Q.y());tf_q.setZ(Q.z());tf_q.setW(Q.w());
@@ -929,7 +929,7 @@ void Bi_manual_scenario::prepare_jacobian(int index)
 }
 
 
-/*void Bi_manual_scenario::pubish_on_point_cloud(int index, MatrixXd  X)
+/*void Bi_manual_scenario::publish_on_point_cloud(int index, MatrixXd  X)
 {
 	sensor_msgs::PointCloud 		pointcloud;
 
@@ -982,7 +982,8 @@ RobotInterface::Status Bi_manual_scenario::RobotInit(){
 	flag_job=true;
 	AddConsoleCommand("init");
 	AddConsoleCommand("job");
-	AddConsoleCommand("catch");
+    AddConsoleCommand("catch");
+    AddConsoleCommand("stop");
 
 
 
@@ -1202,15 +1203,16 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 		}
 		msg_vobject.position.x=VirtualOb_State(0);msg_vobject.position.y=VirtualOb_State(1);msg_vobject.position.z=VirtualOb_State(2);
 		pub_pos_virtual.publish(msg_vobject);
-		pubish_on_tf(VirtualOb_State.block(0,0,3,1),O_object_raw,"Virtual_object");
+        publish_on_tf(VirtualOb_State.block(0,0,3,1),O_object_raw,"Virtual_object");
 		for (int i=0;i<N_grabbing;i++)
 		{
 			Motion_G->Get_the_grabbing_state(i,VirtualOb_Grabbing_State[i]);
 			O_object=Robot_grasp[i];
-			pubish_on_tf(VirtualOb_Grabbing_State[i].block(0,0,3,1),O_object,addTwostring("Grabbing","On_virtual",i));
+     //       ROS_INFO_STREAM("grabbing position " << i << " is at " << VirtualOb_Grabbing_State[i].block(0,0,3,1).transpose() << " with virtual object at " << VirtualOb_State.block(0,0,3,1).transpose());
+            publish_on_tf(VirtualOb_Grabbing_State[i].block(0,0,3,1),O_object,addTwostring("Grabbing","On_virtual",i));
 		}
-	//	pubish_on_tf(Pfirst_primitive[1],T_G_On_object[1],"First_primitive_KUKA7");
-	//	pubish_on_tf(Pfirst_primitive[0],T_G_On_object[0],"First_primitive_KUKA14");
+    //	publish_on_tf(Pfirst_primitive[1],T_G_On_object[1],"First_primitive_KUKA7");
+    //	publish_on_tf(Pfirst_primitive[0],T_G_On_object[0],"First_primitive_KUKA14");
 		if (Motion_G->Get_catching_state())
 		{
 
@@ -1227,7 +1229,7 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 					TheRobotdata<<Desired_End_State[i](0)<<" "<<Desired_End_State[i](1)<<" "<<Desired_End_State[i](2)<<" ";
 				}
 
-				pubish_on_tf(Desired_End_State[i].block(0,0,3,1),O_object,addTwostring("End","desired_position",i));
+                publish_on_tf(Desired_End_State[i].block(0,0,3,1),O_object,addTwostring("End","desired_position",i));
 			}
 
 			for(int i=0;i<N_robots;i++)
@@ -1351,6 +1353,13 @@ int Bi_manual_scenario::RespondToConsoleCommand(const string cmd, const vector<s
 			flag_job=true;
 		}
 	}
+    else if(cmd=="stop")
+    {
+        cout << "Stop/start the ball!" << endl;
+        std_msgs::Int64 msg;
+        msg.data = COMMAND_STOP;
+        pub_command.publish(msg);
+    }
 	return 0;
 }
 

@@ -32,9 +32,9 @@ using namespace MathLib;
 
 
 
-enum Command{Com_Ball_INIT=0, Com_Ball_Move};
+enum Command{Com_Ball_INIT=0, Com_Ball_Move, Com_Ball_Stop};
 enum ENUM_State{Com_Stop,Com_Break, Com_Safe};
-enum ENUM_COMMAND{COMMAND_INITIAL=0,COMMAND_JOB,COMMAND_Grab,COMMAND_NONE};
+enum ENUM_COMMAND{COMMAND_INITIAL=0,COMMAND_JOB,COMMAND_Grab,COMMAND_NONE, COMMAND_STOP};
 
 
 Vector P_O;

@@ -954,6 +954,7 @@ void multiarm_ds::Get_the_grabbing_state(int index, VectorXd & X)
 	/* Getting the current state of index th grabbing position on the virtual object with respect to the world frame
 	 * X is the state of the virtual object	*/
 
+//    ROS_INFO_STREAM("Vobject.X_V_ " << Vobject_.X_V_.block(0,0,3,1).transpose() << " X_V_G " << index << " is " << Vobject_.X_V_G_[index].block(0,0,3,1).transpose() << endl);
 	X=Vobject_.X_V_G_[index]+Vobject_.X_V_;
 }
 bool multiarm_ds::Get_pos_of_grabbing_posititon_for_object_(double& likelihood, Vector3d& X_I_C)

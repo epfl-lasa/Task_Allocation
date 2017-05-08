@@ -118,8 +118,8 @@ private :
 	void						reset_the_bool();
 	bool						everythingisreceived();
 //	void						pubish_on_tf(Vector3d  X,Quaterniond  Q,std::string n);
-	void						pubish_on_tf(VectorXd  X,Quaterniond  Q,std::string n);
-	void						pubish_on_point_cloud(int index, MatrixXd  X);
+    void						publish_on_tf(VectorXd  X,Quaterniond  Q,std::string n);
+    void						publish_on_point_cloud(int index, MatrixXd  X);
 	void						Thread_prediction( );
 	void						prepare_jacobian(int index);
 

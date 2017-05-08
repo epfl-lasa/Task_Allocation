@@ -86,7 +86,7 @@ double initial_time;
 
 
 
-void pubish_on_point_cloud(int index, MatrixXd  X)
+void publish_on_point_cloud(int index, MatrixXd  X)
 {
 	sensor_msgs::PointCloud 		pointcloud;
 
@@ -101,7 +101,7 @@ void pubish_on_point_cloud(int index, MatrixXd  X)
 	}
 	pub_pos_prediction[index].publish(pointcloud);
 }
-void pubish_on_tf(Vector3d  X,Vector4d  Q,std::string n)
+void publish_on_tf(Vector3d  X,Vector4d  Q,std::string n)
 {
 	tf_transform.setOrigin( tf::Vector3(X(0),X(1), X(2)) );
 	tf_q.setX(Q(0));tf_q.setY(Q(1));tf_q.setZ(Q(2));tf_q.setW(Q(3));

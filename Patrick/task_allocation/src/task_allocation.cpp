@@ -56,19 +56,6 @@ VectorXd Task_allocation::get_object_state(int i)
 }
 
 
-VectorXd Task_allocation::get_robot_intercept(int i) const
-{
-	VectorXd empty_vec;
-	empty_vec.resize(n_state);
-	empty_vec.setConstant(-1);
-	if(i >= 0 && i < n_robots)
-	{
-		return Robots[i]->get_intercept();
-	}
-	return VectorXd();
-}
-
-
 void Task_allocation::predict_motion()
 {
 	for(auto & obj : Objects)
@@ -83,13 +70,16 @@ void Task_allocation::clear_coalitions()
 	unallocated_robots.clear();
 	for(auto& rob : Robots)
 	{
-	//	if(!(rob->is_busy()))
+        if(!(rob->has_grabbed()))
 			rob->set_assignment(-1);
 	}
 
 	for(auto& obj : Objects)
 	{
-		obj->set_assignment(false);
+        // if an object is grabbed or done, let it be.
+        // if it's allocated, reallocate to guarantee permanent reallocation
+        if(obj->get_status() == Object_status::Allocated)
+            obj->set_status(Object_status::Unallocated);
 	}
 }
 
@@ -106,8 +96,6 @@ void Task_allocation::compute_coordination()
 		robId = coal.get_robots_id();
 		if(coal.get_n_robots() == 1)
 		{
-		//	cout << "robot in this coalition " << robId[0] << endl;
-//			targets.col(robId[0]) = get_robot_intercept(robId[0]);
 			coordinations[robId[0]] = 0;
 		}
 		else
@@ -123,7 +111,7 @@ void Task_allocation::compute_coordination()
 void Task_allocation::update_rob_business()
 {
 	for(auto & rob : Robots)
-		rob->update_business();
+        rob->update_status();
 }
 
 MatrixXd Task_allocation::get_targets()
@@ -131,10 +119,9 @@ MatrixXd Task_allocation::get_targets()
 	targets.resize(3, n_robots); targets.setZero();
 	for(auto & rob : Robots)
 	{
-	//	cout << "setting target for robot " << rob->get_id() << " to " << endl << rob->get_intercept() << endl;
-		targets.col(rob->get_id()) = rob->get_intercept();
+  //      ROS_INFO_STREAM("robot " << rob->get_id() << " has target " << rob->get_target().transpose());
+        targets.col(rob->get_id()) = rob->get_target();
 	}
-
 
 	return targets;
 }
@@ -167,7 +154,7 @@ void Task_allocation::build_coalitions()
 //cout << "build_coalitions: making the coalitions ..." << endl;
 	int n_bots = unallocated_robots.size();
     int n_coals = 0;
-    cout << "made ";
+  //  cout << "made ";
 	for(int i = 0; i < min(MAX_COALITION_SIZE, n_bots); i++)
 	{
 
@@ -188,7 +175,7 @@ void Task_allocation::build_coalitions()
 
 
 		// remove the duplicates, as the order does not matter in our case
-  //      cout << "perm matrix for i = " << i << " and n_bots = " << n_bots << endl << perm << endl;
+ //       cout << "perm matrix for i = " << i << " and n_bots = " << n_bots << endl << perm << endl;
 		for(int u = 0; u < perm.rows() - 1; u++)
 		{
 
@@ -198,15 +185,14 @@ void Task_allocation::build_coalitions()
 
 				if(dupe == true)
 				{
-//					cout << "removing row " << perm.row(j) << " as it is similar to " << perm.row(u) << endl;
+    //                cout << "removing row " << perm.row(j) << " as it is similar to " << perm.row(u) << endl;
 					removeRow(perm, j);
-
 				}
 			}
 		}
 
 
-        cout << "perm matrix for i = " << i << " and n_bots = " << n_bots << " without dupes " << endl << perm << endl;
+  //      cout << "perm matrix for i = " << i << " and n_bots = " << n_bots << " without dupes " << endl << perm << endl;
 
 		number_of_coalitions = perm.rows();
       //  n_coals += number_of_coalitions;
@@ -413,6 +399,8 @@ void Task_allocation::update_objects_value()
 	}
 }
 
+
+/*
 void Task_allocation::print_intercepts() const
 {
 	for(const auto & coal : active_coalitions)
@@ -423,6 +411,7 @@ void Task_allocation::print_intercepts() const
 		}
 	}
 }
+*/
 
 void Task_allocation::compute_intercepts()
 {
@@ -446,7 +435,7 @@ void Task_allocation::compute_intercepts()
 		{
 			rob->set_idle_target();
 		}
-	}*/
+    }*/
 }
 
 
@@ -514,9 +503,8 @@ MatrixXd Task_allocation::PermGenerator(int n, int k)
 
 
 
-bool Task_allocation::check_dupe(const VectorXd& rowA, const VectorXd& rowB)
+bool Task_allocation::check_dupe(const VectorXd& rowA, const VectorXd& rowB) const
 {
-	int dupe = 0;
 	bool found;
 
 	if(rowA.rows() != rowB.rows())
@@ -524,10 +512,12 @@ bool Task_allocation::check_dupe(const VectorXd& rowA, const VectorXd& rowB)
 
 	for(int i = 0; i < rowA.rows(); i++)
 	{
+        found = false; // where did this disappear?!
 		for(int j = 0; j < rowB.rows(); j++)
 		{
 			if(rowA(i) == rowB(j))
 			{
+    //            cout << "found a common value " << rowA(i) << endl;
 				found = true;
 				break;
 			}

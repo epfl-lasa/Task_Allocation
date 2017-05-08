@@ -21,7 +21,7 @@
 #include  <omp.h>
 #include <string>
 enum class Object_prediction_type{Ballistic,Straight};
-
+enum class Object_status{Unallocated, Allocated, Grabbed, Done};
 
 class Object {
 
@@ -42,8 +42,10 @@ public:
 	void set_accel(const geometry_msgs::Pose & msg);
 	void set_state(VectorXd X, VectorXd DX);
 	void set_prediction_state(VectorXd X,VectorXd X_filtered, double time);
-	void set_assignment(bool val);
+    void set_assigned();
 	void set_done();
+    void set_status(Object_status);
+
 
 	// getters
 	VectorXd get_X_O() const;
@@ -59,6 +61,8 @@ public:
 	int	get_n_grippers() const;
 	bool get_assignment() const;
 	bool is_done() const;
+    Object_status get_status() const;
+
 	// various
 	void print_estimator() const;
 	friend std::ostream& operator<< (std::ostream& stream, const Object& Object);
@@ -72,8 +76,7 @@ private:
 
 	int id;
 
-	bool is_assigned;
-	bool done;
+    Object_status status;
 
 	int n_state;
 
