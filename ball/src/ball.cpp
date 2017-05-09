@@ -10,6 +10,10 @@
  */
 #include "ball.h"
 
+
+enum class Object_scenarios {ONE, TWO, THREE};
+
+
 using namespace Eigen;
 
 
@@ -20,12 +24,18 @@ double Postion_VO[3];
 const int n_rob = 4;
 const int n_obj = 4; // patrick.
 
+
+
+
 const double SIM_VELOCITY = 2;
-const double X_INIT = -2;
+const double X_INIT = -3;
 const double Y_INIT = -0.6;
 const double Z_INIT = 0.5;
 
+
 int grabbed[n_rob];
+
+const Object_scenarios scenario = Object_scenarios::TWO;
 
 std::vector<geometry_msgs::Pose> rob_ends;
 
@@ -423,21 +433,54 @@ int main(int argc, char **argv) {
 
 		// patrick  make our objects here... hard-coded 2 in front, big in middle, one in back
 
-		obj_pos[0] = Object; // the big object will not be carried by the robots
 
 
-		obj_pos[1].position.x = Object.position.x + 0.5;
-		obj_pos[1].position.y = Object.position.y + 0.2;
-		obj_pos[1].position.z = Object.position.z;
+        switch(scenario)
+        {
+            case(Object_scenarios::ONE):
+
+                obj_pos[0] = Object;
 
 
-		obj_pos[2].position.x = Object.position.x + 0.5;
-		obj_pos[2].position.y = Object.position.y - 0.2;
-		obj_pos[2].position.z = Object.position.z;
+                obj_pos[1].position.x = Object.position.x + 0.5;
+                obj_pos[1].position.y = Object.position.y + 0.2;
+                obj_pos[1].position.z = Object.position.z;
 
-		obj_pos[3].position.x = Object.position.x - 0.5;
-		obj_pos[3].position.y = Object.position.y - 0.0;
-		obj_pos[3].position.z = Object.position.z;
+
+                obj_pos[2].position.x = Object.position.x + 0.5;
+                obj_pos[2].position.y = Object.position.y - 0.2;
+                obj_pos[2].position.z = Object.position.z;
+
+                obj_pos[3].position.x = Object.position.x - 0.5;
+                obj_pos[3].position.y = Object.position.y - 0.0;
+                obj_pos[3].position.z = Object.position.z;
+
+                break;
+
+            case(Object_scenarios::TWO):
+
+                obj_pos[0] = Object;
+
+                obj_pos[1].position.x = Object.position.x - 0.5;
+                obj_pos[1].position.y = Object.position.y + 0.2;
+                obj_pos[1].position.z = Object.position.z;
+
+
+                obj_pos[2].position.x = Object.position.x - 0.5;
+                obj_pos[2].position.y = Object.position.y - 0.2;
+                obj_pos[2].position.z = Object.position.z;
+
+                obj_pos[3].position.x = Object.position.x + 0.5;
+                obj_pos[3].position.y = Object.position.y - 0.0;
+                obj_pos[3].position.z = Object.position.z;
+
+
+                break;
+
+            default:
+                break;
+        }
+
 
 
         obj_vel[0] = Object_vel;

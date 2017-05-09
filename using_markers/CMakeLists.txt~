@@ -128,7 +128,7 @@ include_directories(
 
 ## Declare a C++ executable
  add_executable(basic_shapes src/basic_shapes.cpp)
-set(CMAKE_CXX_FLAGS "-std=c++11")
+
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(using_markers_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})

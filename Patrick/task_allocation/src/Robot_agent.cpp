@@ -52,6 +52,10 @@ Robot_agent::Robot_agent(int Num_LPV_Com, const char *path_A_LPV, const char *pa
 void Robot_agent::set_assignment(int assignment_)
 {
 	assignment = assignment_;
+    if(assignment < 0)
+        status = Robot_status::Unallocated;
+    else
+        status = Robot_status::Allocated;
 }
 
 int Robot_agent::get_assignment() const
@@ -79,6 +83,11 @@ void Robot_agent::set_state(VectorXd X_)
 	}
 
 	X = X_;
+}
+
+Robot_status Robot_agent::get_status() const
+{
+    return status;
 }
 
 VectorXd Robot_agent::get_base() const

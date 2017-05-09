@@ -172,7 +172,7 @@ void Object::dumb_predict_motion()
 {
     if(DX_O(0) > 0.1)
     {
-        double dist = 3.5 - X_O(0); // pat hack... 3.5 is maximum in x that we should predict
+        double dist = OBJECT_MAX_X - X_O(0); // pat hack... 3.5 is maximum in x that we should predict
         int frames = dist/(DX_O(0)*0.2); // pat... let's compute with dt=0.2, so the number of frames = distance/(velocity*dt)
 
         P_O_prediction.resize(X_O.size(), frames+1); // pat hack. Need to find a better way.
@@ -308,7 +308,7 @@ double Object::update_value()
 	{
 		value *= 2.1;
 	}
-	if(X_O(0) > 2) // too late to catch
+    if(X_O(0) > OBJECT_MAX_X) // too late to catch
 	{
 		value = 0;
 	//	cout << "object " << id << " is set to 0 because X_O(0) is " << X_O(0) << endl;

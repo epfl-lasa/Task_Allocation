@@ -113,6 +113,10 @@ void Bi_manual_scenario::chatterCallback_catching_state(const std_msgs::Float64M
 		Motion_G->Set_index_of_grabbing_posititon_(msg.data[5],msg.data[6],X_I_C);
 		X_I_C(0)=msg.data[12];	X_I_C(1)=msg.data[13];	X_I_C(2)=msg.data[14];
 		Motion_G->Set_index_of_grabbing_posititon_(msg.data[10],msg.data[11],X_I_C);
+
+        Motion_G->Set_index_of_grabbing_posititon_(2,0,X_I_C);
+
+        Motion_G->Set_index_of_grabbing_posititon_(3,1,X_I_C);
 	}
 }
 void Bi_manual_scenario::chatterCallback_ObjectPosition_raw(const geometry_msgs::Pose & msg)
@@ -516,8 +520,6 @@ void Bi_manual_scenario::Parameter_initialization()
 		cJob[i].resize(KUKA_DOF);
 	}
 
-
-
 	for(int i=0;i<N_grabbing;i++)
 	{
 		Object_Grabbing_State[i].resize(6);
@@ -525,6 +527,7 @@ void Bi_manual_scenario::Parameter_initialization()
 		VirtualOb_Grabbing_State[i].resize(6);
 		VirtualOb_Grabbing_State[i].setZero();
 	}
+
 	Object_State.resize(6); 		Object_State.setZero();
 	Object_State_raw.resize(6); 	Object_State_raw.setZero();
 	DObject_State.resize(6); 		DObject_State.setZero();
@@ -597,28 +600,20 @@ void Bi_manual_scenario::Parameter_initialization()
 
 
 	IK_Solver= new qp_ik_solver();
-    IK_Solver->Initialize(2,dt, Numerical,Velocity_level, true);//, svm_filename); // 2 was first N_robots
+    IK_Solver->Initialize(2,dt, Numerical,Velocity_level, true, svm_filename); // 2 was first N_robots
 	// Initialize IK Solver without Self-Collision Avoidance
 	//IK_Solver->Initialize(N_robots,dt,Numerical,Velocity_level,true);
 
 	// Initialize IK Solver with Self-Collision Avoidance
 
     IK_Solver_pat = new qp_ik_solver();
-    IK_Solver_pat->Initialize(2,dt,Numerical,Velocity_level, true);
+    IK_Solver_pat->Initialize(2,dt,Numerical,Velocity_level, true,  svm_filename);
 
 	cout<<"IK_Solver->Initialize is done"<<endl;
 	Motion_G= new multiarm_ds();
 	Motion_G->Initialize(N_robots,N_grabbing,dt,6,A_V);
 	cout<<"Motion_G->Initialize is done"<<endl;
 
-/*	cJob[0](0)=0.0;	cJob[0](1)=1.0472;	cJob[0](2)=0.0;	cJob[0](3)=-1.0472;	cJob[0](4)=0.0;	cJob[0](5)=-1.0192;	cJob[0](6)=0.0;
-
-	if (N_robots>1)
-	{
-
-		cJob[1](0)=0.0;	cJob[1](1)=0.9472;	cJob[1](2)=0.0;	cJob[1](3)=-1.1472;	cJob[1](4)=0.0;	cJob[1](5)=-0.523599;	cJob[1](6)=0.0;
-	}
-*/
     for(int i = 0 ; i < N_robots; i++)
     {
         cJob[i](0)=0.0;	cJob[i](1)=1.0472;	cJob[i](2)=0.0;	cJob[i](3)=-1.0472;	cJob[i](4)=0.0;	cJob[i](5)=-1.0192;	cJob[i](6)=0.0;
@@ -1117,7 +1112,6 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdate(){
 	return STATUS_OK;
 }
 RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
-	MatrixXd targets;
 
 	switch(mPlanner){
 	case PLANNER_CARTESIAN :
@@ -1136,12 +1130,15 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 				Motion_G->Set_the_robot_first_primitive_desired_position(i,Pfirst_primitive[i],handle);
 
 
+
+
 				//	cout<<"Pfirst_primitive[i] "<<i<<endl<<Pfirst_primitive[i]<<endl;
 			}
 
 
 			Motion_G->Set_coordination(i, coordinations[i]); // added patrick
 			Motion_G->Set_the_robot_first_primitive_desired_position(i,Pfirst_primitive[i],handle); // added patrick
+
 //			cout << "robot " << i << " coordination " << coordinations[i] << " primitive " << endl << Pfirst_primitive[i] << endl;
 //			cout << "set robot " << i << " coord to " << coordinations[i] << " and target " << endl << Pfirst_primitive[i] << endl;
 			// For open loop
@@ -1249,7 +1246,8 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
                     IK_Solver_pat->set_jacobian_links(i-2,Jacobian_R[i]);
                     IK_Solver_pat->set_jacobian(i-2,Jacobian9[i]);
                 }
-				Desired_Velocity[i].block(0,0,3,1)=(Desired_End_State[i].block(0,0,3,1)-RPos_End[i])/dt;
+              //  cout<<"i "<<i<<" "<<Desired_End_State[i].block(0,0,3,1)<<endl;
+                Desired_Velocity[i].block(0,0,3,1)=(Desired_End_State[i].block(0,0,3,1)-RPos_End[i])/dt;
      //           cout<<"(Desired_End_State[i].block(0,0,3,1)-RPos_End[i])/dt "<<Desired_End_State[i].block(0,0,3,1)<<" i "<<i<<endl;
 
 				/*	cout<<"Desired_End_State[i] "<<i<<endl<<Desired_End_State[i].block(0,0,3,1)<<endl;

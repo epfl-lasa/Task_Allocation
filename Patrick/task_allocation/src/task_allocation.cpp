@@ -59,7 +59,11 @@ VectorXd Task_allocation::get_object_state(int i)
 void Task_allocation::predict_motion()
 {
 	for(auto & obj : Objects)
-		obj->dumb_predict_motion();
+    {
+    //    ROS_INFO_STREAM("predicting object " << obj->get_id());
+        if((!(obj->is_done())) && (obj->get_X_O()(0) < 3.5))
+            obj->dumb_predict_motion();
+    }
 }
 
 
@@ -70,8 +74,10 @@ void Task_allocation::clear_coalitions()
 	unallocated_robots.clear();
 	for(auto& rob : Robots)
 	{
-        if(!(rob->has_grabbed()))
+        if(!(rob->has_grabbed())) // any robot that hasnt grabbed can be reallocated
+        {
 			rob->set_assignment(-1);
+        }
 	}
 
 	for(auto& obj : Objects)
@@ -143,7 +149,7 @@ void Task_allocation::build_coalitions()
 // ****** look for unallocated robots
 	for(auto& rob : Robots)
 	{
-		if(rob->get_assignment() ==  -1)
+        if(rob->get_status() ==  Robot_status::Unallocated)
 		{
 			unallocated_robots.push_back(rob);
 		}
@@ -429,13 +435,13 @@ void Task_allocation::compute_intercepts()
 		}
 	}
 
-/*	for(auto & rob : Robots)
+    for(auto & rob : Robots)
 	{
-		if(rob->get_assignment() == -1) // robot is not assigned
+        if(rob->get_status() == Robot_status::Unallocated) // robot is not assigned
 		{
-			rob->set_idle_target();
+            rob->set_idle();
 		}
-    }*/
+    }
 }
 
 

@@ -22,8 +22,8 @@
 #include "ros/ros.h"
 #include "LPV.h"
 #include <math.h>
-#include  <omp.h>
 #include "Object.h"
+#include "common.h"
 
 using namespace Eigen;
 
@@ -50,7 +50,6 @@ public:
 
     bool has_grabbed() const;
     Robot_status get_status() const;
-	bool get_state_set() const;
 	void get_state(VectorXd& X) const;
 	VectorXd get_base() const;
 	int get_n_grippers() const;

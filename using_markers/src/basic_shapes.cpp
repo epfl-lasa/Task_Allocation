@@ -24,8 +24,14 @@ ros::Publisher marker_filter_pub;
 
 
 const int n_bots = 4;
-int obj_done[4];
+const int n_obj = 4;
+int obj_done[n_obj];
 int rob_id[n_bots];
+
+enum class Object_size {SMALL, LARGE};
+//const geometry_msgs::Vector3 obj_scales[2] = {geometry_msgs::Vector3(0.2,0.2,0.2), geometry_msgs::Vector3(0.4,0.4,0.4)};
+const Object_size obj_sizes[n_obj] = {Object_size::SMALL, Object_size::SMALL, Object_size::SMALL, Object_size::SMALL};
+
 visualization_msgs::Marker marker_rob[n_bots];
 ros::Publisher marker_rob_pub[n_bots];
 double B_t_U=0.0;
@@ -385,10 +391,21 @@ int main( int argc, char** argv )
 	marker.pose.orientation.y = 0.0;
 	marker.pose.orientation.z = 0.0;
 	marker.pose.orientation.w = 1.0;
-	double scale=0.5;
-	marker.scale.x = 0.4;
-	marker.scale.y = 0.4;
-	marker.scale.z = 0.4;
+    if(obj_sizes[0] == Object_size::SMALL)
+    {
+       // marker.scale = obj_scales[0];
+        marker.scale.x = 0.2f;
+        marker.scale.y = 0.2f;
+        marker.scale.z = 0.2f;
+    }
+    else
+    {
+       // marker.scale = obj_scales[1];
+        marker.scale.x = 0.4f;
+        marker.scale.y = 0.4f;
+        marker.scale.z = 0.4f;
+    }
+
 	marker.color.r = 0.0f;
 	marker.color.g = 0.0f;
 	marker.color.b = 1.0f;
@@ -405,9 +422,20 @@ int main( int argc, char** argv )
 	marker_p1.pose.orientation.y = 0.0;
 	marker_p1.pose.orientation.z = 0.0;
 	marker_p1.pose.orientation.w = 1.0;
-	marker_p1.scale.x = 0.2;
-	marker_p1.scale.y = 0.2;
-	marker_p1.scale.z = 0.2;
+    if(obj_sizes[1] == Object_size::SMALL)
+    {
+       // marker.scale = obj_scales[0];
+        marker_p1.scale.x = 0.2f;
+        marker_p1.scale.y = 0.2f;
+        marker_p1.scale.z = 0.2f;
+    }
+    else
+    {
+    //    marker.scale = obj_scales[1];
+        marker_p1.scale.x = 0.4f;
+        marker_p1.scale.y = 0.4f;
+        marker_p1.scale.z = 0.4f;
+    }
 	marker_p1.color.r = 1.0f;
 	marker_p1.color.g = 0.0f;
 	marker_p1.color.b = 0.0f;
@@ -423,9 +451,20 @@ int main( int argc, char** argv )
 	marker_p2.pose.orientation.y = 0.0;
 	marker_p2.pose.orientation.z = 0.0;
 	marker_p2.pose.orientation.w = 1.0;
-	marker_p2.scale.x = 0.2;
-	marker_p2.scale.y = 0.2;
-	marker_p2.scale.z = 0.2;
+    if(obj_sizes[2] == Object_size::SMALL)
+    {
+       // marker.scale = obj_scales[0];
+        marker_p2.scale.x = 0.2f;
+        marker_p2.scale.y = 0.2f;
+        marker_p2.scale.z = 0.2f;
+    }
+    else
+    {
+    //    marker.scale = obj_scales[1];
+        marker_p2.scale.x = 0.4f;
+        marker_p2.scale.y = 0.4f;
+        marker_p2.scale.z = 0.4f;
+    }
 	marker_p2.color.r = 1.0f;
 	marker_p2.color.g = 0.0f;
 	marker_p2.color.b = 1.0f;
@@ -442,9 +481,20 @@ int main( int argc, char** argv )
 	marker_p3.pose.orientation.y = 0.0;
 	marker_p3.pose.orientation.z = 0.0;
 	marker_p3.pose.orientation.w = 1.0;
-	marker_p3.scale.x = 0.2;
-	marker_p3.scale.y = 0.2;
-	marker_p3.scale.z = 0.2;
+    if(obj_sizes[3] == Object_size::SMALL)
+    {
+       // marker.scale = obj_scales[0];
+        marker_p3.scale.x = 0.2f;
+        marker_p3.scale.y = 0.2f;
+        marker_p3.scale.z = 0.2f;
+    }
+    else
+    {
+    //    marker.scale = obj_scales[1];
+        marker_p3.scale.x = 0.4f;
+        marker_p3.scale.y = 0.4f;
+        marker_p3.scale.z = 0.4f;
+    }
 	marker_p3.color.r = 1.0f;
 	marker_p3.color.g = 1.0f;
 	marker_p3.color.b = 1.0f;
@@ -466,7 +516,6 @@ int main( int argc, char** argv )
 	marker_filtered.pose.orientation.y = 0.0;
 	marker_filtered.pose.orientation.z = 0.0;
 	marker_filtered.pose.orientation.w = 1.0;
-	scale=0.5;
 	marker_filtered.scale.x = 0.4;
 	marker_filtered.scale.y = 0.4;
 	marker_filtered.scale.z = 0.4;

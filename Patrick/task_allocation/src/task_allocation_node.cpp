@@ -4,7 +4,7 @@
 
 const int N_ROBOTS = 4;
 const int N_OBJECTS = 4;
-const double TASK_ALLOCATION_RATE = 20; // Hz, frequency at which to run the node
+const double TASK_ALLOCATION_RATE = 10; // Hz, frequency at which to run the node
 
 
 const double dt = 0.30; // seconds
@@ -73,10 +73,10 @@ int main(int argc, char **argv) {
 	init_topics();
 
 
-	cout << "done initializing task allocation" << endl;
+    ROS_INFO_STREAM("done initializing task allocation" << endl);
 
-	cout << "allocating " << N_ROBOTS << " robots to " << N_OBJECTS << " objects" << endl;
-	cout << "waiting for simulator start" << endl;
+    ROS_INFO_STREAM("allocating " << N_ROBOTS << " robots to " << N_OBJECTS << " objects" << endl);
+    ROS_INFO_STREAM("waiting for simulator start" << endl);
 	// while we haven't received everything, wait.. This is not very orthodox
 
     while(run == false) // 0 is the value we get from the "init" in the "job init catch" sequence
@@ -92,7 +92,7 @@ int main(int argc, char **argv) {
 
         cout << rob << endl;
     }
-	cout << "starting allocating in a loop" << endl;
+    ROS_INFO_STREAM("starting allocating in a loop" << endl);
 
 
 
@@ -107,13 +107,19 @@ int main(int argc, char **argv) {
 
             clock_t begin = clock();
 
+     //       ROS_INFO_STREAM("Updating value" << endl);
             Task_allocator->update_objects_value();
+    //        ROS_INFO_STREAM("predicting motion" << endl);
             Task_allocator->predict_motion();
+   //         ROS_INFO_STREAM("updating robot business" << endl);
             Task_allocator->update_rob_business();
+  //          ROS_INFO_STREAM("allocating" << endl);
             Task_allocator->allocate();
+ //           ROS_INFO_STREAM("computing intercepts" << endl);
             Task_allocator->compute_intercepts(); // is actually done in "allocate()".
+//            ROS_INFO_STREAM("computing coordination" << endl);
             Task_allocator->compute_coordination();
-
+          //  ROS_INFO_STREAM("done" << endl);
 
             // check at what state the robots are
             for(auto & rob : Robots)
@@ -125,9 +131,9 @@ int main(int argc, char **argv) {
                     {
                         double distance = (rob.get_end() - Objects[assign].get_X_O().block(0,0,3,1)).norm();
         //				cout << "robot " << rob.get_id() << " is at " << distance << " of its target" << endl;
-                        if( distance < 0.3) // if it reached the object
+                        if( distance < 0.2) // if it reached the object
                         {
-                            cout << "robot " << rob.get_id() << " grabbed object " << Objects[assign].get_id() << endl;
+           //                 cout << "robot " << rob.get_id() << " grabbed object " << Objects[assign].get_id() << endl;
                             rob.set_grabbed();
                         }
                     }
@@ -138,10 +144,10 @@ int main(int argc, char **argv) {
                 {
                     rob.set_idle(); // keep sending it to idle position
 
-                    if((rob.get_idle_pos() - rob.get_end()).norm() < 0.3)
+                    if((rob.get_idle_pos() - rob.get_end()).norm() < 0.1)
                     {
                         Objects[rob.get_assignment()].set_done();
-                        cout << "robot " << rob.get_id() << " released the object " << Objects[rob.get_assignment()].get_id() << endl;
+         //               cout << "robot " << rob.get_id() << " released the object " << Objects[rob.get_assignment()].get_id() << endl;
                     }
                 }
             }

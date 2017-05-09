@@ -33,21 +33,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "eigen3/Eigen/Dense"
-//#include "geometry_msgs/Pose.h"
 #include "ros/ros.h"
-//#include "LPV.h"
-//#include "TrajectoryEstimation.h"
 #include <math.h>
-//#include <omp.h>
 #include <vector>
 #include "Coalition.h"
-//#include "multiarm_ds.h"
+#include "common.h"
 
 
-#include "std_msgs/MultiArrayLayout.h"
-#include "std_msgs/MultiArrayDimension.h"
+//#include "std_msgs/MultiArrayLayout.h"
+//#include "std_msgs/MultiArrayDimension.h"
 
-#include "std_msgs/Int32MultiArray.h"
+//#include "std_msgs/Int32MultiArray.h"
 
 
 
@@ -55,12 +51,7 @@ using namespace Eigen;
 
 
 
-const double VALUATION_THRESHOLD = 1;
-const int MAX_COALITION_SIZE = 6;
 
-const int MAX_TASKS = 6;
-
-const double OBJ_MAX_PREDICTIONTIME = 100;
 
 
 

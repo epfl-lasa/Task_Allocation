@@ -695,7 +695,7 @@ void multiarm_ds::predict_the_object_position()
 {
 	if ((Object_.predict_->mReadyToPredict)&&(Object_.X_O_(0)<4*minPos[0]))
 	{
-        cout<<"inside big if "<<endl;
+    //    cout<<"inside big if "<<endl;
 		int nFrame =0;
 		nFrame = Object_.predict_->PredictNextPosVel(Object_.MAX_PREDICTIONTIME_,dt_, Object_.P_O_prediction_,true,0,maxPos[0]);
 		//	cout<<"frame "<<nFrame<<" a "<<Object_.P_O_prediction_.cols()<<" "<<Object_.P_O_prediction_.rows()<<endl;
@@ -710,7 +710,7 @@ void multiarm_ds::predict_the_object_position()
 		}
 		else
 		{
-            cout<<"inside else "<<endl;
+      //      cout<<"inside else "<<endl;
 			for (int i=0;i<Object_.N_grabbing_pos_;i++)
 			{
 				for (int j=0;j<nFrame;j++)
@@ -731,23 +731,23 @@ void multiarm_ds::predict_the_object_position()
 				//				cout<<"Robots_[i].Probability_of_catching "<<i<<endl<<Robots_[i].Probability_of_catching_<<endl;
 			}
 
-            cout<<"after for loops "<<endl;
+//            cout<<"after for loops "<<endl;
 			Object_.prob_order_of_grabbing_.resize(nFrame,Object_.order_of_grabbing_.rows());Object_.prob_order_of_grabbing_.setOnes();
 			int pointer_robot=-1;
 			for (int i=0;i<Object_.order_of_grabbing_.rows();i++)
 			{
 				for (int j=0;j<Object_.order_of_grabbing_.cols();j++)
 				{
-                    ROS_INFO_STREAM("begin of loop i " << i << " j " << j );
-                    ROS_INFO_STREAM("Object_order_of_grabbing" << endl << Object_.order_of_grabbing_);
+          //          ROS_INFO_STREAM("begin of loop i " << i << " j " << j );
+          //          ROS_INFO_STREAM("Object_order_of_grabbing" << endl << Object_.order_of_grabbing_);
 					pointer_robot=Object_.order_of_grabbing_(i,j);
 
-                    ROS_INFO_STREAM("pointer robot " << pointer_robot);
+         //           ROS_INFO_STREAM("pointer robot " << pointer_robot);
 
-                    ROS_INFO_STREAM("size of prob order cols " << Object_.prob_order_of_grabbing_.cols() << " and will access column " << i);// << " " << Object_.prob_order_of_grabbing_.cols());
-                    ROS_INFO_STREAM("size of prob order rows " << Object_.prob_order_of_grabbing_.rows());
-                    ROS_INFO_STREAM("probab of catching cols " <<  Robots_[pointer_robot].Probability_of_catching_.cols() << " and will access column " << j);
-                    ROS_INFO_STREAM("probab of catching rows " <<  Robots_[pointer_robot].Probability_of_catching_.rows());
+        //            ROS_INFO_STREAM("size of prob order cols " << Object_.prob_order_of_grabbing_.cols() << " and will access column " << i);// << " " << Object_.prob_order_of_grabbing_.cols());
+        //            ROS_INFO_STREAM("size of prob order rows " << Object_.prob_order_of_grabbing_.rows());
+          //          ROS_INFO_STREAM("probab of catching cols " <<  Robots_[pointer_robot].Probability_of_catching_.cols() << " and will access column " << j);
+        //            ROS_INFO_STREAM("probab of catching rows " <<  Robots_[pointer_robot].Probability_of_catching_.rows());
 
                     Object_.prob_order_of_grabbing_.col(i)=Object_.prob_order_of_grabbing_.col(i).cwiseProduct(Robots_[pointer_robot].Probability_of_catching_.col(j));
 				}
@@ -827,14 +827,14 @@ void multiarm_ds::predict_the_object_position()
 				Object_.Max_liklihood=-1;
 			}
 
-            cout<<"after big if max_likelihood "<<endl;
+     //       cout<<"after big if max_likelihood "<<endl;
 		}
 
 	}
 	else if ( ((Object_.X_O_(0)>2*minPos[0]) &&  (Object_.X_O_(0)<maxPos[0] ) ) &&
 			( (Object_.X_O_(2)>minPos[2] ) &&  (Object_.X_O_(2)<maxPos[2] ) ))
 	{
-        cout<<"inside big else if "<<endl;
+  //      cout<<"inside big else if "<<endl;
 		Object_.Max_liklihood=10;
 		int handle=0;
 		for (int i=0;i<Object_.N_grabbing_pos_;i++)
@@ -920,19 +920,23 @@ bool multiarm_ds::Get_catching_state()
 {
 	return The_catching_pos_is_found;
 }
+
 void multiarm_ds::Get_the_coordination_allocation(int index, double& x)
 {
 	x=Robots_[index].tau_;
 }
+
 void multiarm_ds::Get_the_coordination_parameter(double& x)
 {
 	x=Vobject_.gamma_;
 }
+
 void multiarm_ds::Get_predict_the_object_position(int index, MatrixXd& X)
 {
 	//X.resize(Object_.P_O_G_prediction_[index].rows(),Object_.P_O_G_prediction_[index].cols());
 	X=Object_.P_O_G_prediction_[index];
 }
+
 void multiarm_ds::Get_the_robot_state(int index, VectorXd& X)
 {
 
@@ -942,6 +946,7 @@ void multiarm_ds::Get_the_robot_state(int index, VectorXd& X)
 
 	X=Robots_[index].X_;
 }
+
 void multiarm_ds::Get_Virtual_state(VectorXd & X)
 {
 	/* Getting the current state of the virtual object
@@ -949,6 +954,7 @@ void multiarm_ds::Get_Virtual_state(VectorXd & X)
 
 	X=Vobject_.X_V_;
 }
+
 void multiarm_ds::Get_the_grabbing_state(int index, VectorXd & X)
 {
 	/* Getting the current state of index th grabbing position on the virtual object with respect to the world frame
@@ -957,6 +963,7 @@ void multiarm_ds::Get_the_grabbing_state(int index, VectorXd & X)
 //    ROS_INFO_STREAM("Vobject.X_V_ " << Vobject_.X_V_.block(0,0,3,1).transpose() << " X_V_G " << index << " is " << Vobject_.X_V_G_[index].block(0,0,3,1).transpose() << endl);
 	X=Vobject_.X_V_G_[index]+Vobject_.X_V_;
 }
+
 bool multiarm_ds::Get_pos_of_grabbing_posititon_for_object_(double& likelihood, Vector3d& X_I_C)
 {
 	/* Getting the desired grabbing position of the virtual object
@@ -969,6 +976,7 @@ bool multiarm_ds::Get_pos_of_grabbing_posititon_for_object_(double& likelihood, 
 	}
 	return The_catching_pos_is_found;
 }
+
 void multiarm_ds::Get_index_of_grabbing_posititon_(int index_of_robot, int& index_of_grabbing, Vector3d& X_I_C)
 {
 
