@@ -29,13 +29,13 @@ const int n_obj = 4; // patrick.
 
 const double SIM_VELOCITY = 2;
 const double X_INIT = -3;
-const double Y_INIT = -0.6;
+const double Y_INIT = -0.55;
 const double Z_INIT = 0.5;
 
 
 int grabbed[n_rob];
 
-const Object_scenarios scenario = Object_scenarios::TWO;
+const Object_scenarios scenario = Object_scenarios::ONE;
 
 std::vector<geometry_msgs::Pose> rob_ends;
 
@@ -473,9 +473,24 @@ int main(int argc, char **argv) {
                 obj_pos[3].position.x = Object.position.x + 0.5;
                 obj_pos[3].position.y = Object.position.y - 0.0;
                 obj_pos[3].position.z = Object.position.z;
-
-
                 break;
+
+        case(Object_scenarios::THREE):
+
+            obj_pos[0] = Object;
+
+            obj_pos[1].position.x = Object.position.x - 1;
+            obj_pos[1].position.y = Object.position.y;
+            obj_pos[1].position.z = Object.position.z;
+
+
+            obj_pos[2].position.x = Object.position.x - 0.5;
+            obj_pos[2].position.y = Object.position.y;
+            obj_pos[2].position.z = Object.position.z;
+
+            obj_pos[3].position.x = Object.position.x + 0.5;
+            obj_pos[3].position.y = Object.position.y;
+            obj_pos[3].position.z = Object.position.z;
 
             default:
                 break;

@@ -30,7 +30,7 @@ int rob_id[n_bots];
 
 enum class Object_size {SMALL, LARGE};
 //const geometry_msgs::Vector3 obj_scales[2] = {geometry_msgs::Vector3(0.2,0.2,0.2), geometry_msgs::Vector3(0.4,0.4,0.4)};
-const Object_size obj_sizes[n_obj] = {Object_size::SMALL, Object_size::SMALL, Object_size::SMALL, Object_size::SMALL};
+const Object_size obj_sizes[n_obj] = {Object_size::LARGE, Object_size::SMALL, Object_size::SMALL, Object_size::SMALL};
 
 visualization_msgs::Marker marker_rob[n_bots];
 ros::Publisher marker_rob_pub[n_bots];
