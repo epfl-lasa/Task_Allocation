@@ -141,6 +141,8 @@ include_directories(
    ${catkin_LIBRARIES}
  )
 
+
+set(CMAKE_CXX_FLAGS "-std=c++11")
 #############
 ## Install ##
 #############

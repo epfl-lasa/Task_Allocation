@@ -2,13 +2,7 @@
 #include <ctime>
 
 
-const int N_ROBOTS = 4;
-const int N_OBJECTS = 4;
-const double TASK_ALLOCATION_RATE = 10; // Hz, frequency at which to run the node
 
-
-const double dt = 0.30; // seconds
-const double max_time = 10; // seconds
 const int n_state = 6;
 
 
@@ -75,7 +69,7 @@ int main(int argc, char **argv) {
 
     ROS_INFO_STREAM("done initializing task allocation" << endl);
 
-    ROS_INFO_STREAM("allocating " << N_ROBOTS << " robots to " << N_OBJECTS << " objects" << endl);
+    ROS_INFO_STREAM("allocating " << N_ROB << " robots to " << N_OBJ << " objects" << endl);
     ROS_INFO_STREAM("waiting for simulator start" << endl);
 	// while we haven't received everything, wait.. This is not very orthodox
 
@@ -87,11 +81,13 @@ int main(int argc, char **argv) {
 		}
 	}
 
-    for(auto & rob : Robots)
+  /*  for(auto & rob : Robots)
     {
 
         cout << rob << endl;
-    }
+    }*/
+
+    cout << *Task_allocator << endl;
     ROS_INFO_STREAM("starting allocating in a loop" << endl);
 
 
@@ -204,14 +200,14 @@ int main(int argc, char **argv) {
             }
 
             // publish the ids for the coalitions for display
-            for(int i = 0; i < N_ROBOTS; i++)
+            for(int i = 0; i < N_ROB; i++)
             {
                 rob_id_msg.data = Task_allocator->get_robot_target(i);
                 rob_target_id_pub[i].publish(rob_id_msg);
             }
 
 
-            for(int i = 0; i < N_OBJECTS; i++)
+            for(int i = 0; i < N_OBJ; i++)
             {
                 std_msgs::Int64 msg;
                 msg.data = Objects[i].is_done();
@@ -359,17 +355,49 @@ void add_objects_task_allocator()
 	VectorXd double_grab[2];
 	double_grab[0] = single_grab[0];
 	double_grab[1] = single_grab[0];
-	Object task0(n_state,zeroVec,zeroVec, Task_allocator->get_max_time(), Task_allocator->get_dt(), double_grab, 2, weight, value, 0);
-	Object task1(n_state,zeroVec,zeroVec, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value, 1);
-	Object task2(n_state,zeroVec,zeroVec, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value, 2);
-	Object task3(n_state,zeroVec,zeroVec, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value, 3);
+
+ /*   Object task0(n_state,zeroVec,zeroVec, Task_allocator->get_max_time(), Task_allocator->get_dt(), double_grab, 2, weight, value, 0);
+    Object task1(n_state,zeroVec,zeroVec, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value, 1);
+    Object task2(n_state,zeroVec,zeroVec, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value, 2);
+    Object task3(n_state,zeroVec,zeroVec, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value, 3);
 
 
-	Objects.push_back(task0);
+    switch(SCENARIO)
+    {
+        case(Object_scenarios::ONE):
+            for(int i = 0; i < N_OBJ; i++)
+            {
+                if(obj_sizes[(int)(SCENARIO)][i] == Object_sizes::SMALL)
+                    Objects.push_back(Object(n_state,zeroVec,zeroVec, Task_allocator->get_max_time(), Task_allocator->get_dt(), double_grab, 2, weight, value, i));
+                else
+                    Objects.push_back(Object(n_state,zeroVec,zeroVec, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value, i));
+            }
+            break;
+
+        case(Object_scenarios::TWO):
+            break;
+        case(Object_scenarios::THREE):
+            break;
+
+        default:
+            break;
+    }*/
+
+    for(int i = 0; i < N_OBJ; i++)
+    {
+        if(obj_sizes[(int)(SCENARIO)][i] == Object_sizes::LARGE) // shouldn't cast this to int. The clean way is making a switch statement but breaks the modularity of the code.
+            Objects.push_back(Object(n_state,zeroVec,zeroVec, Task_allocator->get_max_time(), Task_allocator->get_dt(), double_grab, 2, weight, value, i));
+        else
+            Objects.push_back(Object(n_state,zeroVec,zeroVec, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value, i));
+    }
+
+
+
+/*	Objects.push_back(task0);
 	Objects.push_back(task1);
 	Objects.push_back(task2);
 	Objects.push_back(task3);
-
+*/
 
 	for(auto & obj : Objects)
 		Task_allocator->add_task(&obj);
@@ -383,7 +411,7 @@ void add_robots_task_allocator()
 	double force = 5;
 	int grippers = 1;
 
-	for(int i = 0; i < N_ROBOTS; i++)
+    for(int i = 0; i < N_ROB; i++)
 	{
 
 		Vector3d base;

@@ -16,6 +16,13 @@
 #include "std_msgs/Float64.h"
 #include "task_allocation.h"
 #include <string>
+#include "common.h"
+
+const double TASK_ALLOCATION_RATE = 10; // Hz, frequency at which to run the node
+
+const double dt = 0.30; // seconds
+const double max_time = 10; // seconds
+
 
 // This is hideous, should just include "PATH.h"
 std::string Common_path  = "/home/patrick/lasa-project/catkin_ws/src/IJRR/simple_example_two_kuka/data"; // dirty

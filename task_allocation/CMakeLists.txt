@@ -6,7 +6,6 @@ project(task_allocation_node)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
  roscpp
-## motion_prediction
 )
 
 ##find_package(OpenMP REQUIRED)
@@ -119,13 +118,14 @@ include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
 )
+include_directories(../common/)
 
-FILE(GLOB theSourceFiles src/*)
+FILE(GLOB theSourceFiles src/* )
 FILE(GLOB theHeaderFiles include/*)
 
 ## Declare a cpp library
 add_library(task_allocation ${theSourceFiles} ${theHeaderFiles} )
-##target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
+target_link_libraries(task_allocation ${catkin_LIBRARIES})
 
 ## Declare a C++ library
 # add_library(bimanual_ds

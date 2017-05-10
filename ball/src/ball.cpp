@@ -11,8 +11,6 @@
 #include "ball.h"
 
 
-enum class Object_scenarios {ONE, TWO, THREE};
-
 
 using namespace Eigen;
 
@@ -21,23 +19,11 @@ Command COM;
 /*ENUM_State State;*/
 double Postion_VO[3];
 
-const int n_rob = 4;
-const int n_obj = 4; // patrick.
-
-
-
-
-const double SIM_VELOCITY = 2;
-const double X_INIT = -3;
-const double Y_INIT = -0.55;
-const double Z_INIT = 0.5;
-
-
-int grabbed[n_rob];
-
-const Object_scenarios scenario = Object_scenarios::ONE;
+int grabbed[N_ROB];
 
 std::vector<geometry_msgs::Pose> rob_ends;
+
+
 
 
 void chatterCallback_rob0_end(const geometry_msgs::Pose& msg);
@@ -51,8 +37,8 @@ void chatterCallback_rob2_grabbed(const std_msgs::Int64& msg);
 void chatterCallback_rob3_grabbed(const std_msgs::Int64& msg);
 
 
-void (*cb_rob_grabbed[n_rob])( const std_msgs::Int64& msg ) = { chatterCallback_rob0_grabbed, chatterCallback_rob1_grabbed, chatterCallback_rob2_grabbed, chatterCallback_rob3_grabbed};
-void (*cb_rob_end[n_rob])( const geometry_msgs::Pose& msg ) = { chatterCallback_rob0_end, chatterCallback_rob1_end, chatterCallback_rob2_end, chatterCallback_rob3_end};
+void (*cb_rob_grabbed[N_ROB])( const std_msgs::Int64& msg ) = { chatterCallback_rob0_grabbed, chatterCallback_rob1_grabbed, chatterCallback_rob2_grabbed, chatterCallback_rob3_grabbed};
+void (*cb_rob_end[N_ROB])( const geometry_msgs::Pose& msg ) = { chatterCallback_rob0_end, chatterCallback_rob1_end, chatterCallback_rob2_end, chatterCallback_rob3_end};
 
 
 void chatterCallback_rob0_end(const geometry_msgs::Pose& msg)
@@ -170,7 +156,7 @@ int main(int argc, char **argv) {
 	std::vector<ros::Subscriber> sub_rob_end;
 
 
-	for(int i = 0; i < n_rob; i++)
+    for(int i = 0; i < N_ROB; i++)
 	{
 		grabbed[i] = -1;
 	}
@@ -190,7 +176,7 @@ int main(int argc, char **argv) {
 
 	// pat
 	std::ostringstream oss;
-	for(int i = 0; i < n_obj; i++)
+    for(int i = 0; i < N_OBJ; i++)
 	{
 		obj_pos.push_back(geometry_msgs::Pose());
 		obj_vel.push_back(geometry_msgs::Pose());
@@ -213,7 +199,7 @@ int main(int argc, char **argv) {
 	}
 
 
-	for(int i = 0; i < n_rob; i++)
+    for(int i = 0; i < N_ROB; i++)
 	{
 		rob_ends.push_back(geometry_msgs::Pose());
 
@@ -435,12 +421,11 @@ int main(int argc, char **argv) {
 
 
 
-        switch(scenario)
+        switch(SCENARIO)
         {
             case(Object_scenarios::ONE):
 
                 obj_pos[0] = Object;
-
 
                 obj_pos[1].position.x = Object.position.x + 0.5;
                 obj_pos[1].position.y = Object.position.y + 0.2;
@@ -510,7 +495,7 @@ int main(int argc, char **argv) {
         obj_acc[3] = Object_acc;
 
 
-		for(int i = 0; i < n_rob; i++)
+        for(int i = 0; i < N_ROB; i++)
 		{
 			if(grabbed[i] != -1)
 			{
@@ -529,7 +514,7 @@ int main(int argc, char **argv) {
 
 
 
-		for(int i = 0; i < n_obj; i++)
+        for(int i = 0; i < N_OBJ; i++)
 		{
 			pub_obj_pos[i].publish(obj_pos[i]);
 			pub_obj_vel[i].publish(obj_vel[i]);

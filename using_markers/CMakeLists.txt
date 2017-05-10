@@ -115,7 +115,7 @@ catkin_package(
 include_directories(
   ${catkin_INCLUDE_DIRS}
 )
-
+include_directories(../common/)
 ## Declare a C++ library
 # add_library(using_markers
 #   src/${PROJECT_NAME}/using_markers.cpp

@@ -1,10 +1,9 @@
-
-
-
 #include <ros/ros.h>
 #include <visualization_msgs/Marker.h>
 #include "geometry_msgs/Pose.h"
 #include "std_msgs/Int64.h"
+#include "common.h"
+
 
 visualization_msgs::Marker marker_p1;
 visualization_msgs::Marker marker_p2;
@@ -22,18 +21,11 @@ ros::Publisher marker_filter_pub;
 
 
 
+int obj_done[N_OBJ];
+int rob_id[N_ROB];
 
-const int n_bots = 4;
-const int n_obj = 4;
-int obj_done[n_obj];
-int rob_id[n_bots];
-
-enum class Object_size {SMALL, LARGE};
-//const geometry_msgs::Vector3 obj_scales[2] = {geometry_msgs::Vector3(0.2,0.2,0.2), geometry_msgs::Vector3(0.4,0.4,0.4)};
-const Object_size obj_sizes[n_obj] = {Object_size::LARGE, Object_size::SMALL, Object_size::SMALL, Object_size::SMALL};
-
-visualization_msgs::Marker marker_rob[n_bots];
-ros::Publisher marker_rob_pub[n_bots];
+visualization_msgs::Marker marker_rob[N_ROB];
+ros::Publisher marker_rob_pub[N_ROB];
 double B_t_U=0.0;
 
 
@@ -359,7 +351,7 @@ int main( int argc, char** argv )
 	marker_p2_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
 	marker_p3_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
 
-	for(int i = 0; i < n_bots; i++)
+    for(int i = 0; i < N_ROB; i++)
 	{
 		marker_rob_pub[i] = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
 	}
@@ -391,7 +383,7 @@ int main( int argc, char** argv )
 	marker.pose.orientation.y = 0.0;
 	marker.pose.orientation.z = 0.0;
 	marker.pose.orientation.w = 1.0;
-    if(obj_sizes[0] == Object_size::SMALL)
+    if(obj_sizes[(int)(SCENARIO)][0] == Object_sizes::SMALL)
     {
        // marker.scale = obj_scales[0];
         marker.scale.x = 0.2f;
@@ -422,7 +414,7 @@ int main( int argc, char** argv )
 	marker_p1.pose.orientation.y = 0.0;
 	marker_p1.pose.orientation.z = 0.0;
 	marker_p1.pose.orientation.w = 1.0;
-    if(obj_sizes[1] == Object_size::SMALL)
+    if(obj_sizes[(int)(SCENARIO)][1] == Object_sizes::SMALL)
     {
        // marker.scale = obj_scales[0];
         marker_p1.scale.x = 0.2f;
@@ -451,7 +443,7 @@ int main( int argc, char** argv )
 	marker_p2.pose.orientation.y = 0.0;
 	marker_p2.pose.orientation.z = 0.0;
 	marker_p2.pose.orientation.w = 1.0;
-    if(obj_sizes[2] == Object_size::SMALL)
+    if(obj_sizes[(int)(SCENARIO)][2] == Object_sizes::SMALL)
     {
        // marker.scale = obj_scales[0];
         marker_p2.scale.x = 0.2f;
@@ -481,7 +473,7 @@ int main( int argc, char** argv )
 	marker_p3.pose.orientation.y = 0.0;
 	marker_p3.pose.orientation.z = 0.0;
 	marker_p3.pose.orientation.w = 1.0;
-    if(obj_sizes[3] == Object_size::SMALL)
+    if(obj_sizes[(int)(SCENARIO)][3] == Object_sizes::SMALL)
     {
        // marker.scale = obj_scales[0];
         marker_p3.scale.x = 0.2f;
@@ -643,7 +635,7 @@ int main( int argc, char** argv )
 
 
 
-	for(int i = 0; i < n_bots; i++)
+    for(int i = 0; i < N_ROB; i++)
 	{
 		marker_rob_pub[i].publish(marker_rob[i]);
 	}

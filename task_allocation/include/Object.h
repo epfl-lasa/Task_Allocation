@@ -16,11 +16,12 @@
 #include "eigen3/Eigen/Dense"
 #include "geometry_msgs/Pose.h"
 #include "ros/ros.h"
-#include "LPV.h"
 #include <math.h>
 #include <string>
 #include "common.h"
 
+using namespace std;
+using namespace Eigen;
 
 enum class Object_prediction_type{Ballistic,Straight};
 enum class Object_status{Unallocated, Allocated, Grabbed, Done};

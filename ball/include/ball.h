@@ -25,10 +25,16 @@
 #include <sstream>
 #include "sg_filter.h"
 #include "eigen3/Eigen/Dense"
-
+#include "common.h"
 
 using namespace std;
 using namespace MathLib;
+
+
+const double SIM_VELOCITY = 2;
+const double X_INIT = -3;
+const double Y_INIT = -0.55;
+const double Z_INIT = 0.5;
 
 
 

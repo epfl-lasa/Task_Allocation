@@ -40,20 +40,7 @@
 #include "common.h"
 
 
-//#include "std_msgs/MultiArrayLayout.h"
-//#include "std_msgs/MultiArrayDimension.h"
-
-//#include "std_msgs/Int32MultiArray.h"
-
-
-
 using namespace Eigen;
-
-
-
-
-
-
 
 
 class Task_allocation

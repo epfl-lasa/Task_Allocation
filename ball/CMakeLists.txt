@@ -118,7 +118,7 @@ catkin_package(
 include_directories(
   ${catkin_INCLUDE_DIRS}
 )
-
+include_directories(../common/)
 ## Declare a C++ library
 # add_library(ball
 #   src/${PROJECT_NAME}/ball.cpp
