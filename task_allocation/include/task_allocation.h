@@ -82,6 +82,7 @@ public:
 	void		compute_coordination();
 	MatrixXd	get_targets();
 	std::vector<double> get_coordinations();
+    std::vector<Coalition> get_coalitions() const;
 
 	friend std::ostream& operator<< (std::ostream& stream, const Task_allocation& Object);
     bool        check_dupe(const VectorXd& rowA, const VectorXd& rowB) const;

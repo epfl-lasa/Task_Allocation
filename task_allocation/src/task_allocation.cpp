@@ -89,6 +89,10 @@ void Task_allocation::clear_coalitions()
 	}
 }
 
+std::vector<Coalition> Task_allocation::get_coalitions() const
+{
+    return active_coalitions;
+}
 
 void Task_allocation::compute_coordination()
 {

@@ -235,9 +235,13 @@ void Robot_agent::update_status()
 
     if(status == Robot_status::Grabbed)
     {
-        if((X_idle - X_targ).norm() < 0.01)
+        if((X_idle - X_targ).norm() < 0.01) // is robot going to idle position, unsure if I can just X_idle == X_targ
         {
-            status = Robot_status::Unallocated;
+            if(delta < 0.1)
+            {
+                status = Robot_status::Unallocated;
+                cout << "robot " << id << " went from grabbed to unallocated" << endl;
+            }
         }
     }
 }

@@ -4,7 +4,7 @@
 const int N_ROB = 4;
 const int N_OBJ = 4;
 
-const double OBJECT_MAX_X = 3.5; // end of workspace
+const double OBJECT_MAX_X = 3.5; // end of conveyor
 
 const int MAX_COALITION_SIZE = 6;
 const int MAX_TASKS = 6;

@@ -33,6 +33,8 @@ std::vector<ros::Publisher> obj_done_pub;
 std::vector<Object> Objects;
 std::vector<Robot_agent> Robots;
 
+std::vector<Coalition> active_coalitions;
+
 
 Task_allocation* Task_allocator;
 
@@ -117,13 +119,73 @@ int main(int argc, char **argv) {
             Task_allocator->compute_coordination();
           //  ROS_INFO_STREAM("done" << endl);
 
+
+            active_coalitions = Task_allocator->get_coalitions();
+            // go through each coalition and see if the robots are where we want them
+            for(auto & coal : active_coalitions)
+            {
+                std::vector<int> ids;
+                ids = coal.get_robots_id();
+                std::vector<bool> reached;
+                double distance_POG;
+                int n_grips = Objects[coal.get_object_id()].get_n_grippers(); // the "get_object_id() can theoretically return -1, but should not happen in active coalitions. If it happens, there's another error.
+                for(int i = 0; i < ids.size(); i++)
+                {
+                    // for robot 0, check POG 0, for robot 1, check POG 1
+                    distance_POG = (Robots[ids[i]].get_end() - Objects[coal.get_object_id()].get_P_O_G_prediction(i%2).col(0).block(0,0,3,1)).norm();
+                    if(distance_POG < 0.25)
+                        reached.push_back(true);
+                    else
+                        reached.push_back(false);
+                }
+                if(n_grips == 1)
+                {
+                    if(reached[0] == true)
+                    {
+                        // single robot in coalition and it caught the item
+                        cout << "robot " << ids[0] << " grabbed object " << coal.get_object_id() << endl;
+                        Robots[ids[0]].set_grabbed();
+                        Robots[ids[0]].set_idle();
+                    }
+                }
+                else if(n_grips == 2)
+                {
+                    if(reached[0] == true && reached[1] == true)
+                    {
+                        // 2 robots in coalition and they caught the item
+                        for(auto & id : ids)
+                        {
+                            Robots[id].set_grabbed();
+                        }
+                        // Here I somehow need to set the virtual object going up...
+                    }
+                }
+            }
+
+            for(auto & rob : Robots)
+            {
+                if(rob.get_status() == Robot_status::Unallocated)
+                {
+                    rob.set_idle();
+                }
+                if(rob.has_grabbed())
+                {
+                    if((rob.get_idle_pos() - rob.get_end()).norm() < 0.1)
+                    {
+                        Objects[rob.get_assignment()].set_done();
+                    }
+                }
+            }
+
+/*
             // check at what state the robots are
             for(auto & rob : Robots)
             {
                 int assign = rob.get_assignment();
                 if(assign != -1) // if it's assigned
                 {
-                    if(Objects[assign].get_n_grippers() == 1) // if its object is a "1 robot" object
+                    int n_grips = Objects[assign].get_n_grippers();
+                    if(n_grips == 1) // if its object is a "1 robot" object
                     {
                         double distance = (rob.get_end() - Objects[assign].get_X_O().block(0,0,3,1)).norm();
         //				cout << "robot " << rob.get_id() << " is at " << distance << " of its target" << endl;
@@ -131,6 +193,20 @@ int main(int argc, char **argv) {
                         {
            //                 cout << "robot " << rob.get_id() << " grabbed object " << Objects[assign].get_id() << endl;
                             rob.set_grabbed();
+                        }
+                    }
+
+                    if(n_grips == 2)
+                    {
+                        double distance_POG[n_grips];
+                        for(int i = 0; i < n_grips; i++)
+                        {
+                            distance_POG[i] = (rob.get_end() - Objects[assign].get_P_O_G_prediction(i).col(0).block(0,0,3,1)).norm();
+                        }
+                        if(distance_POG[0] < 0.15 && distance_POG[1] < 0.15)
+                        {
+                            ROS_INFO_STREAM("robot " << rob.get_id() << "distance to POG " << distance_POG[0] << " " << distance_POG[1]);
+
                         }
                     }
                 }
@@ -147,12 +223,8 @@ int main(int argc, char **argv) {
                     }
                 }
             }
-
-    //
-
-
+*/
             clock_t end = clock();
-
 
 
             // publish stuff
@@ -162,6 +234,16 @@ int main(int argc, char **argv) {
 
             // publish who grabbed what.
             for(auto & rob : Robots)
+            {
+                std_msgs::Int64 msg;
+                msg.data = -1;
+                if(rob.has_grabbed())
+                {
+                    msg.data = rob.get_assignment();
+                }
+                rob_grabbed_pub[rob.get_id()].publish(msg);
+            }
+     /*       for(auto & rob : Robots)
             {
                 int assign = rob.get_assignment();
                 std_msgs::Int64 msg;
@@ -178,7 +260,7 @@ int main(int argc, char **argv) {
 
                 rob_grabbed_pub[rob.get_id()].publish(msg);
             }
-
+*/
 
             // publish the desired coordinations...
             for(int i = 0; i < coordinations.size(); i++)
@@ -215,22 +297,9 @@ int main(int argc, char **argv) {
 
             }
 
-
             clock_t end_pub = clock();
-
-
-     /*       Coalition test;
-            test.add_robot(&(Robots[2]));
-            test.add_robot(&(Robots[3]));
-            test.add_task(&Objects[0]);
-            test.compute_value();
-            cout << "test coalition cost " << test.get_cost() << " value " << test.get_value() << " weight " << test.get_weight() << " feasible "<< test.is_feasible(Objects[0]) << endl;
-            cout << "Value of object 0 " << Objects[0].get_value() << " assigned " << Objects[0].get_assignment() <<  " done " << Objects[0].is_done() << endl;
-            cout << "Robot 2 cost for task 0 " << Robots[2].evaluate_task(Objects[0]) << endl;
-            cout << "Robot 3 cost for task 0 " << Robots[3].evaluate_task(Objects[0]) << endl;
-    */
-
         }
+
         ros::spinOnce();
         r.sleep();
 
@@ -353,35 +422,11 @@ void add_objects_task_allocator()
 	single_grab[0].resize(n_state); single_grab[0].setZero();
 
 	VectorXd double_grab[2];
-	double_grab[0] = single_grab[0];
-	double_grab[1] = single_grab[0];
+    double_grab[0].resize(n_state); double_grab[0].setZero();
+    double_grab[1].resize(n_state); double_grab[1].setZero();
+    double_grab[0](1) = -0.1;
+    double_grab[1](1) = 0.1;
 
- /*   Object task0(n_state,zeroVec,zeroVec, Task_allocator->get_max_time(), Task_allocator->get_dt(), double_grab, 2, weight, value, 0);
-    Object task1(n_state,zeroVec,zeroVec, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value, 1);
-    Object task2(n_state,zeroVec,zeroVec, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value, 2);
-    Object task3(n_state,zeroVec,zeroVec, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value, 3);
-
-
-    switch(SCENARIO)
-    {
-        case(Object_scenarios::ONE):
-            for(int i = 0; i < N_OBJ; i++)
-            {
-                if(obj_sizes[(int)(SCENARIO)][i] == Object_sizes::SMALL)
-                    Objects.push_back(Object(n_state,zeroVec,zeroVec, Task_allocator->get_max_time(), Task_allocator->get_dt(), double_grab, 2, weight, value, i));
-                else
-                    Objects.push_back(Object(n_state,zeroVec,zeroVec, Task_allocator->get_max_time(), Task_allocator->get_dt(), single_grab, 1, weight*0.3, value, i));
-            }
-            break;
-
-        case(Object_scenarios::TWO):
-            break;
-        case(Object_scenarios::THREE):
-            break;
-
-        default:
-            break;
-    }*/
 
     for(int i = 0; i < N_OBJ; i++)
     {

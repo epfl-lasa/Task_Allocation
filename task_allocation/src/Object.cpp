@@ -182,26 +182,26 @@ void Object::dumb_predict_motion()
         //	cout << "X_O " << endl << X_O << endl;
         //	cout << "DX_O " << endl << DX_O << endl;
 
-            for(int i = 0; i <= frames; i++)
-            {
-                P_O_prediction.col(i) = X_O + i*dt*DX_O;
-            }
+        for(int i = 0; i <= frames; i++)
+        {
+            P_O_prediction.col(i) = X_O + i*dt*DX_O;
+        }
 
         //	cout << "P_O predicted " << endl << P_O_prediction << endl;
 
-            for(int j = 0; j < n_grabbing_pos; j++)
-            {
-                P_O_G_prediction[j].resize(X_O.size(), frames+1);
-                P_O_G_prediction[j].setZero();
+        for(int j = 0; j < n_grabbing_pos; j++)
+        {
+            P_O_G_prediction[j].resize(X_O.size(), frames+1);
+            P_O_G_prediction[j].setZero();
 
-        //		cout << "P_O_G prediction " << j << endl << P_O_G_prediction[j] << endl;
-        //		cout << "X_O_G " << j << endl << X_O_G[j] << endl;
-                for(int k = 0; k <= frames; k++)
-                {
-                    P_O_G_prediction[j].col(k) = P_O_prediction.col(k)+X_O_G[j];//.block(0,0,3,1).transpose();
-                }
-        //		cout << "for grabbing pos " << j << endl << P_O_G_prediction[j] << endl;
+    //		cout << "P_O_G prediction " << j << endl << P_O_G_prediction[j] << endl;
+    //		cout << "X_O_G " << j << endl << X_O_G[j] << endl;
+            for(int k = 0; k <= frames; k++)
+            {
+                P_O_G_prediction[j].col(k) = P_O_prediction.col(k)+X_O_G[j];//.block(0,0,3,1).transpose();
             }
+    //		cout << "for grabbing pos " << j << endl << P_O_G_prediction[j] << endl;
+        }
 
         //	cout << "P_O predicted for " << n_frames << " frames" << endl << P_O_prediction << endl;
 
@@ -336,6 +336,7 @@ MatrixXd Object::get_P_O_G_prediction(int index) const
 {
 	if(index >= 0 && index < n_grabbing_pos)
 		return P_O_G_prediction[index];
+    ROS_INFO_STREAM("received wrong parameter for POG_prediction" << endl;);
 	return P_O_G_prediction[0];
 }
 

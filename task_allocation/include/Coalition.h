@@ -44,7 +44,6 @@ public:
 	void print_intercept() const;
     bool is_feasible(Object& obj) const;
 	double compute_value(); // updates value, cost and weight
-
 	friend std::ostream& operator<< (std::ostream& stream, const Coalition& Object);
 
 private:
