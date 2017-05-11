@@ -96,7 +96,7 @@ int main(int argc, char **argv) {
             //if(coordinations[0] == 1 && coordinations)
       //      cout << *Task_allocator << endl;
 
-            cout << Objects[0] << endl;
+   //         cout << Objects[0] << endl;
 
             clock_t begin = clock();
 
