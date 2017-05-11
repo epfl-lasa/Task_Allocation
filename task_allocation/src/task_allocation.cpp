@@ -232,7 +232,9 @@ void Task_allocation::build_coalitions()
             for(const auto & obj : Objects)
             {
                 if(obj->get_status() == Object_status::Unallocated)
+                {
                     coal.add_task(obj);
+                }
             }
 
             coal.set_id(i*min(MAX_COALITION_SIZE, n_bots)+j);

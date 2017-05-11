@@ -96,6 +96,8 @@ int main(int argc, char **argv) {
             //if(coordinations[0] == 1 && coordinations)
       //      cout << *Task_allocator << endl;
 
+            cout << Objects[0] << endl;
+
             clock_t begin = clock();
 
      //       ROS__STREAM("Updating value" << endl);
@@ -133,7 +135,7 @@ int main(int argc, char **argv) {
                     {
                         // for robot 0, check POG 0, for robot 1, check POG 1
                         distance_POG = (Robots[ids[i]].get_end() - Objects[coal.get_object_id()].get_P_O_G_prediction(i%2).col(0).block(0,0,3,1)).norm();
-                        if(distance_POG < 0.25)
+                        if(distance_POG < 0.15)
                             reached.push_back(true);
                         else
                             reached.push_back(false);

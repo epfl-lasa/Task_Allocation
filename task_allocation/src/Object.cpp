@@ -395,7 +395,8 @@ std::ostream& operator <<(std::ostream& stream, const Object& o)
 	cout << "dt " << o.dt << endl;
 	cout << "object id " << o.id << endl;
     cout << "status " << static_cast<typename std::underlying_type<Object_status>::type>(o.status) << endl;
-	for(int i = 0; i < 3; i++)
+
+    for(int i = 0; i < 3; i++)
 	{
 		cout << "minPos i " << i << " value " << o.minPos[i] << endl;
 	}
