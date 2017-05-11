@@ -105,7 +105,7 @@ int main(int argc, char **argv) {
 
             clock_t begin = clock();
 
-     //       ROS_INFO_STREAM("Updating value" << endl);
+     //       ROS__STREAM("Updating value" << endl);
             Task_allocator->update_objects_value();
     //        ROS_INFO_STREAM("predicting motion" << endl);
             Task_allocator->predict_motion();

@@ -74,19 +74,22 @@ void Task_allocation::clear_coalitions()
     Coalitions.clear();
     unallocated_robots.clear();
 
+    // remove robots that haven't grabbed their target from the active coalitions
     for(int i = 0; i < active_coalitions.size(); (removed_coal)? i : i++) // uses old iteration because I sucked and didn't know how to erase without having the position
     {
-
+        removed_coal = false;
         std::vector<int> ids = active_coalitions[i].get_robots_id();
         for(const auto & id : ids)
         {
             if(!(Robots[id]->has_grabbed())) // one robot at least hasn't grabbed the object, the coalition can be disbanded
             {
                 active_coalitions.erase(active_coalitions.begin() + i);
+                removed_coal = true;
             }
         }
     }
 
+    // go over each robots and add them to unallocated robots (if they haven't grabbed anything)
 	for(auto& rob : Robots)
 	{
         if(!(rob->has_grabbed())) // any robot that hasnt grabbed can be reallocated
@@ -98,10 +101,11 @@ void Task_allocation::clear_coalitions()
             unallocated_robots.push_back(rob);
     }
 
+
+    // if an object is grabbed or done, let it be.
+    // if it's allocated, reallocate to guarantee permanent reallocation
 	for(auto& obj : Objects)
 	{
-        // if an object is grabbed or done, let it be.
-        // if it's allocated, reallocate to guarantee permanent reallocation
         if(obj->get_status() == Object_status::Allocated)
             obj->set_status(Object_status::Unallocated);
 	}
@@ -114,8 +118,6 @@ std::vector<Coalition> Task_allocation::get_coalitions() const
 
 void Task_allocation::compute_coordination()
 {
-//	targets.resize(6, n_robots);
-//	targets.setZero();
 	std::vector<int> robId;
 	coordinations.clear();
 	coordinations.resize(n_robots);
@@ -159,16 +161,29 @@ std::vector<double> Task_allocation::get_coordinations()
 	return coordinations;
 }
 
+
+
 // computes all coalitions for the unallocated robots.
 void Task_allocation::build_coalitions()
 {
 
+    unallocated_robots.clear();
+    for(const auto & rob : Robots)
+    {
+        if(rob->get_status() == Robot_status::Unallocated)
+            unallocated_robots.push_back(rob);
+    }
+
+
 // ****** make all the possible coalitions
 //cout << "build_coalitions: making the coalitions ..." << endl;
-	int n_bots = unallocated_robots.size();
+    int n_bots = unallocated_robots.size();
+
+
   //  cout << "made ";
 	for(int i = 0; i < min(MAX_COALITION_SIZE, n_bots); i++)
 	{
+
 		// ************* make the matrix with all permutations of the available robots
 		unsigned long int number_of_coalitions;
 		MatrixXd perm = PermGenerator(n_bots,i+1); // i+1 because in array 0 we store the coalitions of size 1(ie singletons)
@@ -205,18 +220,18 @@ void Task_allocation::build_coalitions()
 		for(int j = 0; j < number_of_coalitions; j++)
 		{
 			// make the coalition
-			Coalition test;
+            Coalition coal;
 			for(int k = 0; k < i+1; k++) // add all robots that should be in this coalition.
 			{
-				test.add_robot((unallocated_robots[perm(j,k)]));
+                coal.add_robot((unallocated_robots[perm(j,k)]));
 			}
 			for(int k = 0; k < n_objects; k++)
 			{
                 if((Objects[k]->get_assignment() == false) && (Objects[k]->is_done() == false))
-					test.add_task((Objects[k]));
+                    coal.add_task((Objects[k]));
 			}
-			test.set_id(i*min(MAX_COALITION_SIZE, n_bots)+j);
-			Coalitions[i].push_back(test);
+            coal.set_id(i*min(MAX_COALITION_SIZE, n_bots)+j);
+            Coalitions[i].push_back(coal);
 //			cout << "Coalition of size " << i+1 << " number " << j << endl << Coalitions[i][j] << endl;
 		}
 	}
@@ -257,7 +272,6 @@ bool Task_allocation::set_object_state(int i, VectorXd X, VectorXd DX)
 	if(i < n_objects)
 	{
 		Objects[i]->set_state(X, DX);
-
 		return true;
 	}
 	return false;
@@ -286,7 +300,6 @@ void Task_allocation::allocate()
 		{
 			break;
 		}
-
 
 		// ************** evaluate the coalitions
 	//	cout << "evaluating coalitions" << endl;
@@ -321,8 +334,6 @@ void Task_allocation::allocate()
 			active_coalitions.push_back(*low_coal);
 			low_coal->assign();
 		}
-	//	else
-		//	cout << "didn't find a coalition" << endl;
 	}
 }
 
@@ -373,12 +384,7 @@ void Task_allocation::print_intercepts() const
 
 void Task_allocation::compute_intercepts()
 {
-	// initialize all robots to idle target
-//	for(auto & rob : Robots)
-//		rob->set_idle();
-
-
-	// modify only the targets of the robots that have a useful target
+    // modify only the targets of the robots that have a useful target
 	for(auto & coal : active_coalitions)
 	{
 		if(coal.get_n_robots() == 1)

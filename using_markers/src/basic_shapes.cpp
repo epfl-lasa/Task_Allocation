@@ -6,14 +6,6 @@
 
 #define UNALLOCATED_COLOR {0,1,1} // color for unallocated marker
 
-
-//visualization_msgs::Marker marker_p1;
-//visualization_msgs::Marker marker_p2;
-//visualization_msgs::Marker marker_p3;
-//ros::Publisher marker_p1_pub;
-//ros::Publisher marker_p2_pub;
-//ros::Publisher marker_p3_pub;
-
 visualization_msgs::Marker marker;
 visualization_msgs::Marker marker_filtered;
 visualization_msgs::Marker marker_virtual;
