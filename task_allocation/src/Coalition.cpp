@@ -54,7 +54,9 @@ void Coalition::assign()
 	// assign all robots in here
 	for(const auto& rob : Robots)
 	{
+    //    cout << "setting robot " << rob->get_id() << " assigned to " << des_obj->get_id() << endl;
 		rob->set_assignment(des_obj->get_id());
+    //    rob->set_status(Robot_status::Allocated);
 	}
 
     des_obj->set_assigned();

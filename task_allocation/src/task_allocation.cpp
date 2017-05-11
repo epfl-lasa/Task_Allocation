@@ -173,17 +173,32 @@ std::vector<double> Task_allocation::get_coordinations()
 // computes all coalitions for the unallocated robots.
 void Task_allocation::build_coalitions()
 {
+
+    for(auto & row: Coalitions)
+    {
+        row.clear();
+    }
+    Coalitions.clear();
     unallocated_robots.clear();
     for(const auto & rob : Robots)
     {
         if(rob->get_status() == Robot_status::Unallocated)
+        {
+         //   if(rob->get_id() == 0)
+           //     cout << "robot 0 is unallocated!" << endl;
             unallocated_robots.push_back(rob);
+        }
     }
 
 // ****** make all the possible coalitions
 //cout << "build_coalitions: making the coalitions ..." << endl;
     int n_bots = unallocated_robots.size();
-
+ /*   cout << "have " << n_bots << " available: " ;
+    for(int i = 0; i < n_bots; i++)
+    {
+        cout << unallocated_robots[i]->get_id() << " ";
+    }
+    cout << endl;   */
 	for(int i = 0; i < min(MAX_COALITION_SIZE, n_bots); i++)
 	{
 
@@ -296,12 +311,13 @@ void Task_allocation::allocate()
 //    ROS_INFO_STREAM("clearing coalitions" << endl);
 	clear_coalitions();
 
+//    ROS_INFO_STREAM("Begin allocating");
 	for(int i = 0; i < n_objects; i++) // the boundary should be something else.... Needed because we need to check until we have all objects allocated.
 	{
 
-//        ROS_INFO_STREAM("Building coalitions" << endl);
-		build_coalitions();
 
+		build_coalitions();
+    //    ROS_INFO_STREAM("Built coalitions, " << unallocated_robots.size() << " robots unallocated" << endl);
 		if(unallocated_robots.size() < 1)
 		{
 			break;
@@ -348,6 +364,12 @@ void Task_allocation::allocate()
 		{
 			active_coalitions.push_back(*low_coal);
 			low_coal->assign();
+            std::vector<int> ids = low_coal->get_robots_id();
+    /*        if(ids.size() > 1)
+                ROS_INFO_STREAM("added coalition of " << ids[0] << " " << ids[1] << endl);
+            else
+                ROS_INFO_STREAM("added coalition of " << ids[0] << endl);*/
+            //cout << "added coalition " << endl; //, I had " << unallocated_robots.size() << " robots to choose from" << endl << *low_coal << endl;
 		}
 	}
 }

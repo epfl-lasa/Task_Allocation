@@ -52,10 +52,20 @@ Robot_agent::Robot_agent(int Num_LPV_Com, const char *path_A_LPV, const char *pa
 void Robot_agent::set_assignment(int assignment_)
 {
 	assignment = assignment_;
+   /* if(id == 0)
+    {
+        cout << "robot 0 setting status to " << assignment;
+    }*/
     if(assignment < 0)
+    {
+       // cout << " and is unallocated" << endl;
         status = Robot_status::Unallocated;
+    }
     else
+    {
+        //cout << " and is allocated" << endl;
         status = Robot_status::Allocated;
+    }
 }
 
 int Robot_agent::get_assignment() const
