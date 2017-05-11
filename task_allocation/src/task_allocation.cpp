@@ -75,20 +75,26 @@ void Task_allocation::clear_coalitions()
     unallocated_robots.clear();
 
     // remove robots that haven't grabbed their target from the active coalitions
+//    ROS_INFO_STREAM("Removing active coalitions. I have " << active_coalitions.size() << " coalitions" << endl);
     for(int i = 0; i < active_coalitions.size(); (removed_coal)? i : i++) // uses old iteration because I sucked and didn't know how to erase without having the position
     {
+//        ROS_INFO_STREAM(" Checking active coalition " << i << " from " << active_coalitions.size() << endl);
         removed_coal = false;
         std::vector<int> ids = active_coalitions[i].get_robots_id();
         for(const auto & id : ids)
         {
             if(!(Robots[id]->has_grabbed())) // one robot at least hasn't grabbed the object, the coalition can be disbanded
             {
+//                ROS_INFO_STREAM("trying to remove it" << endl);
                 active_coalitions.erase(active_coalitions.begin() + i);
                 removed_coal = true;
+//                ROS_INFO_STREAM("done removing" << endl);
+                break;
             }
         }
     }
 
+//    ROS_INFO_STREAM("Done. Now adding unallocated robots" << endl);
     // go over each robots and add them to unallocated robots (if they haven't grabbed anything)
 	for(auto& rob : Robots)
 	{
@@ -100,6 +106,7 @@ void Task_allocation::clear_coalitions()
         if(rob->get_status() == Robot_status::Unallocated)
             unallocated_robots.push_back(rob);
     }
+
 
 
     // if an object is grabbed or done, let it be.
@@ -166,7 +173,6 @@ std::vector<double> Task_allocation::get_coordinations()
 // computes all coalitions for the unallocated robots.
 void Task_allocation::build_coalitions()
 {
-
     unallocated_robots.clear();
     for(const auto & rob : Robots)
     {
@@ -174,13 +180,10 @@ void Task_allocation::build_coalitions()
             unallocated_robots.push_back(rob);
     }
 
-
 // ****** make all the possible coalitions
 //cout << "build_coalitions: making the coalitions ..." << endl;
     int n_bots = unallocated_robots.size();
 
-
-  //  cout << "made ";
 	for(int i = 0; i < min(MAX_COALITION_SIZE, n_bots); i++)
 	{
 
@@ -195,7 +198,7 @@ void Task_allocation::build_coalitions()
 			to_remove[j] = -1;
 
 		// remove the duplicates, as the order does not matter in our case
- //       cout << "perm matrix for i = " << i << " and n_bots = " << n_bots << endl << perm << endl;
+//        cout << "perm matrix for i = " << i << " and n_bots = " << n_bots << endl << perm << endl;
 		for(int u = 0; u < perm.rows() - 1; u++)
 		{
 			for(int j = u+1; j < perm.rows(); (dupe == false) ? j++ : j) // only increment if the previous wasn't a dupe, if it's a dupe, as we remove it, we need to check the same row
@@ -204,13 +207,13 @@ void Task_allocation::build_coalitions()
 
 				if(dupe == true)
 				{
-    //                cout << "removing row " << perm.row(j) << " as it is similar to " << perm.row(u) << endl;
+//                    cout << "removing row " << perm.row(j) << " as it is similar to " << perm.row(u) << endl;
 					removeRow(perm, j);
 				}
 			}
 		}
 
-  //      cout << "perm matrix for i = " << i << " and n_bots = " << n_bots << " without dupes " << endl << perm << endl;
+//        cout << "perm matrix for i = " << i << " and n_bots = " << n_bots << " without dupes " << endl << perm << endl;
 
 		number_of_coalitions = perm.rows();
 		Coalitions.push_back( std::vector<Coalition>() );
@@ -225,11 +228,13 @@ void Task_allocation::build_coalitions()
 			{
                 coal.add_robot((unallocated_robots[perm(j,k)]));
 			}
-			for(int k = 0; k < n_objects; k++)
-			{
-                if((Objects[k]->get_assignment() == false) && (Objects[k]->is_done() == false))
-                    coal.add_task((Objects[k]));
-			}
+
+            for(const auto & obj : Objects)
+            {
+                if(obj->get_status() == Object_status::Unallocated)
+                    coal.add_task(obj);
+            }
+
             coal.set_id(i*min(MAX_COALITION_SIZE, n_bots)+j);
             Coalitions[i].push_back(coal);
 //			cout << "Coalition of size " << i+1 << " number " << j << endl << Coalitions[i][j] << endl;
@@ -286,25 +291,21 @@ void Task_allocation::print_obj()  const
 
 void Task_allocation::allocate()
 {
-    // **************** reset
+//    ROS_INFO_STREAM("clearing coalitions" << endl);
 	clear_coalitions();
 
 	for(int i = 0; i < n_objects; i++) // the boundary should be something else.... Needed because we need to check until we have all objects allocated.
 	{
-		// *************** build the coalitions
-	//	cout << "building coalitions" << endl;
+
+//        ROS_INFO_STREAM("Building coalitions" << endl);
 		build_coalitions();
 
-//		cout << "done building coalitions: " << unallocated_robots.size() << " available robots, making " << n_coal << " coalitions " << endl;
 		if(unallocated_robots.size() < 1)
 		{
 			break;
 		}
 
-		// ************** evaluate the coalitions
-	//	cout << "evaluating coalitions" << endl;
-	//	evaluate_coalitions();
-
+//        ROS_INFO_STREAM("Evaluating coalitions");
 		double lowest_weight = 100000;
 		double temp_weight = lowest_weight;
 		Coalition* low_coal = nullptr;
@@ -313,12 +314,26 @@ void Task_allocation::allocate()
 			for(auto& coal : row)
 			{
 				coal.compute_value();
+
 				temp_weight = coal.get_weight();
 				if(0.0 < temp_weight && temp_weight < lowest_weight)
 				{
 					lowest_weight = temp_weight;
 					low_coal = &(coal);
 				}
+
+       /*         std::vector<int> ids = coal.get_robots_id();
+                if(ids.size() == 2)
+                {
+                    if(ids[0] == 2 || ids[0] == 3)
+                    {
+                        if(ids[1] == 2 || ids[1] == 3)
+                        {
+                            ROS_INFO_STREAM("coalition of robots 2 and 3 has weight " << temp_weight << endl);
+                        }
+                    }
+                }
+                */
 			}
 		}
 
@@ -329,8 +344,6 @@ void Task_allocation::allocate()
 		// set the assignment (target task) of the robots in this coalition
 		if(low_coal != nullptr)
 		{
-	//		cout << "found best coalition" << endl;
-	//		cout << *low_coal << endl;
 			active_coalitions.push_back(*low_coal);
 			low_coal->assign();
 		}
@@ -550,7 +563,7 @@ std::ostream& operator<< (std::ostream& stream, const Task_allocation& o)
 		cout << endl << "***** END OF COALITION  *****" << endl;
 	}
 
-    cout << "printing all coalitions" << endl;
+ /*   cout << "printing all coalitions" << endl;
     for(const auto& row : o.Coalitions)
     {
         for(const auto& coal : row)
@@ -560,6 +573,6 @@ std::ostream& operator<< (std::ostream& stream, const Task_allocation& o)
             cout << endl << "***** END OF COALITION  *****" << endl;
         }
     }
-    return cout << endl << "**************** END OF TASK ALLOCATION ****************" << endl;
+*/    return cout << endl << "**************** END OF TASK ALLOCATION ****************" << endl;
 }
 

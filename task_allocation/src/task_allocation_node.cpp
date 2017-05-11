@@ -83,16 +83,8 @@ int main(int argc, char **argv) {
 		}
 	}
 
-  /*  for(auto & rob : Robots)
-    {
-
-        cout << rob << endl;
-    }*/
-
     cout << *Task_allocator << endl;
     ROS_INFO_STREAM("starting allocating in a loop" << endl);
-
-
 
 	// loop...
     ros::Rate r(TASK_ALLOCATION_RATE);
@@ -101,6 +93,7 @@ int main(int argc, char **argv) {
 
         if(run == true)
         {
+            //if(coordinations[0] == 1 && coordinations)
       //      cout << *Task_allocator << endl;
 
             clock_t begin = clock();
@@ -111,13 +104,13 @@ int main(int argc, char **argv) {
             Task_allocator->predict_motion();
    //         ROS_INFO_STREAM("updating robot business" << endl);
    //         Task_allocator->update_rob_business();
-  //          ROS_INFO_STREAM("allocating" << endl);
+   //         ROS_INFO_STREAM("allocating" << endl);
             Task_allocator->allocate();
- //           ROS_INFO_STREAM("computing intercepts" << endl);
+   //         ROS_INFO_STREAM("computing intercepts" << endl);
             Task_allocator->compute_intercepts(); // is actually done in "allocate()".
-//            ROS_INFO_STREAM("computing coordination" << endl);
+   //         ROS_INFO_STREAM("computing coordination" << endl);
             Task_allocator->compute_coordination();
-          //  ROS_INFO_STREAM("done" << endl);
+   //         ROS_INFO_STREAM("done" << endl);
 
 
             active_coalitions = Task_allocator->get_coalitions();
@@ -126,47 +119,76 @@ int main(int argc, char **argv) {
             // go through each coalition and see if the robots are where we want them
             for(auto & coal : active_coalitions)
             {
-                std::vector<int> ids;
-                ids = coal.get_robots_id();
-                std::vector<bool> reached;
-                double distance_POG;
-                int n_grips = Objects[coal.get_object_id()].get_n_grippers(); // the "get_object_id() can theoretically return -1, but should not happen in active coalitions. If it happens, there's another error.
-                for(int i = 0; i < ids.size(); i++)
+// the "get_object_id() can theoretically return -1, but should not happen in active coalitions. If it happens, there's another error.
+                if(Objects[coal.get_object_id()].get_status() != Object_status::Grabbed)
                 {
-                    // for robot 0, check POG 0, for robot 1, check POG 1
-                    distance_POG = (Robots[ids[i]].get_end() - Objects[coal.get_object_id()].get_P_O_G_prediction(i%2).col(0).block(0,0,3,1)).norm();
-                    if(distance_POG < 0.25)
-                        reached.push_back(true);
-                    else
-                        reached.push_back(false);
-                }
-                if(n_grips == 1)
-                {
-                    if(reached[0] == true)
+                    std::vector<int> ids;
+                    ids = coal.get_robots_id();
+                    std::vector<bool> reached;
+                    double distance_POG;
+                    int n_grips = Objects[coal.get_object_id()].get_n_grippers();
+
+                    // check if the robots reached the object's grabbing positions
+                    for(int i = 0; i < ids.size(); i++)
                     {
-                        // single robot in coalition and it caught the item
-                        cout << "robot " << ids[0] << " grabbed object " << coal.get_object_id() << endl;
-                        Robots[ids[0]].set_grabbed();
-                        Robots[ids[0]].set_idle();
+                        // for robot 0, check POG 0, for robot 1, check POG 1
+                        distance_POG = (Robots[ids[i]].get_end() - Objects[coal.get_object_id()].get_P_O_G_prediction(i%2).col(0).block(0,0,3,1)).norm();
+                        if(distance_POG < 0.25)
+                            reached.push_back(true);
+                        else
+                            reached.push_back(false);
                     }
-                }
-                else if(n_grips == 2)
-                {
-                    if(reached[0] == true && reached[1] == true)
+
+
+                    // set the objects to grabbed
+                    if(n_grips == 1)
                     {
-                        // 2 robots in coalition and they caught the item
-                        for(auto & id : ids)
+                        if(reached[0] == true)
                         {
-                            Robots[id].set_grabbed();
+                            // single robot in coalition and it caught the item
+                            cout << "robot " << ids[0] << " grabbed object " << coal.get_object_id() << endl;
+                            Robots[ids[0]].set_grabbed();
+                            Robots[ids[0]].set_idle();
+                            Objects[coal.get_object_id()].set_status(Object_status::Grabbed);
                         }
-                        // Here I somehow need to set the virtual object going up...
+                    }
+                    else if(n_grips == 2)
+                    {
+                        if(reached[0] == true && reached[1] == true)
+                        {
+                            // 2 robots in coalition and they caught the item
+                            for(auto & id : ids)
+                            {
+                                Robots[id].set_grabbed();
+                             //   Objects[coal.get_object_id()].set_status(Object_status::Grabbed);
+                            }
+                            // Here I somehow need to set the virtual object going up...
+                        }
                     }
                 }
             }
 
             for(auto & rob : Robots)
             {
-                if(rob.get_status() == Robot_status::Unallocated)
+                switch(rob.get_status())
+                {
+                case(Robot_status::Unallocated):
+                    rob.set_idle();
+                    break;
+
+                case(Robot_status::Grabbed):
+                    rob.set_idle();
+                    if((rob.get_idle_pos() - rob.get_end()).norm() < 0.15)
+                    {
+                        Objects[rob.get_assignment()].set_done();
+                        rob.set_done();
+                    }
+                    break;
+
+                default:
+                    break;
+                }
+             /*   if(rob.get_status() == Robot_status::Unallocated)
                 {
                     rob.set_idle();
                 }
@@ -177,7 +199,7 @@ int main(int argc, char **argv) {
                         Objects[rob.get_assignment()].set_done();
                         rob.set_done();
                     }
-                }
+                }*/
             }
 
 /*
@@ -236,7 +258,7 @@ int main(int argc, char **argv) {
 
 
             // publish who grabbed what.
-            for(auto & rob : Robots)
+            for(const auto & rob : Robots)
             {
                 std_msgs::Int64 msg;
                 msg.data = -1;
@@ -255,6 +277,7 @@ int main(int argc, char **argv) {
                 msg.data = coordinations[i];
                 rob_coordination_pub[i].publish(msg);
             }
+
 
             // publish the targets...
             for(int i = 0; i < targets.cols(); i++)
@@ -275,12 +298,12 @@ int main(int argc, char **argv) {
             }
 
 
+            // publish if the objects are done
             for(int i = 0; i < N_OBJ; i++)
             {
                 std_msgs::Int64 msg;
                 msg.data = Objects[i].is_done();
                 obj_done_pub[i].publish(msg);
-
             }
 
             clock_t end_pub = clock();

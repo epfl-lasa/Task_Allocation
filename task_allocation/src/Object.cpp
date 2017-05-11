@@ -28,8 +28,6 @@ Object::Object( const Object &o) // copy construct
 	X_O = o.X_O;
 	DX_O = o.DX_O;
 
-	is_assigned = o.is_assigned;
-
 
 	P_O_prediction = o.P_O_prediction;
 	for(int i = 0; i < max_grabbing_state; i++)
