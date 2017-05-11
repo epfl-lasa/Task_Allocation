@@ -231,9 +231,9 @@ void Robot_agent::update_status()
 {
 //	cout << " end " << endl << X_end << endl;
 //	cout << " target " << endl << X_targ << endl;
-    double delta = (X_end - X_targ.block(0,0,3,1)).norm();
+ //   double delta = (X_end - X_targ.block(0,0,3,1)).norm();
 
-    if(status == Robot_status::Grabbed)
+  /*  if(status == Robot_status::Grabbed)
     {
         if((X_idle - X_targ).norm() < 0.01) // is robot going to idle position, unsure if I can just X_idle == X_targ
         {
@@ -244,8 +244,14 @@ void Robot_agent::update_status()
             }
         }
     }
+    */
 }
 
+
+void Robot_agent::set_done()
+{
+    status = Robot_status::Unallocated;
+}
 
 bool Robot_agent::has_grabbed() const
 {

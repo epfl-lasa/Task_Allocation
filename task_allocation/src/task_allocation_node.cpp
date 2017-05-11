@@ -110,7 +110,7 @@ int main(int argc, char **argv) {
     //        ROS_INFO_STREAM("predicting motion" << endl);
             Task_allocator->predict_motion();
    //         ROS_INFO_STREAM("updating robot business" << endl);
-            Task_allocator->update_rob_business();
+   //         Task_allocator->update_rob_business();
   //          ROS_INFO_STREAM("allocating" << endl);
             Task_allocator->allocate();
  //           ROS_INFO_STREAM("computing intercepts" << endl);
@@ -121,6 +121,8 @@ int main(int argc, char **argv) {
 
 
             active_coalitions = Task_allocator->get_coalitions();
+
+
             // go through each coalition and see if the robots are where we want them
             for(auto & coal : active_coalitions)
             {
@@ -170,9 +172,10 @@ int main(int argc, char **argv) {
                 }
                 if(rob.has_grabbed())
                 {
-                    if((rob.get_idle_pos() - rob.get_end()).norm() < 0.1)
+                    if((rob.get_idle_pos() - rob.get_end()).norm() < 0.15)
                     {
                         Objects[rob.get_assignment()].set_done();
+                        rob.set_done();
                     }
                 }
             }
@@ -229,8 +232,8 @@ int main(int argc, char **argv) {
 
             // publish stuff
             targets = Task_allocator->get_targets();
-
             coordinations = Task_allocator->get_coordinations();
+
 
             // publish who grabbed what.
             for(auto & rob : Robots)
@@ -243,24 +246,7 @@ int main(int argc, char **argv) {
                 }
                 rob_grabbed_pub[rob.get_id()].publish(msg);
             }
-     /*       for(auto & rob : Robots)
-            {
-                int assign = rob.get_assignment();
-                std_msgs::Int64 msg;
-                msg.data = -1;
-                if(assign >= 0)
-                {
-                    if(Objects[assign].get_n_grippers() == 1)
-                    {
-                        if(rob.has_grabbed())
-                            msg.data = assign;
 
-                    }
-                }
-
-                rob_grabbed_pub[rob.get_id()].publish(msg);
-            }
-*/
 
             // publish the desired coordinations...
             for(int i = 0; i < coordinations.size(); i++)

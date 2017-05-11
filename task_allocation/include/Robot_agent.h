@@ -47,6 +47,7 @@ public:
 	void set_state(VectorXd X);
 	void set_assignment(int);
     void set_grabbed();
+    void set_done();
 
     bool has_grabbed() const;
     Robot_status get_status() const;

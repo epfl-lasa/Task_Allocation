@@ -69,16 +69,34 @@ void Task_allocation::predict_motion()
 
 void Task_allocation::clear_coalitions()
 {
-	Coalitions.clear();
-	active_coalitions.clear();
-	unallocated_robots.clear();
+    bool removed_coal = false;
+
+    Coalitions.clear();
+    unallocated_robots.clear();
+
+    for(int i = 0; i < active_coalitions.size(); (removed_coal)? i : i++) // uses old iteration because I sucked and didn't know how to erase without having the position
+    {
+
+        std::vector<int> ids = active_coalitions[i].get_robots_id();
+        for(const auto & id : ids)
+        {
+            if(!(Robots[id]->has_grabbed())) // one robot at least hasn't grabbed the object, the coalition can be disbanded
+            {
+                active_coalitions.erase(active_coalitions.begin() + i);
+            }
+        }
+    }
+
 	for(auto& rob : Robots)
 	{
         if(!(rob->has_grabbed())) // any robot that hasnt grabbed can be reallocated
         {
 			rob->set_assignment(-1);
         }
-	}
+
+        if(rob->get_status() == Robot_status::Unallocated)
+            unallocated_robots.push_back(rob);
+    }
 
 	for(auto& obj : Objects)
 	{
@@ -145,50 +163,26 @@ std::vector<double> Task_allocation::get_coordinations()
 void Task_allocation::build_coalitions()
 {
 
-//	Coalitions.reserve(MAX_COALITION_SIZE);
-	Coalitions.clear();
-	unallocated_robots.clear();
-
-//cout << "build_coalitions: building unallocated_robots ...";
-// ****** look for unallocated robots
-	for(auto& rob : Robots)
-	{
-        if(rob->get_status() ==  Robot_status::Unallocated)
-		{
-			unallocated_robots.push_back(rob);
-		}
-	}
-//cout << "... done" << endl;
-
 // ****** make all the possible coalitions
 //cout << "build_coalitions: making the coalitions ..." << endl;
 	int n_bots = unallocated_robots.size();
-    int n_coals = 0;
   //  cout << "made ";
 	for(int i = 0; i < min(MAX_COALITION_SIZE, n_bots); i++)
 	{
-
-
-
 		// ************* make the matrix with all permutations of the available robots
 		unsigned long int number_of_coalitions;
 		MatrixXd perm = PermGenerator(n_bots,i+1); // i+1 because in array 0 we store the coalitions of size 1(ie singletons)
 
 		int n_rows = perm.rows();
-		int n_cols = perm.cols();
 		bool dupe = false;
 		int to_remove[n_rows];
-		int n_dupes = 0;
 		for(int j = 0; j < n_rows; j++)
 			to_remove[j] = -1;
-
-
 
 		// remove the duplicates, as the order does not matter in our case
  //       cout << "perm matrix for i = " << i << " and n_bots = " << n_bots << endl << perm << endl;
 		for(int u = 0; u < perm.rows() - 1; u++)
 		{
-
 			for(int j = u+1; j < perm.rows(); (dupe == false) ? j++ : j) // only increment if the previous wasn't a dupe, if it's a dupe, as we remove it, we need to check the same row
 			{
 				dupe = check_dupe(perm.row(u), perm.row(j));
@@ -201,19 +195,15 @@ void Task_allocation::build_coalitions()
 			}
 		}
 
-
   //      cout << "perm matrix for i = " << i << " and n_bots = " << n_bots << " without dupes " << endl << perm << endl;
 
 		number_of_coalitions = perm.rows();
-      //  n_coals += number_of_coalitions;
-       // cout << n_coals << " ";
 		Coalitions.push_back( std::vector<Coalition>() );
 //		Coalitions[i].reserve(number_of_coalitions);
 
 		// the 2nd level is the ID of the coalition within that size
 		for(int j = 0; j < number_of_coalitions; j++)
 		{
-
 			// make the coalition
 			Coalition test;
 			for(int k = 0; k < i+1; k++) // add all robots that should be in this coalition.
@@ -222,7 +212,7 @@ void Task_allocation::build_coalitions()
 			}
 			for(int k = 0; k < n_objects; k++)
 			{
-				if(Objects[k]->get_assignment() == false && Objects[k]->is_done() == false)
+                if((Objects[k]->get_assignment() == false) && (Objects[k]->is_done() == false))
 					test.add_task((Objects[k]));
 			}
 			test.set_id(i*min(MAX_COALITION_SIZE, n_bots)+j);
@@ -230,48 +220,6 @@ void Task_allocation::build_coalitions()
 //			cout << "Coalition of size " << i+1 << " number " << j << endl << Coalitions[i][j] << endl;
 		}
 	}
-
-
-   // for(int i = 0; i < Coalitions.size(); i++)
-   //     for(int j = 0; j < Coalitions[i].size(); j++)
-   //         n_coals++;
-  //  cout << "made ";
-/*    for(const auto & coal_col : Coalitions)
-    {
-        for(const auto & coal : coal_col)
-            n_coals ++;
-        cout << n_coals << " ";
-    }*/
- //   cout << n_coals << " coalitions out of " << n_bots << " robots " << endl;
-
-
-	// some tests on pointers and addresses and stuff in this part. This is just to confirm something
-/*	double lowest_weight = 100000;
-	double temp_weight = lowest_weight;
-	Coalition* low_coal = NULL;
-	int i = 0;
-	int j = 0;
-	for(auto& row : Coalitions)
-	{
-
-		for(auto& coal : row)
-		{
-
-			temp_weight = coal.get_weight();
-			if(temp_weight < lowest_weight)
-			{
-				lowest_weight = temp_weight;
-				low_coal = &(coal);
-				cout << "comparing the 2 pointers " << low_coal << " " ;
-				coal.print_pointer();
-				cout << " and accessing with i j we get ";
-				((Coalitions.at(i)).at(j)).print_pointer();
-			}
-			j++;
-		}
-		i++;
-	}
-*/
 }
 
 
@@ -324,7 +272,7 @@ void Task_allocation::print_obj()  const
 
 void Task_allocation::allocate()
 {
-	// **************** reset everything
+    // **************** reset
 	clear_coalitions();
 
 	for(int i = 0; i < n_objects; i++) // the boundary should be something else.... Needed because we need to check until we have all objects allocated.
