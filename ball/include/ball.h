@@ -31,11 +31,6 @@ using namespace std;
 using namespace MathLib;
 
 
-const double SIM_VELOCITY = 8;
-const double X_INIT = -3;
-const double Y_INIT = -0.55;
-const double Z_INIT = 0.5;
-
 
 
 enum Command{Com_Ball_INIT=0, Com_Ball_Move, Com_Ball_Stop};

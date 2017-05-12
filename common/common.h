@@ -13,6 +13,13 @@ const double OBJ_MAX_PREDICTIONTIME = 100; // effectively useless
 
 
 
+const double SIM_VELOCITY = 2;
+const double X_INIT = -3;
+const double Y_INIT = -0.55;
+const double Z_INIT = 0.5;
+
+
+
 enum class Object_scenarios {ONE, TWO, THREE};
 const int N_SCENARIOS = 3;
 enum class Object_sizes {SMALL, LARGE};
