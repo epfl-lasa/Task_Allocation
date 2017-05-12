@@ -23,6 +23,9 @@
 using namespace std;
 using namespace Eigen;
 
+
+
+
 enum class Object_prediction_type{Ballistic,Straight};
 enum class Object_status{Unallocated, Allocated, Grabbed, Done};
 
@@ -71,6 +74,9 @@ public:
 	friend std::ostream& operator<< (std::ostream& stream, const Object& Object);
 
 private:
+
+    double sigmoid(double x);
+
 
 	const static int max_grabbing_state = 4;
 

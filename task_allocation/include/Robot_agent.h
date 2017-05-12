@@ -25,6 +25,12 @@
 #include "Object.h"
 #include "common.h"
 
+const double SIGMOID_SLOPE_FACTOR = 100;
+const double MIN_SPEED = 0.05;
+const double MAX_SPEED = 0.8;
+
+
+
 using namespace Eigen;
 
 enum class Robot_status{Unallocated, Allocated, Grabbed};
@@ -64,6 +70,8 @@ public:
 
 	friend std::ostream& operator <<(std::ostream& stream, const Robot_agent& o);
 private:
+
+    double      sigmoid(double x) const;
 
 
     Robot_status status;

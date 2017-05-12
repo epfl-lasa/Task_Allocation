@@ -204,6 +204,21 @@ void Object::dumb_predict_motion()
         //	cout << "P_O predicted for " << n_frames << " frames" << endl << P_O_prediction << endl;
 
     }
+    else
+    {
+        P_O_prediction.resize(X_O.size(), 1);
+        P_O_prediction.setZero();
+
+        P_O_prediction.col(0) = X_O;
+
+        for(int j = 0; j < n_grabbing_pos; j++)
+        {
+            P_O_G_prediction[j].resize(X_O.size(), 1);
+            P_O_G_prediction[j].setZero();
+
+            P_O_G_prediction[j].col(0) = P_O_prediction.col(0)+X_O_G[j];
+        }
+    }
 
 
     // old functionning way but sub-optimal.
@@ -300,8 +315,15 @@ int Object::get_n_grippers() const
 
 double Object::update_value()
 {
-	value = 5*X_O(0)+30;
-
+// on one side, use sigmoid, on the other, use negation
+    double value_end = 5*X_O(0)+30;
+  //  double speed = DX_O.block(0,0,3,1).norm();
+    double speed = DX_O(0);
+//    double s1 = sigmoid(speed-MIN_SPEED);
+//    double s2 = sigmoid(MAX_SPEED-speed);
+//    cout << "speed: " << speed << " s1 " << s1 << " s2 " << s2 << endl;
+//    value = value_end*s1*s2;
+    value = value_end;
 	if(n_grabbing_pos > 1)
 	{
 		value *= 2.1;

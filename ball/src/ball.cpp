@@ -322,7 +322,42 @@ int main(int argc, char **argv) {
 			Object_right.orientation.y=0;
 			Object_right.orientation.z=0;
 			Object_right.orientation.w=1;
-		}
+
+
+
+            obj_pos[0] = Object;
+            for(int i = 0; i < N_OBJ; i++)
+                obj_pos[i].position.x = obj_pos[i].position.x + r.cycleTime().toSec()*SIM_VELOCITY;
+
+
+            obj_vel[0] = Object_vel;
+            obj_vel[1] = Object_vel;
+            obj_vel[2] = Object_vel;
+            obj_vel[3] = Object_vel;
+
+
+            obj_acc[0] = Object_acc;
+            obj_acc[1] = Object_acc;
+            obj_acc[2] = Object_acc;
+            obj_acc[3] = Object_acc;
+
+
+            for(int i = 0; i < N_ROB; i++)
+            {
+                if(grabbed[i] != -1)
+                {
+                    ROS_INFO("robot %d had grabbed object %d", i, grabbed[i]);
+                    obj_pos[grabbed[i]].position.x = rob_ends[i].position.x;
+                    obj_pos[grabbed[i]].position.y = rob_ends[i].position.y;
+                    obj_pos[grabbed[i]].position.z = rob_ends[i].position.z;
+                    obj_vel[grabbed[i]].position.x = 0;
+                    obj_vel[grabbed[i]].position.y = 0;
+                    obj_vel[grabbed[i]].position.z = 0;
+                }
+            }
+
+
+        }
 		if (COM==Com_Ball_INIT)
 		{/*
 			P_O(0)=P_I[0]+fRand(-AA,AA);P_O(1)=P_I[1]+fRand(-AA,AA);P_O(2)=P_I[2]+fRand(-AA,AA);
@@ -386,6 +421,68 @@ int main(int argc, char **argv) {
 			Object_right.orientation.z=0;
 			Object_right.orientation.w=1;
 
+
+
+
+            switch(SCENARIO)
+            {
+                case(Object_scenarios::ONE):
+
+                    obj_pos[0] = Object;
+
+                    obj_pos[1].position.x = Object.position.x + 0.5;
+                    obj_pos[1].position.y = Object.position.y + 0.2;
+                    obj_pos[1].position.z = Object.position.z;
+
+
+                    obj_pos[2].position.x = Object.position.x + 0.5;
+                    obj_pos[2].position.y = Object.position.y - 0.2;
+                    obj_pos[2].position.z = Object.position.z;
+
+                    obj_pos[3].position.x = Object.position.x - 0.5;
+                    obj_pos[3].position.y = Object.position.y - 0.0;
+                    obj_pos[3].position.z = Object.position.z;
+
+                    break;
+
+                case(Object_scenarios::TWO):
+
+                    obj_pos[0] = Object;
+
+                    obj_pos[1].position.x = Object.position.x - 0.5;
+                    obj_pos[1].position.y = Object.position.y + 0.2;
+                    obj_pos[1].position.z = Object.position.z;
+
+
+                    obj_pos[2].position.x = Object.position.x - 0.5;
+                    obj_pos[2].position.y = Object.position.y - 0.2;
+                    obj_pos[2].position.z = Object.position.z;
+
+                    obj_pos[3].position.x = Object.position.x + 0.5;
+                    obj_pos[3].position.y = Object.position.y - 0.0;
+                    obj_pos[3].position.z = Object.position.z;
+                    break;
+
+            case(Object_scenarios::THREE):
+
+                obj_pos[0] = Object;
+
+                obj_pos[1].position.x = Object.position.x - 1;
+                obj_pos[1].position.y = Object.position.y;
+                obj_pos[1].position.z = Object.position.z;
+
+
+                obj_pos[2].position.x = Object.position.x - 0.5;
+                obj_pos[2].position.y = Object.position.y;
+                obj_pos[2].position.z = Object.position.z;
+
+                obj_pos[3].position.x = Object.position.x + 0.5;
+                obj_pos[3].position.y = Object.position.y;
+                obj_pos[3].position.z = Object.position.z;
+
+                default:
+                    break;
+            }
 		//	State=Com_Safe;
 
 		}
@@ -420,94 +517,6 @@ int main(int argc, char **argv) {
 		// patrick  make our objects here... hard-coded 2 in front, big in middle, one in back
 
 
-
-        switch(SCENARIO)
-        {
-            case(Object_scenarios::ONE):
-
-                obj_pos[0] = Object;
-
-                obj_pos[1].position.x = Object.position.x + 0.5;
-                obj_pos[1].position.y = Object.position.y + 0.2;
-                obj_pos[1].position.z = Object.position.z;
-
-
-                obj_pos[2].position.x = Object.position.x + 0.5;
-                obj_pos[2].position.y = Object.position.y - 0.2;
-                obj_pos[2].position.z = Object.position.z;
-
-                obj_pos[3].position.x = Object.position.x - 0.5;
-                obj_pos[3].position.y = Object.position.y - 0.0;
-                obj_pos[3].position.z = Object.position.z;
-
-                break;
-
-            case(Object_scenarios::TWO):
-
-                obj_pos[0] = Object;
-
-                obj_pos[1].position.x = Object.position.x - 0.5;
-                obj_pos[1].position.y = Object.position.y + 0.2;
-                obj_pos[1].position.z = Object.position.z;
-
-
-                obj_pos[2].position.x = Object.position.x - 0.5;
-                obj_pos[2].position.y = Object.position.y - 0.2;
-                obj_pos[2].position.z = Object.position.z;
-
-                obj_pos[3].position.x = Object.position.x + 0.5;
-                obj_pos[3].position.y = Object.position.y - 0.0;
-                obj_pos[3].position.z = Object.position.z;
-                break;
-
-        case(Object_scenarios::THREE):
-
-            obj_pos[0] = Object;
-
-            obj_pos[1].position.x = Object.position.x - 1;
-            obj_pos[1].position.y = Object.position.y;
-            obj_pos[1].position.z = Object.position.z;
-
-
-            obj_pos[2].position.x = Object.position.x - 0.5;
-            obj_pos[2].position.y = Object.position.y;
-            obj_pos[2].position.z = Object.position.z;
-
-            obj_pos[3].position.x = Object.position.x + 0.5;
-            obj_pos[3].position.y = Object.position.y;
-            obj_pos[3].position.z = Object.position.z;
-
-            default:
-                break;
-        }
-
-
-
-        obj_vel[0] = Object_vel;
-        obj_vel[1] = Object_vel;
-        obj_vel[2] = Object_vel;
-        obj_vel[3] = Object_vel;
-
-
-        obj_acc[0] = Object_acc;
-        obj_acc[1] = Object_acc;
-        obj_acc[2] = Object_acc;
-        obj_acc[3] = Object_acc;
-
-
-        for(int i = 0; i < N_ROB; i++)
-		{
-			if(grabbed[i] != -1)
-			{
-				ROS_INFO("robot %d had grabbed object %d", i, grabbed[i]);
-				obj_pos[grabbed[i]].position.x = rob_ends[i].position.x;
-				obj_pos[grabbed[i]].position.y = rob_ends[i].position.y;
-				obj_pos[grabbed[i]].position.z = rob_ends[i].position.z;
-                obj_vel[grabbed[i]].position.x = 0;
-                obj_vel[grabbed[i]].position.y = 0;
-                obj_vel[grabbed[i]].position.z = 0;
-			}
-		}
 
 
 		// all the same atm, but writing like this lets us change them... */

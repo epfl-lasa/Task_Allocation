@@ -12,8 +12,9 @@ const int MAX_TASKS = 6;
 const double OBJ_MAX_PREDICTIONTIME = 100; // effectively useless
 
 
+// somehow setting SIM_VELOCITY to 30 equates to speed in object.cpp to be between 1 and 2.5...
+const double SIM_VELOCITY = 8; // only used by ball.cpp. Makes it easier for us to have it here...
 
-const double SIM_VELOCITY = 2;
 const double X_INIT = -3;
 const double Y_INIT = -0.55;
 const double Z_INIT = 0.5;

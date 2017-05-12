@@ -118,6 +118,13 @@ int main(int argc, char **argv) {
             active_coalitions = Task_allocator->get_coalitions();
 
 
+    /*        if(active_coalitions.size() < 1)
+                cout << "no coalitions !" << endl;
+            else
+                cout << "got " << active_coalitions.size() << " coalitions " << endl;
+   */
+
+
             // go through each coalition and see if the robots are where we want them
             for(auto & coal : active_coalitions)
             {
@@ -133,8 +140,14 @@ int main(int argc, char **argv) {
                     // check if the robots reached the object's grabbing positions
                     for(int i = 0; i < ids.size(); i++)
                     {
-                        // for robot 0, check POG 0, for robot 1, check POG 1
-                        distance_POG = (Robots[ids[i]].get_end() - Objects[coal.get_object_id()].get_P_O_G_prediction(i%2).col(0).block(0,0,3,1)).norm();
+                        // for even robot ID, check POG 0, for uneven robot ID, check POG 1
+                    // this if/else seems to slow down stuff.
+                        if(n_grips > 1)
+                            distance_POG = (Robots[ids[i]].get_end() - Objects[coal.get_object_id()].get_P_O_G_prediction(ids[i]%2).col(0).block(0,0,3,1)).norm();
+                        else // only 1 robot, only 1 POG.
+                            distance_POG = (Robots[ids[i]].get_end() - Objects[coal.get_object_id()].get_P_O_G_prediction(0).col(0).block(0,0,3,1)).norm();
+
+
                         if(distance_POG < 0.15)
                             reached.push_back(true);
                         else
@@ -156,14 +169,24 @@ int main(int argc, char **argv) {
                     }
                     else if(n_grips == 2)
                     {
+                        if(reached[0] == true)
+                        {
+                            cout << "Robot " << ids[0] << " reached the target " << coal.get_object_id() << endl;
+
+                        }
+                        if(reached[1] == true)
+                        {
+                            cout << "Robot " << ids[1] << " reached the target " << coal.get_object_id() << endl;
+                        }
                         if(reached[0] == true && reached[1] == true)
                         {
                             // 2 robots in coalition and they caught the item
-                            for(auto & id : ids)
+                  /*          for(auto & id : ids)
                             {
                                 Robots[id].set_grabbed();
                              //   Objects[coal.get_object_id()].set_status(Object_status::Grabbed);
-                            }
+                            }*/
+                            cout << "Robots " << ids[0] << " and " << ids[1] << " grabbed object " << coal.get_object_id() << endl;
                             // Here I somehow need to set the virtual object going up...
                         }
                     }

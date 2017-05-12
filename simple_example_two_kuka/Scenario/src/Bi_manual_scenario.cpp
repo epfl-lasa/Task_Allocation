@@ -587,8 +587,11 @@ void Bi_manual_scenario::Parameter_initialization()
 	// Desired Target for KUKA 14
     Desired_DirY[0](0)=0;		Desired_DirY[0](1)=0;			Desired_DirY[0](2)=1;
     Desired_DirZ[0](0)=0;		Desired_DirZ[0](1)=-1;			Desired_DirZ[0](2)=0;
-	// Desired Target for KUKA 7
-	Desired_DirY[1](0)=0;		Desired_DirY[1](1)=0;			Desired_DirY[1](2)=1;
+    // Desired Target for KUKA 7
+    Desired_DirY[1](0)=0;		Desired_DirY[1](1)=0;			Desired_DirY[1](2)=1;
+    Desired_DirZ[1](0)=0;		Desired_DirZ[1](1)=1;			Desired_DirZ[1](2)=0;
+
+    Desired_DirY[1](0)=0;		Desired_DirY[1](1)=0;			Desired_DirY[1](2)=1;
     Desired_DirZ[1](0)=0;		Desired_DirZ[1](1)=1;			Desired_DirZ[1](2)=0;
 
     // Desired Target for KUKA 14
@@ -1254,8 +1257,8 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 					Desired_Velocity[i].block(0,0,3,1)=Desired_End_State[i].block(3,0,3,1);
 					c*/
 
-				Desired_Velocity[i].block(3,0,3,1)=(Desired_DirY[i]-lDirY[i])/(10*dt);
-				Desired_Velocity[i].block(6,0,3,1)=(Desired_DirZ[i]-lDirZ[i])/(10*dt);
+                Desired_Velocity[i].block(3,0,3,1)=(Desired_DirY[i]-lDirY[i])/(10*dt);
+                Desired_Velocity[i].block(6,0,3,1)=(Desired_DirZ[i]-lDirZ[i])/(10*dt);
           //      cout << "trying to set desired state for robot " << i << endl;
                 if(i == 0 || i == 1)
 				{
