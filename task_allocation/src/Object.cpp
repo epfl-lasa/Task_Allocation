@@ -1,5 +1,9 @@
 #include "Object.h"
 
+const double MIN_SPEED = 0.05;
+const double MAX_SPEED = 0.8;
+
+
 Object::Object()
 {
 
@@ -319,10 +323,10 @@ double Object::update_value()
     double value_end = 5*X_O(0)+30;
   //  double speed = DX_O.block(0,0,3,1).norm();
     double speed = DX_O(0);
-//    double s1 = sigmoid(speed-MIN_SPEED);
+//    double s1 = sigmoid(speed-MIN_SPEED); // purposedly done in Robot_agent to allow to allocate to the objects when they are in the workspace
 //    double s2 = sigmoid(MAX_SPEED-speed);
 //    cout << "speed: " << speed << " s1 " << s1 << " s2 " << s2 << endl;
-//    value = value_end*s1*s2;
+//    value = value_end*s1;
     value = value_end;
 	if(n_grabbing_pos > 1)
 	{

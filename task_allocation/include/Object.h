@@ -75,8 +75,6 @@ public:
 
 private:
 
-    double sigmoid(double x);
-
 
 	const static int max_grabbing_state = 4;
 

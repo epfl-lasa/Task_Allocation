@@ -124,12 +124,12 @@ Vector3d Robot_agent::get_end() const
 {
 	return X_end;
 }
-
+/*
 double Robot_agent::sigmoid(double x) const
 {
     return 1.0f/(1+exp(-SIGMOID_SLOPE_FACTOR*x));
 }
-
+*/
 
 double Robot_agent::evaluate_task(const Object& obj)
 {
@@ -211,8 +211,8 @@ double Robot_agent::evaluate_task(const Object& obj)
     if(best_prob_overall > 0) // avoid dividing by 0
     {
         double obj_speed = obj.get_DX_O()(0);
-        double s1 = sigmoid(obj_speed-MIN_SPEED);
-        double s2 = sigmoid(MAX_SPEED-obj_speed);
+        double s1 = sigmoid(obj_speed-OBJ_MIN_SPEED);
+        double s2 = sigmoid(OBJ_MAX_SPEED-obj_speed);
         double prob0 = Workspace_model.PDF((obj.get_X_O().block(0,0,3,1) - X_base));
         cost = delta_norm / best_prob_overall;
         // apply sigmoid from upper boundary

@@ -143,7 +143,11 @@ int main(int argc, char **argv) {
                         // for even robot ID, check POG 0, for uneven robot ID, check POG 1
                     // this if/else seems to slow down stuff.
                         if(n_grips > 1)
+                        {
                             distance_POG = (Robots[ids[i]].get_end() - Objects[coal.get_object_id()].get_P_O_G_prediction(ids[i]%2).col(0).block(0,0,3,1)).norm();
+                            cout << "robot " << ids[i] << " at x " << Robots[ids[i]].get_end().transpose() << " of POG " << ids[i]%2 << " at " << Objects[coal.get_object_id()].get_P_O_G_prediction(ids[i]%2).col(0).block(0,0,3,1).transpose() << " and distance " << distance_POG << endl;
+
+                        }
                         else // only 1 robot, only 1 POG.
                             distance_POG = (Robots[ids[i]].get_end() - Objects[coal.get_object_id()].get_P_O_G_prediction(0).col(0).block(0,0,3,1)).norm();
 
