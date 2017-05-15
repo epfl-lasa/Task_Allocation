@@ -145,7 +145,7 @@ int main(int argc, char **argv) {
                         if(n_grips > 1)
                         {
                             distance_POG = (Robots[ids[i]].get_end() - Objects[coal.get_object_id()].get_P_O_G_prediction(ids[i]%2).col(0).block(0,0,3,1)).norm();
-                            cout << "robot " << ids[i] << " at x " << Robots[ids[i]].get_end().transpose() << " of POG " << ids[i]%2 << " at " << Objects[coal.get_object_id()].get_P_O_G_prediction(ids[i]%2).col(0).block(0,0,3,1).transpose() << " and distance " << distance_POG << endl;
+                     //       cout << "robot " << ids[i] << " at x " << Robots[ids[i]].get_end().transpose() << " of POG " << ids[i]%2 << " at " << Objects[coal.get_object_id()].get_P_O_G_prediction(ids[i]%2).col(0).block(0,0,3,1).transpose() << " and distance " << distance_POG << endl;
 
                         }
                         else // only 1 robot, only 1 POG.
@@ -345,7 +345,7 @@ int main(int argc, char **argv) {
         // warning if we're too slow
         if(r.cycleTime().toNSec() > r.expectedCycleTime().toNSec())
         {
-            ROS_INFO_STREAM("Task allocation node is not reaching it's desired frequency! Cycletime " << r.cycleTime() << " expected cycletime " << r.expectedCycleTime());
+            ROS_INFO_STREAM("Task allocation node is not reaching it's desired frequency! Frequency " << 1.0f/(r.cycleTime().toSec()) << " expected frequency " << 1.0f/(r.expectedCycleTime().toSec()));
         }
 	}
 }

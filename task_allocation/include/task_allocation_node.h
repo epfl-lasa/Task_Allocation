@@ -18,7 +18,7 @@
 #include <string>
 #include "common.h"
 
-const double TASK_ALLOCATION_RATE = 10; // Hz, frequency at which to run the node
+const double TASK_ALLOCATION_RATE = 50; // Hz, frequency at which to run the node
 
 const double dt = 0.30; // seconds
 const double max_time = 10; // seconds
