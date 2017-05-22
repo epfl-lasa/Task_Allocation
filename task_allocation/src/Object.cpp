@@ -8,6 +8,23 @@ Object::Object()
 {
 
 }
+
+
+void Object::compute_N_DX_O(VectorXd Sum_DX_O)
+{
+    N_DX_O = DX_O;
+    for(int i = 0; i < N_DX_O.rows(), i < Sum_DX_O.rows(); i++)
+    {
+        N_DX_O(i) = DX_O(i)/Sum_DX_O(i);
+    }
+ //   cout << "done computing normalized velocity of object " << id << " " << N_DX_O.transpose() << endl;
+}
+
+
+VectorXd Object::get_N_DX_O() const
+{
+    return N_DX_O;
+}
 /*
 Object::Object( const Object &o) // copy construct
 {
@@ -174,8 +191,8 @@ void Object::dumb_predict_motion()
 {
     if(DX_O(0) > 0.1)
     {
-        double dist = OBJECT_MAX_X - X_O(0); // pat hack... 3.5 is maximum in x that we should predict
-        int frames = dist/(DX_O(0)*0.2); // pat... let's compute with dt=0.2, so the number of frames = distance/(velocity*dt)
+        double dist = OBJECT_MAX_X - X_O(0);
+        int frames = dist/(DX_O(0)*dt);
 
         P_O_prediction.resize(X_O.size(), frames+1); // pat hack. Need to find a better way.
         P_O_prediction.setZero();
@@ -328,6 +345,7 @@ double Object::update_value()
 //    cout << "speed: " << speed << " s1 " << s1 << " s2 " << s2 << endl;
 //    value = value_end*s1;
     value = value_end;
+    value *= 2;
 	if(n_grabbing_pos > 1)
 	{
 		value *= 2.1;

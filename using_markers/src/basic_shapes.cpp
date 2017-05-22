@@ -13,14 +13,14 @@ ros::Publisher marker_pub;
 ros::Publisher marker_virtual_pub;
 ros::Publisher marker_filter_pub;
 
-double X[N_ROB] = {0, 0, 2, 2};
-double Y[N_ROB] = {0, -1.25, 0, -1.25};
-double Z[N_ROB] = {-0.5, -0.5, -0.5, -0.5};
+double X[] = {0, 0, 2, 2, 4, 4, 6, 6};
+double Y[] = {0, -1.25, 0, -1.25, 0, -1.25, 0, -1.25};
+double Z[] = {-0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5};
 
 int obj_done[N_OBJ];
 int rob_id[N_ROB];
 
-double colors[N_OBJ+1][3] = {{0,0,1},{1,0,0},{1,0,1},{1,1,1}, UNALLOCATED_COLOR};
+double colors[][3] = {{0,0,1},{1,0,0},{1,0,1},{1,1,1}, UNALLOCATED_COLOR};
 
 
 visualization_msgs::Marker marker_obj[N_OBJ];

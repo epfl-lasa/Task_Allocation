@@ -44,6 +44,27 @@ Task_allocation::Task_allocation(double max_time_, double dt_, int n_state_, Obj
 
 }
 
+
+
+void Task_allocation::compute_normalized_velocities()
+{
+    VectorXd sum_DX = Objects[0]->get_X_O(); // make sure it's a correct dimension...
+    sum_DX.setZero();
+    for(const auto obj : Objects)
+    {
+        if(obj->get_status() == Object_status::Unallocated || obj->get_status() == Object_status::Allocated) // only look at the ones that are not done... Others should be zero'd
+            sum_DX += obj->get_DX_O();
+    }
+
+    for(const auto obj : Objects)
+    {
+        if(obj->get_status() == Object_status::Unallocated || obj->get_status() == Object_status::Allocated)
+            obj->compute_N_DX_O(sum_DX);
+    }
+
+}
+
+
 VectorXd Task_allocation::get_object_state(int i)
 {
 	VectorXd empty_vec;

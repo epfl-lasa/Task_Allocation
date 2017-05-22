@@ -134,7 +134,6 @@ double Robot_agent::sigmoid(double x) const
 double Robot_agent::evaluate_task(const Object& obj)
 {
 	int n_grips = obj.get_n_grippers();
-	Vector3d delta[n_grips];
 	double delta_norm = 1000000;
 	double temp_delta;
 
@@ -145,6 +144,13 @@ double Robot_agent::evaluate_task(const Object& obj)
     double best_prob[n_grips];
     Vector3d best_pos[n_grips];
     double best_prob_overall = 0;
+    double travel_time = 0;
+
+    double obj_speed = obj.get_DX_O()(0); // get velocity
+    double n_obj_speed = obj.get_N_DX_O()(0); // get its normalization factor
+
+    double s1 = sigmoid(n_obj_speed-OBJ_MIN_SPEED);
+    double s2 = sigmoid(OBJ_MAX_SPEED-obj_speed);
 
 
 
@@ -152,17 +158,19 @@ double Robot_agent::evaluate_task(const Object& obj)
     for(int i = 0; i < n_grips; i++)
 	{
 		POG[i] = obj.get_P_O_G_prediction(i);
+        cout << "robot " << id << " object " << obj.get_id() << " POG size " << POG[i].rows() << " " << POG[i].cols() << endl;
         for(int j = 0; j < POG[i].cols(); j++)
         {
 
             if((POG[i].col(j)(0)-X_base(0)) < 1.5)
             {
+                cout << (POG[i].col(j).block(0,0,3,1) - X_base).transpose() << " has prob " << Workspace_model.PDF((POG[i].col(j).block(0,0,3,1) - X_base)) << endl;
                 temp_prob[i] = Workspace_model.PDF((POG[i].col(j).block(0,0,3,1) - X_base));
                 if(temp_prob[i] > best_prob[i])
                 {
                     best_prob[i] = temp_prob[i];
                     best_pos[i] = POG[i].col(j).block(0,0,3,1);
-                    if(best_prob[i] > 0.3) // pat hack value.
+                    if(best_prob[i] > 0.6) // pat hack value.
                         break;
                 //    best_prob_overall = temp_prob[i];
                 }
@@ -176,12 +184,14 @@ double Robot_agent::evaluate_task(const Object& obj)
         {
             best_prob_overall = best_prob[i];
             X_targ = best_pos[i];
+
         }
     }
 
     if(best_prob_overall == 0)
         X_targ = X_end;
-
+    else
+         travel_time = 0.5*((X_targ - obj.get_X_O().block(0,0,3,1)).norm())/(obj_speed*n_obj_speed);
 
    /* if(id == 1)
     {
@@ -210,38 +220,21 @@ double Robot_agent::evaluate_task(const Object& obj)
 
     if(best_prob_overall > 0) // avoid dividing by 0
     {
-        double obj_speed = obj.get_DX_O()(0);
-        double s1 = sigmoid(obj_speed-OBJ_MIN_SPEED);
-        double s2 = sigmoid(OBJ_MAX_SPEED-obj_speed);
-        double prob0 = Workspace_model.PDF((obj.get_X_O().block(0,0,3,1) - X_base));
-        cost = delta_norm / best_prob_overall;
+        cost = (delta_norm + travel_time) / best_prob_overall;
         // apply sigmoid from upper boundary
-        if(s2 != 0)
+        if(!std::isnan(s2) && s2 != 0)
             cost /= s2;
         else
             cost = 1000000;
 
-        // if the object is out of the workspace, apply lower boundary sigmoid
-        if(prob0 < 0)
-        {
-            if(s1 != 0)
-                cost/= s1;
-            else
-                cost = 1000000;
-        }
-
+        cout << "robot " << id << " object " << obj.get_id() << " s1 " << s1 << " s2 " << s2 << " travel time " << travel_time << endl;
     }
     else
+    {
         cost = 1000000;
+        cout << "robot " << id << " prob of catch " << best_prob_overall << endl;
+    }
 
-
-
-	// check feasibility somehow
- //   if(delta_norm > 20 || obj.get_X_O()(0) >= X_base(0)) // either too far, or object is past the robot
- //       delta_norm = 1000000;
- //   cout << "delta norm = " << delta_norm << endl;
-
- //    cost = delta_norm;
     return cost;
 }
 

@@ -30,15 +30,25 @@ void chatterCallback_rob0_end(const geometry_msgs::Pose& msg);
 void chatterCallback_rob1_end(const geometry_msgs::Pose& msg);
 void chatterCallback_rob2_end(const geometry_msgs::Pose& msg);
 void chatterCallback_rob3_end(const geometry_msgs::Pose& msg);
+void chatterCallback_rob4_end(const geometry_msgs::Pose& msg);
+void chatterCallback_rob5_end(const geometry_msgs::Pose& msg);
+void chatterCallback_rob6_end(const geometry_msgs::Pose& msg);
+void chatterCallback_rob7_end(const geometry_msgs::Pose& msg);
+void chatterCallback_rob8_end(const geometry_msgs::Pose& msg);
 
 void chatterCallback_rob0_grabbed(const std_msgs::Int64& msg);
 void chatterCallback_rob1_grabbed(const std_msgs::Int64& msg);
 void chatterCallback_rob2_grabbed(const std_msgs::Int64& msg);
 void chatterCallback_rob3_grabbed(const std_msgs::Int64& msg);
+void chatterCallback_rob4_grabbed(const std_msgs::Int64& msg);
+void chatterCallback_rob5_grabbed(const std_msgs::Int64& msg);
+void chatterCallback_rob6_grabbed(const std_msgs::Int64& msg);
+void chatterCallback_rob7_grabbed(const std_msgs::Int64& msg);
+void chatterCallback_rob8_grabbed(const std_msgs::Int64& msg);
 
 
-void (*cb_rob_grabbed[N_ROB])( const std_msgs::Int64& msg ) = { chatterCallback_rob0_grabbed, chatterCallback_rob1_grabbed, chatterCallback_rob2_grabbed, chatterCallback_rob3_grabbed};
-void (*cb_rob_end[N_ROB])( const geometry_msgs::Pose& msg ) = { chatterCallback_rob0_end, chatterCallback_rob1_end, chatterCallback_rob2_end, chatterCallback_rob3_end};
+void (*cb_rob_grabbed[])( const std_msgs::Int64& msg ) = { chatterCallback_rob0_grabbed, chatterCallback_rob1_grabbed, chatterCallback_rob2_grabbed, chatterCallback_rob3_grabbed, chatterCallback_rob4_grabbed, chatterCallback_rob5_grabbed, chatterCallback_rob6_grabbed, chatterCallback_rob7_grabbed, chatterCallback_rob8_grabbed};
+void (*cb_rob_end[])( const geometry_msgs::Pose& msg ) = { chatterCallback_rob0_end, chatterCallback_rob1_end, chatterCallback_rob2_end, chatterCallback_rob3_end, chatterCallback_rob4_end, chatterCallback_rob5_end, chatterCallback_rob6_end, chatterCallback_rob7_end, chatterCallback_rob8_end};
 
 
 void chatterCallback_rob0_end(const geometry_msgs::Pose& msg)
@@ -58,7 +68,32 @@ void chatterCallback_rob2_end(const geometry_msgs::Pose& msg)
 
 void chatterCallback_rob3_end(const geometry_msgs::Pose& msg)
 {
-	rob_ends[3] = msg;
+    rob_ends[3] = msg;
+}
+
+void chatterCallback_rob4_end(const geometry_msgs::Pose& msg)
+{
+    rob_ends[4] = msg;
+}
+
+void chatterCallback_rob5_end(const geometry_msgs::Pose& msg)
+{
+    rob_ends[5] = msg;
+}
+
+void chatterCallback_rob6_end(const geometry_msgs::Pose& msg)
+{
+    rob_ends[6] = msg;
+}
+
+void chatterCallback_rob7_end(const geometry_msgs::Pose& msg)
+{
+    rob_ends[7] = msg;
+}
+
+void chatterCallback_rob8_end(const geometry_msgs::Pose& msg)
+{
+    rob_ends[8] = msg;
 }
 
 void chatterCallback_rob0_grabbed(const std_msgs::Int64& msg)
@@ -75,8 +110,29 @@ void chatterCallback_rob2_grabbed(const std_msgs::Int64& msg)
 }
 void chatterCallback_rob3_grabbed(const std_msgs::Int64& msg)
 {
-	grabbed[3] = msg.data;
+    grabbed[3] = msg.data;
 }
+void chatterCallback_rob4_grabbed(const std_msgs::Int64& msg)
+{
+    grabbed[4] = msg.data;
+}
+void chatterCallback_rob5_grabbed(const std_msgs::Int64& msg)
+{
+    grabbed[5] = msg.data;
+}
+void chatterCallback_rob6_grabbed(const std_msgs::Int64& msg)
+{
+    grabbed[6] = msg.data;
+}
+void chatterCallback_rob7_grabbed(const std_msgs::Int64& msg)
+{
+    grabbed[7] = msg.data;
+}
+void chatterCallback_rob8_grabbed(const std_msgs::Int64& msg)
+{
+    grabbed[8] = msg.data;
+}
+
 
 
 void chatterCallback_Command(const std_msgs::Int64& msg)
@@ -282,11 +338,11 @@ int main(int argc, char **argv) {
             P_O(2) = Object.position.z;
 
 
-            Object.position.x = Object.position.x + r.cycleTime().toSec()*SIM_VELOCITY;
+            Object.position.x = Object.position.x + r.cycleTime().toSec()*SIM_VELOCITY[0];
             Object.position.y = Object.position.y;
             Object.position.z = Object.position.z;
 
-            ROS_INFO_STREAM("moved object by " << r.cycleTime().toSec()*SIM_VELOCITY << endl);
+            ROS_INFO_STREAM("moved object by " << r.cycleTime().toSec()*SIM_VELOCITY[0] << endl);
             // end patrick
 
 
@@ -327,14 +383,19 @@ int main(int argc, char **argv) {
 
             obj_pos[0] = Object;
             for(int i = 0; i < N_OBJ; i++)
-                obj_pos[i].position.x = obj_pos[i].position.x + r.cycleTime().toSec()*SIM_VELOCITY;
+                obj_pos[i].position.x = obj_pos[i].position.x + r.cycleTime().toSec()*SIM_VELOCITY[i];
 
 
-            obj_vel[0] = Object_vel;
+            for(int i = 0; i < N_OBJ; i++)
+            {
+                obj_vel[i] = Object_vel;
+                obj_vel[i].position.x =  SIM_VELOCITY[i];
+            }
+ /*           obj_vel[0] = Object_vel;
             obj_vel[1] = Object_vel;
             obj_vel[2] = Object_vel;
             obj_vel[3] = Object_vel;
-
+*/
 
             obj_acc[0] = Object_acc;
             obj_acc[1] = Object_acc;
@@ -440,7 +501,7 @@ int main(int argc, char **argv) {
                     obj_pos[2].position.z = Object.position.z;
 
                     obj_pos[3].position.x = Object.position.x - 0.5;
-                    obj_pos[3].position.y = Object.position.y - 0.0;
+                    obj_pos[3].position.y = Object.position.y + 0.05;
                     obj_pos[3].position.z = Object.position.z;
 
                     break;
@@ -459,25 +520,27 @@ int main(int argc, char **argv) {
                     obj_pos[2].position.z = Object.position.z;
 
                     obj_pos[3].position.x = Object.position.x + 0.5;
-                    obj_pos[3].position.y = Object.position.y - 0.0;
+                    obj_pos[3].position.y = Object.position.y + 0.05;
                     obj_pos[3].position.z = Object.position.z;
                     break;
 
             case(Object_scenarios::THREE):
 
                 obj_pos[0] = Object;
+                obj_pos[0].position.y = obj_pos[0].position.y + 0.05;
+
 
                 obj_pos[1].position.x = Object.position.x - 1;
-                obj_pos[1].position.y = Object.position.y;
+                obj_pos[1].position.y = Object.position.y + 0.05;
                 obj_pos[1].position.z = Object.position.z;
 
 
                 obj_pos[2].position.x = Object.position.x - 0.5;
-                obj_pos[2].position.y = Object.position.y;
+                obj_pos[2].position.y = Object.position.y + 0.05;
                 obj_pos[2].position.z = Object.position.z;
 
                 obj_pos[3].position.x = Object.position.x + 0.5;
-                obj_pos[3].position.y = Object.position.y;
+                obj_pos[3].position.y = Object.position.y + 0.05;
                 obj_pos[3].position.z = Object.position.z;
 
                 default:

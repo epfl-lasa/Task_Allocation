@@ -51,11 +51,12 @@ public:
     void set_assigned();
 	void set_done();
     void set_status(Object_status);
-
+    void compute_N_DX_O(VectorXd sum_DX);
 
 	// getters
 	VectorXd get_X_O() const;
 	VectorXd get_DX_O() const;
+    VectorXd get_N_DX_O() const;
 	int get_id() const;
 	double get_dt() const;
 	double get_max_time() const;
@@ -68,6 +69,8 @@ public:
 	bool get_assignment() const;
 	bool is_done() const;
     Object_status get_status() const;
+
+
 
 	// various
 	void print_estimator() const;
@@ -93,7 +96,8 @@ private:
 	VectorXd X_O;		 				// The State of the object with respect to the world frame
 
 	VectorXd DX_O;						// The D-State of the object with respect to the world frame
-	VectorXd X_O_G[max_grabbing_state];// The State of the grabbing positions with respect to the state of the object
+    VectorXd N_DX_O; // normalized derivative compared to the other objects
+    VectorXd X_O_G[max_grabbing_state];// The State of the grabbing positions with respect to the state of the object
 
 	Object_prediction_type motion_type;
 	double	max_pred_time;

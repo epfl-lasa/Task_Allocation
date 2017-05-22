@@ -183,8 +183,11 @@ double Coalition::compute_value()
 					}
 				}//   */
 
-	//			cout << " evaluated weight " << temp_weight << endl;
-				if(0.0 < temp_weight && temp_weight < weight)
+     //           cout << "robot " << Robots[0]->get_id() << " object " << obj->get_id() << " value " << obj->get_value() << " cost " << temp_cost << endl;
+
+
+
+                if(0.0 < temp_weight && temp_weight < weight)
 				{
 		//			cout << " updated the desired object" << endl;
 					value = temp_value;
@@ -197,8 +200,6 @@ double Coalition::compute_value()
 	//		if(weight < 5)
 		//		weight = -1;
 		}
-	//	else
-	//		cout << "cant do this object, requires n_grips force " << obj->get_n_grippers() << " " << obj->get_weight() << " I have " << n_grippers << " " << force << endl;
 	}
 
 //	cout << endl;

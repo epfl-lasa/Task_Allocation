@@ -102,6 +102,7 @@ int main(int argc, char **argv) {
 
      //       ROS__STREAM("Updating value" << endl);
             Task_allocator->update_objects_value();
+            Task_allocator->compute_normalized_velocities();
     //        ROS_INFO_STREAM("predicting motion" << endl);
             Task_allocator->predict_motion();
    //         ROS_INFO_STREAM("updating robot business" << endl);
@@ -145,7 +146,7 @@ int main(int argc, char **argv) {
                         if(n_grips > 1)
                         {
                             distance_POG = (Robots[ids[i]].get_end() - Objects[coal.get_object_id()].get_P_O_G_prediction(ids[i]%2).col(0).block(0,0,3,1)).norm();
-                     //       cout << "robot " << ids[i] << " at x " << Robots[ids[i]].get_end().transpose() << " of POG " << ids[i]%2 << " at " << Objects[coal.get_object_id()].get_P_O_G_prediction(ids[i]%2).col(0).block(0,0,3,1).transpose() << " and distance " << distance_POG << endl;
+//                            cout << "robot " << ids[i] << " at x " << Robots[ids[i]].get_end().transpose() << " of POG " << ids[i]%2 << " at " << Objects[coal.get_object_id()].get_P_O_G_prediction(ids[i]%2).col(0).block(0,0,3,1).transpose() << " and distance " << distance_POG << endl;
 
                         }
                         else // only 1 robot, only 1 POG.
@@ -165,7 +166,7 @@ int main(int argc, char **argv) {
                         if(reached[0] == true)
                         {
                             // single robot in coalition and it caught the item
-                            cout << "robot " << ids[0] << " grabbed object " << coal.get_object_id() << endl;
+               //             cout << "robot " << ids[0] << " grabbed object " << coal.get_object_id() << endl;
                             Robots[ids[0]].set_grabbed();
                             Robots[ids[0]].set_idle();
                             Objects[coal.get_object_id()].set_status(Object_status::Grabbed);
@@ -175,12 +176,12 @@ int main(int argc, char **argv) {
                     {
                         if(reached[0] == true)
                         {
-                            cout << "Robot " << ids[0] << " reached the target " << coal.get_object_id() << endl;
+        //                    cout << "Robot " << ids[0] << " reached the target " << coal.get_object_id() << endl;
 
                         }
                         if(reached[1] == true)
                         {
-                            cout << "Robot " << ids[1] << " reached the target " << coal.get_object_id() << endl;
+      //                      cout << "Robot " << ids[1] << " reached the target " << coal.get_object_id() << endl;
                         }
                         if(reached[0] == true && reached[1] == true)
                         {
@@ -231,53 +232,6 @@ int main(int argc, char **argv) {
                 }*/
             }
 
-/*
-            // check at what state the robots are
-            for(auto & rob : Robots)
-            {
-                int assign = rob.get_assignment();
-                if(assign != -1) // if it's assigned
-                {
-                    int n_grips = Objects[assign].get_n_grippers();
-                    if(n_grips == 1) // if its object is a "1 robot" object
-                    {
-                        double distance = (rob.get_end() - Objects[assign].get_X_O().block(0,0,3,1)).norm();
-        //				cout << "robot " << rob.get_id() << " is at " << distance << " of its target" << endl;
-                        if( distance < 0.2) // if it reached the object
-                        {
-           //                 cout << "robot " << rob.get_id() << " grabbed object " << Objects[assign].get_id() << endl;
-                            rob.set_grabbed();
-                        }
-                    }
-
-                    if(n_grips == 2)
-                    {
-                        double distance_POG[n_grips];
-                        for(int i = 0; i < n_grips; i++)
-                        {
-                            distance_POG[i] = (rob.get_end() - Objects[assign].get_P_O_G_prediction(i).col(0).block(0,0,3,1)).norm();
-                        }
-                        if(distance_POG[0] < 0.15 && distance_POG[1] < 0.15)
-                        {
-                            ROS_INFO_STREAM("robot " << rob.get_id() << "distance to POG " << distance_POG[0] << " " << distance_POG[1]);
-
-                        }
-                    }
-                }
-
-
-                if(rob.has_grabbed()) // if the robot has grabbed something
-                {
-                    rob.set_idle(); // keep sending it to idle position
-
-                    if((rob.get_idle_pos() - rob.get_end()).norm() < 0.1)
-                    {
-                        Objects[rob.get_assignment()].set_done();
-         //               cout << "robot " << rob.get_id() << " released the object " << Objects[rob.get_assignment()].get_id() << endl;
-                    }
-                }
-            }
-*/
             clock_t end = clock();
 
 
@@ -462,8 +416,8 @@ void add_objects_task_allocator()
 	VectorXd double_grab[2];
     double_grab[0].resize(n_state); double_grab[0].setZero();
     double_grab[1].resize(n_state); double_grab[1].setZero();
-    double_grab[0](1) = -0.1;
-    double_grab[1](1) = 0.1;
+    double_grab[0](1) = 0.1;
+    double_grab[1](1) = -0.1;
 
 
     for(int i = 0; i < N_OBJ; i++)
