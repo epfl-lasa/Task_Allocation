@@ -158,13 +158,20 @@ double Robot_agent::evaluate_task(const Object& obj)
     for(int i = 0; i < n_grips; i++)
 	{
 		POG[i] = obj.get_P_O_G_prediction(i);
-        cout << "robot " << id << " object " << obj.get_id() << " POG size " << POG[i].rows() << " " << POG[i].cols() << endl;
+  //    cout << "robot " << id << " object " << obj.get_id() << " POG size " << POG[i].rows() << " " << POG[i].cols() << endl;
         for(int j = 0; j < POG[i].cols(); j++)
         {
-
             if((POG[i].col(j)(0)-X_base(0)) < 1.5)
             {
-                cout << (POG[i].col(j).block(0,0,3,1) - X_base).transpose() << " has prob " << Workspace_model.PDF((POG[i].col(j).block(0,0,3,1) - X_base)) << endl;
+                VectorXd col = POG[i].col(j).block(0,0,3,1);
+                double prob = Workspace_model.PDF(col - X_base);
+                cout << col.transpose() << " has prob " << prob << endl;
+              //  cout << col.transpose() << " has prob " << Workspace_model.PDF(col - X_base) << endl;
+              //  cout << (POG[i].col(j).block(0,0,3,1) - X_base).transpose() << " has prob " << Workspace_model.PDF((POG[i].col(j).block(0,0,3,1) - X_base)) << endl;
+              //  (POG[i].col(j).block(0,0,3,1) - X_base).transpose();
+              //  Workspace_model.PDF((POG[i].col(j).block(0,0,3,1) - X_base));
+
+
                 temp_prob[i] = Workspace_model.PDF((POG[i].col(j).block(0,0,3,1) - X_base));
                 if(temp_prob[i] > best_prob[i])
                 {
@@ -172,7 +179,6 @@ double Robot_agent::evaluate_task(const Object& obj)
                     best_pos[i] = POG[i].col(j).block(0,0,3,1);
                     if(best_prob[i] > 0.6) // pat hack value.
                         break;
-                //    best_prob_overall = temp_prob[i];
                 }
             }
         }
@@ -227,7 +233,7 @@ double Robot_agent::evaluate_task(const Object& obj)
         else
             cost = 1000000;
 
-        cout << "robot " << id << " object " << obj.get_id() << " s1 " << s1 << " s2 " << s2 << " travel time " << travel_time << endl;
+    //    cout << "robot " << id << " object " << obj.get_id() << " s1 " << s1 << " s2 " << s2 << " travel time " << travel_time << endl;
     }
     else
     {
