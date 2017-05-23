@@ -204,15 +204,17 @@ double Robot_agent::evaluate_task(const Object& obj)
     }
     else
     {
-        travel_time = obj.get_travel_time(id % 2); //((X_targ - obj.get_X_O().block(0,0,3,1)).norm())/(obj_speed*n_obj_speed);
-        n_travel_time = obj.get_N_travel_time(id % 2);
+        travel_time = obj.get_travel_time(id/ 2); //((X_targ - obj.get_X_O().block(0,0,3,1)).norm())/(obj_speed*n_obj_speed);
+        n_travel_time = obj.get_N_travel_time(id/2);
 
 
         rob_travel_dist = (X_targ - X_end).norm();
         rob_travel_time = rob_travel_dist/1; // arbitrary max velocity of the robot at 1m/s.
 
 
-        cost = n_travel_time*rob_travel_dist/best_prob_overall;
+       // cost = n_travel_time*rob_travel_dist/best_prob_overall;
+
+        cost = (travel_time + rob_travel_dist)/best_prob_overall;
 
         // apply sigmoid from upper velocity boundary
         if(!std::isnan(s2) && s2 != 0)
@@ -220,11 +222,13 @@ double Robot_agent::evaluate_task(const Object& obj)
         else
             cost = 1000000;
 
+
+   //     cout << "robot " << id << " object " << obj.get_id() <<  " dist " << rob_travel_dist << " travel_time " << travel_time << " n_travel " << n_travel_time << " cost " << cost << endl;
         double s3 = sigmoid(travel_time - rob_travel_time);
 
 
 
-        // **************** BACKUP BELOW **************************
+/*        // **************** BACKUP BELOW **************************
         // distance of object
         temp_delta = (X_end.block(0,0,3,1) - obj.get_X_O().block(0,0,3,1)).norm();
         delta_norm = temp_delta;
@@ -237,7 +241,7 @@ double Robot_agent::evaluate_task(const Object& obj)
         else
             cost = 1000000;
 
-        // ********************* BACKUP ABOVE ***********************
+        // ********************* BACKUP ABOVE ************************/
     //    cout << "robot " << id << " object " << obj.get_id() << " s3 " << s3 << " time object " << travel_time << " time robot " << rob_travel_time << endl;
     //   cout << "travel from " << X_end.transpose() << " to " << X_targ.transpose() << endl;
 

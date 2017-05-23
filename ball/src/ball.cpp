@@ -383,8 +383,11 @@ int main(int argc, char **argv) {
 
             obj_pos[0] = Object;
             for(int i = 0; i < N_OBJ; i++)
+            {
                 obj_pos[i].position.x = obj_pos[i].position.x + r.cycleTime().toSec()*SIM_VELOCITY[i];
 
+                ROS_INFO_STREAM( "moved object " << i << " " << r.cycleTime().toSec()*SIM_VELOCITY[i] << " in " << r.cycleTime().toSec() << " seconds " << endl);
+            }
 
             for(int i = 0; i < N_OBJ; i++)
             {

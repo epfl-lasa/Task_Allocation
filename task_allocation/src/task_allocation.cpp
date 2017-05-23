@@ -329,6 +329,7 @@ void Task_allocation::print_obj()  const
 
 void Task_allocation::allocate()
 {
+//    cout << " ********** BEGIN ALLOCATING ********" << endl;
 //    ROS_INFO_STREAM("clearing coalitions" << endl);
 	clear_coalitions();
 
@@ -386,13 +387,16 @@ void Task_allocation::allocate()
 			active_coalitions.push_back(*low_coal);
 			low_coal->assign();
             std::vector<int> ids = low_coal->get_robots_id();
-    /*        if(ids.size() > 1)
-                ROS_INFO_STREAM("added coalition of " << ids[0] << " " << ids[1] << endl);
-            else
-                ROS_INFO_STREAM("added coalition of " << ids[0] << endl);*/
+  //          if(ids.size() > 1)
+    //            cout << "added coalition of " << ids[0] << " " << ids[1] << " targeting object " << low_coal->get_object_id() << endl;
+      //      else
+        //        cout << "added coalition of " << ids[0] << " targeting object " << low_coal->get_object_id() << endl;
             //cout << "added coalition " << endl; //, I had " << unallocated_robots.size() << " robots to choose from" << endl << *low_coal << endl;
 		}
 	}
+
+
+//    cout << " ********** DONE ALLOCATING ********" << endl;
 }
 
 
