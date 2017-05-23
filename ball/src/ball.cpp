@@ -491,6 +491,7 @@ int main(int argc, char **argv) {
 
                     obj_pos[0] = Object;
 
+
                     obj_pos[1].position.x = Object.position.x + 0.5;
                     obj_pos[1].position.y = Object.position.y + 0.2;
                     obj_pos[1].position.z = Object.position.z;
@@ -501,7 +502,7 @@ int main(int argc, char **argv) {
                     obj_pos[2].position.z = Object.position.z;
 
                     obj_pos[3].position.x = Object.position.x - 0.5;
-                    obj_pos[3].position.y = Object.position.y + 0.05;
+                    obj_pos[3].position.y = Object.position.y;
                     obj_pos[3].position.z = Object.position.z;
 
                     break;
@@ -520,27 +521,27 @@ int main(int argc, char **argv) {
                     obj_pos[2].position.z = Object.position.z;
 
                     obj_pos[3].position.x = Object.position.x + 0.5;
-                    obj_pos[3].position.y = Object.position.y + 0.05;
+                    obj_pos[3].position.y = Object.position.y;
                     obj_pos[3].position.z = Object.position.z;
                     break;
 
             case(Object_scenarios::THREE):
 
                 obj_pos[0] = Object;
-                obj_pos[0].position.y = obj_pos[0].position.y + 0.05;
+       //         obj_pos[0].position.y = obj_pos[0].position.y + 0.05;
 
 
                 obj_pos[1].position.x = Object.position.x - 1;
-                obj_pos[1].position.y = Object.position.y + 0.05;
+                obj_pos[1].position.y = Object.position.y;
                 obj_pos[1].position.z = Object.position.z;
 
 
                 obj_pos[2].position.x = Object.position.x - 0.5;
-                obj_pos[2].position.y = Object.position.y + 0.05;
+                obj_pos[2].position.y = Object.position.y;
                 obj_pos[2].position.z = Object.position.z;
 
                 obj_pos[3].position.x = Object.position.x + 0.5;
-                obj_pos[3].position.y = Object.position.y + 0.05;
+                obj_pos[3].position.y = Object.position.y;
                 obj_pos[3].position.z = Object.position.z;
 
                 default:
@@ -569,7 +570,8 @@ int main(int argc, char **argv) {
 		Object_acc.orientation.x=0;					Object_acc.orientation.y=0;					Object_acc.orientation.z=0;
 		Object_acc.orientation.w=0;
 
-		chatter_pub.publish(Object);
+    //	chatter_pub.publish(Object); // removed pat
+        chatter_pub.publish(obj_pos[0]);
 		chatter_pub_f.publish(Object_f);
 		chatter_pub_vel_f.publish(Object_vel);
 		chatter_pub_acc_f.publish(Object_acc);

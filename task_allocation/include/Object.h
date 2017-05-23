@@ -52,6 +52,10 @@ public:
 	void set_done();
     void set_status(Object_status);
     void compute_N_DX_O(VectorXd sum_DX);
+    void compute_travel_time(double avg_times[]); // avhg times to checkpoints
+
+
+
 
 	// getters
 	VectorXd get_X_O() const;
@@ -69,7 +73,8 @@ public:
 	bool get_assignment() const;
 	bool is_done() const;
     Object_status get_status() const;
-
+    double get_N_travel_time(int i) const; // returns normalized travel time to checkpoint i
+    double get_travel_time(int i) const;
 
 
 	// various
@@ -83,6 +88,13 @@ private:
 
 	const double minPos[3] = {-0.5, -1.00, 0.3};
 	const double maxPos[3] = {0.0,  1.00, 1.0};
+
+
+
+
+    double travel_time[N_CHECKPOINTS]; // travel time to each checkpoint
+    double N_travel_time[N_CHECKPOINTS]; // travel time to each checkpoint normalized against others
+
 
 	int id;
 

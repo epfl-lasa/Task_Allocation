@@ -460,6 +460,49 @@ void Task_allocation::compute_intercepts()
     }
 }
 
+void Task_allocation::compute_normalized_travel_times()
+{
+ //   double travel_times[N_CHECKPOINTS][Objects.size()];
+    double avg_travel_times[N_CHECKPOINTS];
+    int crossing[N_CHECKPOINTS]; // number of robots crossing that checkpoint
+    VectorXd X_O;
+    VectorXd DX_O;
+
+    for(int i = 0; i < N_CHECKPOINTS; i++)
+    {
+        avg_travel_times[i] = 0;
+        crossing[i] = 0;
+    }
+    for(int i = 0; i < Objects.size(); i++)
+    {
+        X_O = Objects[i]->get_X_O();
+        DX_O = Objects[i]->get_DX_O();
+
+        for(int j = 0; j < N_CHECKPOINTS; j++)
+        {
+            if(X_O(0) < X_checkpoint[j] && DX_O(0) > 0) // if the object will eventually cross this point
+            {
+                crossing[j]++;
+                avg_travel_times[j] += (X_checkpoint[j] - X_O(0))/DX_O(0);
+            }
+        }
+    }
+
+    for(int j = 0; j < N_CHECKPOINTS; j++)
+    {
+        if(crossing[j] == 0)
+            avg_travel_times[j] = -1;
+  //      if(crossing[j] != 0)
+    //        avg_travel_times[j] /= crossing[j];
+
+    }
+
+//    cout << "number of objects crossing checkpoints " << crossing[0] << " " << crossing[1] << endl;
+    for(auto & obj : Objects)
+    {
+        obj->compute_travel_time(avg_travel_times); // not the averages!
+    }
+}
 
 
 bool Task_allocation::set_robot_state(int i, VectorXd X_)

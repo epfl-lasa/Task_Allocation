@@ -137,7 +137,7 @@ double Robot_agent::evaluate_task(const Object& obj)
 	double delta_norm = 1000000;
 	double temp_delta;
 
-    double cost;
+    double cost = 1000000;
     MatrixXd POG[n_grips];
 
     double temp_prob[n_grips];
@@ -145,7 +145,9 @@ double Robot_agent::evaluate_task(const Object& obj)
     Vector3d best_pos[n_grips];
     double best_prob_overall = 0;
     double travel_time = 0;
-
+    double rob_travel_dist = 0;
+    double rob_travel_time = 0;
+    double n_travel_time = 0;
     double obj_speed = obj.get_DX_O()(0); // get velocity
     double n_obj_speed = obj.get_N_DX_O()(0); // get its normalization factor
 
@@ -157,6 +159,7 @@ double Robot_agent::evaluate_task(const Object& obj)
     // probability of being in workspace in future
     for(int i = 0; i < n_grips; i++)
 	{
+        best_prob[i] = 0;
 		POG[i] = obj.get_P_O_G_prediction(i);
   //    cout << "robot " << id << " object " << obj.get_id() << " POG size " << POG[i].rows() << " " << POG[i].cols() << endl;
         for(int j = 0; j < POG[i].cols(); j++)
@@ -165,21 +168,22 @@ double Robot_agent::evaluate_task(const Object& obj)
             {
                 VectorXd col = POG[i].col(j).block(0,0,3,1);
                 double prob = Workspace_model.PDF(col - X_base);
-                cout << col.transpose() << " has prob " << prob << endl;
+           //     cout << col << " has prob " << prob << endl;
               //  cout << col.transpose() << " has prob " << Workspace_model.PDF(col - X_base) << endl;
               //  cout << (POG[i].col(j).block(0,0,3,1) - X_base).transpose() << " has prob " << Workspace_model.PDF((POG[i].col(j).block(0,0,3,1) - X_base)) << endl;
               //  (POG[i].col(j).block(0,0,3,1) - X_base).transpose();
               //  Workspace_model.PDF((POG[i].col(j).block(0,0,3,1) - X_base));
 
 
-                temp_prob[i] = Workspace_model.PDF((POG[i].col(j).block(0,0,3,1) - X_base));
+                temp_prob[i] = Workspace_model.PDF((col - X_base));
                 if(temp_prob[i] > best_prob[i])
                 {
                     best_prob[i] = temp_prob[i];
-                    best_pos[i] = POG[i].col(j).block(0,0,3,1);
-                    if(best_prob[i] > 0.6) // pat hack value.
+                    best_pos[i] = col;
+                    if(best_prob[i] > 0.25) // pat hack value.
                         break;
                 }
+           //     cout << "temp prob " << i << " " << temp_prob[i] << endl;
             }
         }
     }
@@ -194,10 +198,50 @@ double Robot_agent::evaluate_task(const Object& obj)
         }
     }
 
-    if(best_prob_overall == 0)
+    if(best_prob_overall <= 0)
+    {
         X_targ = X_end;
+    }
     else
-         travel_time = 0.5*((X_targ - obj.get_X_O().block(0,0,3,1)).norm())/(obj_speed*n_obj_speed);
+    {
+        travel_time = obj.get_travel_time(id % 2); //((X_targ - obj.get_X_O().block(0,0,3,1)).norm())/(obj_speed*n_obj_speed);
+        n_travel_time = obj.get_N_travel_time(id % 2);
+
+
+        rob_travel_dist = (X_targ - X_end).norm();
+        rob_travel_time = rob_travel_dist/1; // arbitrary max velocity of the robot at 1m/s.
+
+
+        cost = n_travel_time*rob_travel_dist/best_prob_overall;
+
+        // apply sigmoid from upper velocity boundary
+        if(!std::isnan(s2) && s2 != 0)
+            cost /= s2;
+        else
+            cost = 1000000;
+
+        double s3 = sigmoid(travel_time - rob_travel_time);
+
+
+
+        // **************** BACKUP BELOW **************************
+        // distance of object
+        temp_delta = (X_end.block(0,0,3,1) - obj.get_X_O().block(0,0,3,1)).norm();
+        delta_norm = temp_delta;
+
+        cost = delta_norm / best_prob_overall;
+
+        // apply sigmoid from upper boundary
+        if(!std::isnan(s2) && s2 != 0)
+            cost /= s2;
+        else
+            cost = 1000000;
+
+        // ********************* BACKUP ABOVE ***********************
+    //    cout << "robot " << id << " object " << obj.get_id() << " s3 " << s3 << " time object " << travel_time << " time robot " << rob_travel_time << endl;
+    //   cout << "travel from " << X_end.transpose() << " to " << X_targ.transpose() << endl;
+
+    }
 
    /* if(id == 1)
     {
@@ -218,6 +262,8 @@ double Robot_agent::evaluate_task(const Object& obj)
         //	delta_norm = temp_delta;
 //	}
 
+ /*
+
     // distance of object
     temp_delta = (X_end.block(0,0,3,1) - obj.get_X_O().block(0,0,3,1)).norm();
 	delta_norm = temp_delta;
@@ -227,6 +273,7 @@ double Robot_agent::evaluate_task(const Object& obj)
     if(best_prob_overall > 0) // avoid dividing by 0
     {
         cost = (delta_norm + travel_time) / best_prob_overall;
+
         // apply sigmoid from upper boundary
         if(!std::isnan(s2) && s2 != 0)
             cost /= s2;
@@ -238,9 +285,9 @@ double Robot_agent::evaluate_task(const Object& obj)
     else
     {
         cost = 1000000;
-        cout << "robot " << id << " prob of catch " << best_prob_overall << endl;
+    //    cout << "robot " << id << " prob of catch " << best_prob_overall << endl;
     }
-
+*/
     return cost;
 }
 

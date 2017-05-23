@@ -187,6 +187,40 @@ Object_status Object::get_status() const
     return status;
 }
 
+double Object::get_travel_time(int i) const
+{
+    if(i >= 0 && i < N_CHECKPOINTS)
+        return travel_time[i];
+    return 0;
+}
+
+double Object::get_N_travel_time(int i) const
+{
+    if(i >= 0 && i < N_CHECKPOINTS)
+        return N_travel_time[i];
+    return 0;
+}
+
+void Object::compute_travel_time(double avg_times[])
+{
+    for(int i = 0; i < N_CHECKPOINTS; i++)
+    {
+        if(DX_O(0) > 0 && X_O(0) < X_checkpoint[i])
+        {
+            travel_time[i]  = (X_checkpoint[i] - X_O(0))/DX_O(0);
+        }
+        else
+            travel_time[i] = -1;
+
+        if(avg_times[i] != 0)
+            N_travel_time[i] = travel_time[i]/avg_times[i];
+        else
+            N_travel_time[i] = -1;
+    }
+//    cout << "object " << id << " N travel " << N_travel_time[0] << " travel time " << travel_time[0] << " for avg " << avg_times[0] << " DX_O " << DX_O(0) << endl;
+}
+
+
 void Object::dumb_predict_motion()
 {
     if(DX_O(0) > 0.1)

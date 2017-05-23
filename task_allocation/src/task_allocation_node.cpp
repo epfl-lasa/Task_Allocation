@@ -103,6 +103,7 @@ int main(int argc, char **argv) {
      //       ROS__STREAM("Updating value" << endl);
             Task_allocator->update_objects_value();
             Task_allocator->compute_normalized_velocities();
+            Task_allocator->compute_normalized_travel_times();
     //        ROS_INFO_STREAM("predicting motion" << endl);
             Task_allocator->predict_motion();
    //         ROS_INFO_STREAM("updating robot business" << endl);

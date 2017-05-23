@@ -65,6 +65,7 @@ public:
 	void		multi_frame_allocation();
 
     void        compute_normalized_velocities();
+    void        compute_normalized_travel_times();
 
 	double 		get_dt() const;
 	double 		get_max_time() const;
