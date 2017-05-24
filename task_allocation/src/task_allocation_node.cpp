@@ -169,7 +169,7 @@ int main(int argc, char **argv) {
                             // single robot in coalition and it caught the item
                //             cout << "robot " << ids[0] << " grabbed object " << coal.get_object_id() << endl;
                             Robots[ids[0]].set_grabbed();
-                            Robots[ids[0]].set_idle();
+   //                         Robots[ids[0]].set_idle();
                             Objects[coal.get_object_id()].set_status(Object_status::Grabbed);
                         }
                     }
@@ -199,13 +199,14 @@ int main(int argc, char **argv) {
                 }
             }
 
+            // update robot targets
             for(auto & rob : Robots)
             {
                 switch(rob.get_status())
                 {
-                case(Robot_status::Unallocated):
-                    rob.set_idle();
-                    break;
+                //case(Robot_status::Unallocated):
+                  //  rob.set_idle();
+                    //break;
 
                 case(Robot_status::Grabbed):
                     rob.set_idle();
@@ -219,18 +220,6 @@ int main(int argc, char **argv) {
                 default:
                     break;
                 }
-             /*   if(rob.get_status() == Robot_status::Unallocated)
-                {
-                    rob.set_idle();
-                }
-                if(rob.has_grabbed())
-                {
-                    if((rob.get_idle_pos() - rob.get_end()).norm() < 0.15)
-                    {
-                        Objects[rob.get_assignment()].set_done();
-                        rob.set_done();
-                    }
-                }*/
             }
 
             clock_t end = clock();

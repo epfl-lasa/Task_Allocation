@@ -25,56 +25,6 @@ VectorXd Object::get_N_DX_O() const
 {
     return N_DX_O;
 }
-/*
-Object::Object( const Object &o) // copy construct
-{
-	//cout << "something called the copy constructor" << endl;
-
-	n_state = o.n_state;
-
-
-	for(int i = 0; i < max_grabbing_state; i++)
-	{
-	//	grabbing_state_is_set[i] = o.grabbing_state_is_set[i];
-		X_O_G[i] = o.X_O_G[i];
-	}
-
-	id = o.id;
-	motion_type = o.motion_type;
-	max_pred_time = o.max_pred_time;
-	dt = o.dt;
-	n_frames = o.n_frames;
-	n_grabbing_pos = o.n_grabbing_pos;
-	X_O_First = o.X_O_First;
-	X_O = o.X_O;
-	DX_O = o.DX_O;
-
-
-	P_O_prediction = o.P_O_prediction;
-	for(int i = 0; i < max_grabbing_state; i++)
-	{
-		P_O_G_prediction[i] = o.P_O_G_prediction[i];
-	}
-
-
-	weight = o.weight;
-	value = o.value;
-
-	double gravity[3];gravity[0]=0;gravity[1]=0;
-
-	if (motion_type==Object_prediction_type::Ballistic)
-	{
-		gravity[2]=9.81;
-	}
-	else
-	{
-		gravity[2]=0;
-	}
-
-	predict = new TrajectoryEstimation(gravity, dt, 30, 10);
-}
-
-*/
 
 Object::Object(int N_state_, VectorXd X_, VectorXd DX_, double max_time_, double dt_, VectorXd grabbing_states_[], int n_grabbing_states_, double weight_, double value_, int id_, Object_prediction_type Object_motion )
 {
@@ -227,7 +177,7 @@ void Object::dumb_predict_motion()
     {
         double dist = OBJECT_MAX_X - X_O(0);
         int frames = dist/(DX_O(0)*dt);
-
+        frames = min(frames, n_frames);
         P_O_prediction.resize(X_O.size(), frames+1); // pat hack. Need to find a better way.
         P_O_prediction.setZero();
 

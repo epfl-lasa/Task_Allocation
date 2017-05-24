@@ -137,7 +137,7 @@ double Robot_agent::evaluate_task(const Object& obj)
 	double delta_norm = 1000000;
 	double temp_delta;
 
-    double cost = 1000000;
+    double cost = ROBOT_MAX_COST;
     MatrixXd POG[n_grips];
 
     double temp_prob[n_grips];
@@ -164,10 +164,9 @@ double Robot_agent::evaluate_task(const Object& obj)
   //    cout << "robot " << id << " object " << obj.get_id() << " POG size " << POG[i].rows() << " " << POG[i].cols() << endl;
         for(int j = 0; j < POG[i].cols(); j++)
         {
-            if((POG[i].col(j)(0)-X_base(0)) < 1.5)
+            if(abs((POG[i].col(j)(0)-X_base(0))) < 1.5)
             {
                 VectorXd col = POG[i].col(j).block(0,0,3,1);
-                double prob = Workspace_model.PDF(col - X_base);
            //     cout << col << " has prob " << prob << endl;
               //  cout << col.transpose() << " has prob " << Workspace_model.PDF(col - X_base) << endl;
               //  cout << (POG[i].col(j).block(0,0,3,1) - X_base).transpose() << " has prob " << Workspace_model.PDF((POG[i].col(j).block(0,0,3,1) - X_base)) << endl;
@@ -198,9 +197,10 @@ double Robot_agent::evaluate_task(const Object& obj)
         }
     }
 
-    if(best_prob_overall <= 0)
+    if(best_prob_overall <= 0) // impossible, put a high number.
     {
         X_targ = X_end;
+        cost = ROBOT_MAX_COST;
     }
     else
     {
@@ -220,13 +220,19 @@ double Robot_agent::evaluate_task(const Object& obj)
         if(!std::isnan(s2) && s2 != 0)
             cost /= s2;
         else
-            cost = 1000000;
+            cost = ROBOT_MAX_COST;
 
 
    //     cout << "robot " << id << " object " << obj.get_id() <<  " dist " << rob_travel_dist << " travel_time " << travel_time << " n_travel " << n_travel_time << " cost " << cost << endl;
-        double s3 = sigmoid(travel_time - rob_travel_time);
 
-
+        if(rob_travel_dist > 0.25) // only apply the time of travel if the robot will have to travel...
+        {
+            double s3 = sigmoid(travel_time - rob_travel_time);
+            if(!std::isnan(s3) && s3 != 0)
+                cost /= s3;
+            else
+                cost = ROBOT_MAX_COST;
+        }
 
 /*        // **************** BACKUP BELOW **************************
         // distance of object
@@ -239,7 +245,7 @@ double Robot_agent::evaluate_task(const Object& obj)
         if(!std::isnan(s2) && s2 != 0)
             cost /= s2;
         else
-            cost = 1000000;
+            cost = ROBOT_MAX_COST;
 
         // ********************* BACKUP ABOVE ************************/
     //    cout << "robot " << id << " object " << obj.get_id() << " s3 " << s3 << " time object " << travel_time << " time robot " << rob_travel_time << endl;
@@ -282,13 +288,13 @@ double Robot_agent::evaluate_task(const Object& obj)
         if(!std::isnan(s2) && s2 != 0)
             cost /= s2;
         else
-            cost = 1000000;
+            cost = ROBOT_MAX_COST;
 
     //    cout << "robot " << id << " object " << obj.get_id() << " s1 " << s1 << " s2 " << s2 << " travel time " << travel_time << endl;
     }
     else
     {
-        cost = 1000000;
+        cost = ROBOT_MAX_COST;
     //    cout << "robot " << id << " prob of catch " << best_prob_overall << endl;
     }
 */
@@ -349,8 +355,6 @@ VectorXd Robot_agent::compute_intercept(const Object& obj)
 {
 	VectorXd best_pos;
 	X_targ.resize(3); X_targ.setZero();
-	X_targ = X_idle;
-//	X_targ = X_base + Vector3d(0,0,0.8);
 	MatrixXd POG = obj.get_P_O_G_prediction(0);//obj.get_P_O_G_prediction(0);
 //	cout << "trying to get intercept for object " << obj.get_id() << " POG is of size " << POG.rows() << " " << POG.cols()  << endl;// << POG << endl;
 	double best_prob = -1;
@@ -358,14 +362,17 @@ VectorXd Robot_agent::compute_intercept(const Object& obj)
 	for(int i = 0; i < POG.cols(); i++)
 	{
 //		cout << "vector " << i << endl << POG.col(i) << endl;
-		temp_prob = Workspace_model.PDF((POG.col(i).block(0,0,3,1) - X_base));
-		if(temp_prob > best_prob)
-		{
-			best_prob = temp_prob;
-			best_pos = POG.col(i);//.block(0,0,3,1);
-            if(best_prob > 0.2)
-                break;
-		}
+        if(abs((POG.col(i)(0)-X_base(0))) < 1.5)
+        {
+            temp_prob = Workspace_model.PDF((POG.col(i).block(0,0,3,1) - X_base));
+            if(temp_prob > best_prob)
+            {
+                best_prob = temp_prob;
+                best_pos = POG.col(i);//.block(0,0,3,1);
+                if(best_prob > 0.2)
+                    break;
+            }
+        }
 	}
 
 /*    if(id == 1)
@@ -384,7 +391,7 @@ VectorXd Robot_agent::compute_intercept(const Object& obj)
 	}
 	else
 	{
-		X_targ = X_end;//X.block(0,0,3,1);
+        X_targ = X_end;
 	}
 	return X_targ;
 }

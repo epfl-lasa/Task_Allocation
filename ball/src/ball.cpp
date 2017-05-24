@@ -301,6 +301,8 @@ int main(int argc, char **argv) {
 	handle.Resize(3);
 
 	ros::Rate r(200);
+    ros::Time time1;
+    ros::Time time2;
 	//State=Com_Safe;
 	COM=Com_Ball_INIT;
 	double AA=0.1;
@@ -338,11 +340,11 @@ int main(int argc, char **argv) {
             P_O(2) = Object.position.z;
 
 
-            Object.position.x = Object.position.x + r.cycleTime().toSec()*SIM_VELOCITY[0];
+            Object.position.x = Object.position.x + r.expectedCycleTime().toSec()*SIM_VELOCITY[0];
             Object.position.y = Object.position.y;
             Object.position.z = Object.position.z;
 
-            ROS_INFO_STREAM("moved object by " << r.cycleTime().toSec()*SIM_VELOCITY[0] << endl);
+            ROS_INFO_STREAM("moved object by " << r.expectedCycleTime().toSec()*SIM_VELOCITY[0] << endl);
             // end patrick
 
 
@@ -382,11 +384,13 @@ int main(int argc, char **argv) {
 
 
             obj_pos[0] = Object;
+      //     time1 = time2;
+      //      time2 = ros::Time::now();
             for(int i = 0; i < N_OBJ; i++)
             {
-                obj_pos[i].position.x = obj_pos[i].position.x + r.cycleTime().toSec()*SIM_VELOCITY[i];
+                obj_pos[i].position.x = obj_pos[i].position.x + r.expectedCycleTime().toSec()*SIM_VELOCITY[i];// r.cycleTime().toSec()*SIM_VELOCITY[i];
 
-                ROS_INFO_STREAM( "moved object " << i << " " << r.cycleTime().toSec()*SIM_VELOCITY[i] << " in " << r.cycleTime().toSec() << " seconds " << endl);
+                ROS_INFO_STREAM( "moved object " << i << " " << r.expectedCycleTime().toSec()*SIM_VELOCITY[i] << " in " << r.expectedCycleTime().toSec() << " seconds " << endl);
             }
 
             for(int i = 0; i < N_OBJ; i++)
