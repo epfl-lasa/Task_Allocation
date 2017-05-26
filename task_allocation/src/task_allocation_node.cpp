@@ -280,7 +280,10 @@ int main(int argc, char **argv) {
             }
 
             clock_t end_pub = clock();
+             cout << "time for the allocation loop is " << ((double)(end-begin))/CLOCKS_PER_SEC << " time for pub is " << ((double)(end_pub - end))/CLOCKS_PER_SEC << " total is " << ((double)(end_pub - begin))/CLOCKS_PER_SEC << endl;
         }
+
+
 
         ros::spinOnce();
         r.sleep();

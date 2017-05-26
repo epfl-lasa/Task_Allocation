@@ -226,10 +226,13 @@ void Coalition::compute_intercept()
 bool Coalition::is_feasible(Object& obj) const
 {
 	bool feasible = false;
-	if(n_grippers == obj.get_n_grippers())
-		if(force >= obj.get_weight())
-				feasible = true;
+    if(n_grippers == obj.get_n_grippers())
+    {
 
+     //   cout << "coalition of " << Robots.size() << " can do object " << obj.get_id() << " requiring " << obj.get_n_grippers() << " grippers " << endl;
+        if(force >= obj.get_weight())
+				feasible = true;
+    }
 	return feasible;
 }
 
