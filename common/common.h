@@ -28,7 +28,7 @@ const double Z_INIT = 0.5;
 enum class Object_scenarios {ONE, TWO, THREE};
 const int N_SCENARIOS = 3;
 enum class Object_sizes {SMALL, LARGE};
-const Object_scenarios SCENARIO = Object_scenarios::ONE;
+const Object_scenarios SCENARIO = Object_scenarios::TWO;
 const Object_sizes obj_sizes[N_SCENARIOS][N_OBJ] = {{Object_sizes::LARGE, Object_sizes::SMALL, Object_sizes::SMALL, Object_sizes::SMALL},
                                                    {Object_sizes::LARGE, Object_sizes::SMALL, Object_sizes::SMALL, Object_sizes::SMALL},
                                                    {Object_sizes::SMALL, Object_sizes::SMALL, Object_sizes::SMALL, Object_sizes::SMALL}};

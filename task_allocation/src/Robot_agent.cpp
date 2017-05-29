@@ -241,12 +241,12 @@ double Robot_agent::evaluate_task(const Object& obj)
 
         }
 
-        if((id == 1 && obj.get_id() == 3))
+/*        if((id == 1 && obj.get_id() == 3))
         {
             cout << "rob travel dist " << rob_travel_dist << " obj travel dist " <<  obj_travel_dist << endl;
             cout << "rob travel time " << rob_travel_time << " obj travel time " << obj_travel_time << " s3 " << sigmoid(obj_travel_time - rob_travel_time - 0.1) << endl;
         }
-
+*/
 /*        // **************** BACKUP BELOW **************************
         // distance of object
         temp_delta = (X_end.block(0,0,3,1) - obj.get_X_O().block(0,0,3,1)).norm();

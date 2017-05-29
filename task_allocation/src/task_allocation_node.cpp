@@ -126,7 +126,11 @@ int main(int argc, char **argv) {
                 cout << "got " << active_coalitions.size() << " coalitions " << endl;
    */
 
-
+      /*      for(auto & rob : Robots)
+            {
+                cout << "robot " << rob.get_id() << " base " << rob.get_base().transpose() << endl;
+            }
+*/
             // go through each coalition and see if the robots are where we want them
             for(auto & coal : active_coalitions)
             {
@@ -134,10 +138,23 @@ int main(int argc, char **argv) {
                 if(Objects[coal.get_object_id()].get_status() != Object_status::Grabbed)
                 {
                     std::vector<int> ids;
+                    ids.clear();
                     ids = coal.get_robots_id();
                     std::vector<bool> reached;
                     double distance_POG;
                     int n_grips = Objects[coal.get_object_id()].get_n_grippers();
+
+
+                    // begin debug
+                    if(ids.size() == 2)
+                    {
+                        if(ids[0] == 0 && ids[1] == 2)
+                            cout << "SOMEHOW ALLOCATED 0 AND 2" << endl;
+                        if(ids[0] == 1 && ids[1] == 2)
+                            cout << "SOMEHOW ALLOCATED 1 AND 2" << endl;
+                    }
+                    // end debug
+
 
                     // check if the robots reached the object's grabbing positions
                     for(int i = 0; i < ids.size(); i++)

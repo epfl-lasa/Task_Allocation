@@ -43,6 +43,7 @@ int Coalition::get_object_id() const
 std::vector<int>  Coalition::get_robots_id() const
 {
 	std::vector<int> ids;
+    ids.clear();
 	for(const auto& rob : Robots)
 	{
 		ids.push_back(rob->get_id());

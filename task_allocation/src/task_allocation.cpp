@@ -252,8 +252,9 @@ void Task_allocation::build_coalitions()
 //        cout << "perm matrix for i = " << i << " and n_bots = " << n_bots << " without dupes " << endl << perm << endl;
 
 
-     //  if(perm.cols() == 2)
-       //    cout << endl << perm << endl;
+        // SHOULD NOT DO PRUNING HERE ! perm DOES NOT REFER TO THE ACTUAL IDs of the robots!
+  /*     if(perm.cols() == 2)
+           cout << "perm matrix before pruning " << endl << perm << endl;
         // pruning due to physical distance
        // leave this in this order because it is not done in a clean fashion!
         for(int u = 0; u < perm.rows(); u++)
@@ -277,20 +278,25 @@ void Task_allocation::build_coalitions()
                 if(perm.row(u)(0) == 1 && perm.row(u)(1) == 2)
                 {
                     removeRow(perm, u);
-      //              cout << "remoevd because 1 and 2 " << endl;
+      //              cout << "removed because 1 and 2 " << endl;
                 }
 
                 if(perm.row(u)(0) == 1 && perm.row(u)(1) == 3)
                 {
                     removeRow(perm, u);
-      //              cout << "remoevd because 1 and 3 " << endl;
+      //              cout << "removed because 1 and 3 " << endl;
                 }
             }
         }
 
         if(perm.cols() == 2)
-            cout << "permutation matrix " << endl << perm << endl;
+        {
 
+            cout << "permutation matrix after pruning " << endl << perm << endl;
+            cout << "lets me build " << perm.rows() << " coalitions" << endl;
+
+        }
+*/
 		number_of_coalitions = perm.rows();
 		Coalitions.push_back( std::vector<Coalition>() );
 //		Coalitions[i].reserve(number_of_coalitions);
@@ -298,12 +304,22 @@ void Task_allocation::build_coalitions()
 		// the 2nd level is the ID of the coalition within that size
 		for(int j = 0; j < number_of_coalitions; j++)
 		{
+     /*       if(perm.cols() == 2)
+            {
+                cout << " adding new coal of 2 " << endl;
+            }
+       */
 			// make the coalition
             Coalition coal;
 			for(int k = 0; k < i+1; k++) // add all robots that should be in this coalition.
 			{
+                //if(perm.cols() == 2)
+                  //  cout << "adding robot j k " << j << " " << k << " perm(j,k) " << perm(j,k) << " unallocated_robots id " << unallocated_robots[perm(j,k)]->get_id() << endl;
+
                 coal.add_robot((unallocated_robots[perm(j,k)]));
 			}
+
+            std::vector<int> ids = coal.get_robots_id();
 
             for(const auto & obj : Objects)
             {
@@ -314,7 +330,14 @@ void Task_allocation::build_coalitions()
             }
 
             coal.set_id(i*min(MAX_COALITION_SIZE, n_bots)+j);
-            Coalitions[i].push_back(coal);
+
+            if(ids.size() == 1)
+                Coalitions[i].push_back(coal);
+            else if(ids.size() == 2) // do some pruning
+            {
+                if((ids[0] == 0 && ids[1] == 1) || (ids[0] == 1 && ids[1] == 0) || (ids[0] == 2 && ids[1] == 3) || (ids[0] == 3 && ids[1] == 2))
+                    Coalitions[i].push_back(coal);
+            }
 //			cout << "Coalition of size " << i+1 << " number " << j << endl << Coalitions[i][j] << endl;
 		}
 	}
