@@ -251,6 +251,46 @@ void Task_allocation::build_coalitions()
 
 //        cout << "perm matrix for i = " << i << " and n_bots = " << n_bots << " without dupes " << endl << perm << endl;
 
+
+     //  if(perm.cols() == 2)
+       //    cout << endl << perm << endl;
+        // pruning due to physical distance
+       // leave this in this order because it is not done in a clean fashion!
+        for(int u = 0; u < perm.rows(); u++)
+        {
+            if(perm.cols() == 2)
+            {
+  //              cout << "got more than 1 column in here " << perm.row(u) << endl;
+
+                if(perm.row(u)(0) == 0 && perm.row(u)(1) == 2)
+                {
+                    removeRow(perm, u);
+    //                cout << "removed because 0 and 2" << endl;
+                }
+
+                if(perm.row(u)(0) == 0 && perm.row(u)(1) == 3)
+                {
+                    removeRow(perm, u);
+      //              cout << "removed because 0 and 3" << endl;
+                }
+
+                if(perm.row(u)(0) == 1 && perm.row(u)(1) == 2)
+                {
+                    removeRow(perm, u);
+      //              cout << "remoevd because 1 and 2 " << endl;
+                }
+
+                if(perm.row(u)(0) == 1 && perm.row(u)(1) == 3)
+                {
+                    removeRow(perm, u);
+      //              cout << "remoevd because 1 and 3 " << endl;
+                }
+            }
+        }
+
+        if(perm.cols() == 2)
+            cout << "permutation matrix " << endl << perm << endl;
+
 		number_of_coalitions = perm.rows();
 		Coalitions.push_back( std::vector<Coalition>() );
 //		Coalitions[i].reserve(number_of_coalitions);

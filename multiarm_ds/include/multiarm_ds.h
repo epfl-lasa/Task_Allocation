@@ -34,7 +34,7 @@
 #include "LPV.h"
 #include "TrajectoryEstimation.h"
 #include <math.h>
-#include  <omp.h>
+#include <omp.h>
 
 enum ENUM_State{Com_Stop,Com_Break, Com_Safe};
 

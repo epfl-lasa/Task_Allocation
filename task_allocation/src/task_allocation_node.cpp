@@ -111,7 +111,7 @@ int main(int argc, char **argv) {
    //         ROS_INFO_STREAM("allocating" << endl);
             Task_allocator->allocate();
    //         ROS_INFO_STREAM("computing intercepts" << endl);
-            Task_allocator->compute_intercepts(); // is actually done in "allocate()".
+            Task_allocator->compute_intercepts();
    //         ROS_INFO_STREAM("computing coordination" << endl);
             Task_allocator->compute_coordination();
    //         ROS_INFO_STREAM("done" << endl);
@@ -280,7 +280,7 @@ int main(int argc, char **argv) {
             }
 
             clock_t end_pub = clock();
-             cout << "time for the allocation loop is " << ((double)(end-begin))/CLOCKS_PER_SEC << " time for pub is " << ((double)(end_pub - end))/CLOCKS_PER_SEC << " total is " << ((double)(end_pub - begin))/CLOCKS_PER_SEC << endl;
+   //          cout << "time for the allocation loop is " << ((double)(end-begin))/CLOCKS_PER_SEC << " time for pub is " << ((double)(end_pub - end))/CLOCKS_PER_SEC << " total is " << ((double)(end_pub - begin))/CLOCKS_PER_SEC << endl;
         }
 
 

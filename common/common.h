@@ -1,12 +1,12 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-const int N_ROB = 6;
+const int N_ROB = 4;
 const int N_OBJ = 4;
 
 const double OBJECT_MAX_X = 3.5; // end of conveyor
 
-const int MAX_COALITION_SIZE = 5;
+const int MAX_COALITION_SIZE = 2;
 //const int MAX_TASKS = 20;
 
 const double OBJ_MAX_PREDICTIONTIME = 100; // effectively useless
