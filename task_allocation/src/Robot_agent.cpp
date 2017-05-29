@@ -209,13 +209,13 @@ double Robot_agent::evaluate_task(const Object& obj)
     //    travel_time = obj.get_travel_time(id/ 2); //((X_targ - obj.get_X_O().block(0,0,3,1)).norm())/(obj_speed*n_obj_speed);
         n_travel_time = obj.get_N_travel_time(id/2);
 
-        obj_travel_dist = best_pos_overall(0) - obj.get_X_O()(0);
+        obj_travel_dist = max((double)(best_pos_overall(0) - obj.get_X_O()(0)), (double)0.0); // (best_pos_overall should be == to current position in worst case if there's not been a fuck-up...)
         obj_travel_time = obj_travel_dist/obj.get_DX_O()(0);
 
 
 
         rob_travel_dist = (best_pos_overall - X_end).norm();
-        rob_travel_time = rob_travel_dist/3; // arbitrary max velocity of the robot.
+        rob_travel_time = rob_travel_dist; // arbitrary max velocity of the robot.
 
 
        // cost = n_travel_time*rob_travel_dist/best_prob_overall;
@@ -233,21 +233,18 @@ double Robot_agent::evaluate_task(const Object& obj)
 
         if(rob_travel_dist > 0.25) // only apply the time of travel if the robot will have to travel...
         {
-            double s3 = sigmoid(obj_travel_time - rob_travel_time - 0.1); // add some offset to guarantee robot is there in time...
+            double s3 = sigmoid(obj_travel_time - rob_travel_time - 0.2); // add some offset to guarantee robot is there in time...
             if(!std::isnan(s3) && s3 != 0)
                 cost /= s3;
             else
                 cost = ROBOT_MAX_COST;
 
         }
-  /*      if(obj_travel_dist < 0)
-        {
-            cost = ROBOT_MAX_COST;
-        }
-*/        if(id == 1 && obj.get_id() == 3)
+
+        if((id == 1 && obj.get_id() == 3))
         {
             cout << "rob travel dist " << rob_travel_dist << " obj travel dist " <<  obj_travel_dist << endl;
-            cout << "rob travel time " << rob_travel_time << " obj travel time " << obj_travel_time << " s3 " << sigmoid(obj_travel_time - rob_travel_time) << endl;
+            cout << "rob travel time " << rob_travel_time << " obj travel time " << obj_travel_time << " s3 " << sigmoid(obj_travel_time - rob_travel_time - 0.1) << endl;
         }
 
 /*        // **************** BACKUP BELOW **************************
