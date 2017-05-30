@@ -383,12 +383,12 @@ int main(int argc, char **argv) {
 
 
 
-            obj_pos[0] = Object;
+          //  obj_pos[0] = Object;
       //     time1 = time2;
       //      time2 = ros::Time::now();
             for(int i = 0; i < N_OBJ; i++)
             {
-                obj_pos[i].position.x = obj_pos[i].position.x + r.expectedCycleTime().toSec()*SIM_VELOCITY[i];// r.cycleTime().toSec()*SIM_VELOCITY[i];
+                obj_pos[i].position.x = obj_pos[i].position.x + r.expectedCycleTime().toSec()*SIM_VELOCITY[i];
 
                 ROS_INFO_STREAM( "moved object " << i << " " << r.expectedCycleTime().toSec()*SIM_VELOCITY[i] << " in " << r.expectedCycleTime().toSec() << " seconds " << endl);
             }
@@ -422,6 +422,33 @@ int main(int argc, char **argv) {
                     obj_vel[grabbed[i]].position.y = 0;
                     obj_vel[grabbed[i]].position.z = 0;
                 }
+
+                if(grabbed[0] == 0 && grabbed[1] == 0)
+                {
+
+                    obj_pos[0].position.x = 0.5*(rob_ends[0].position.x + rob_ends[1].position.x) + r.expectedCycleTime().toSec()*SIM_VELOCITY[0]*15;
+                    obj_pos[0].position.y = 0.5*(rob_ends[0].position.y + rob_ends[1].position.y);
+                    obj_pos[0].position.z = 0.5*(rob_ends[0].position.z + rob_ends[1].position.z) + LIFT_VELOCITY*r.expectedCycleTime().toSec();
+                    obj_vel[0].position.x = 0;
+                    obj_vel[0].position.y = 0;
+                    obj_vel[0].position.z = 0;
+                    Object = obj_pos[0];
+                }
+
+                if(grabbed[2] == 0 && grabbed[3] == 0)
+                {
+                    obj_pos[0].position.x = 0.5*(rob_ends[2].position.x + rob_ends[3].position.x) + r.expectedCycleTime().toSec()*SIM_VELOCITY[0]*15;
+                    obj_pos[0].position.y = 0.5*(rob_ends[2].position.y + rob_ends[3].position.y);
+                    obj_pos[0].position.z = 0.5*(rob_ends[2].position.z + rob_ends[3].position.z) + r.expectedCycleTime().toSec()*LIFT_VELOCITY;
+                    obj_vel[0].position.x = 0;
+                    obj_vel[0].position.y = 0;
+                    obj_vel[0].position.z = 0;
+                    ROS_INFO_STREAM( "lifted object by " << LIFT_VELOCITY*r.expectedCycleTime().toSec() << " veloctiy " << LIFT_VELOCITY << " cycletime " <<  r.expectedCycleTime().toSec() << endl);
+                    Object = obj_pos[0];
+                }
+
+
+
             }
 
 

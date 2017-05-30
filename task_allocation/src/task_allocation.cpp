@@ -335,7 +335,9 @@ void Task_allocation::build_coalitions()
                 Coalitions[i].push_back(coal);
             else if(ids.size() == 2) // do some pruning
             {
-                if((ids[0] == 0 && ids[1] == 1) || (ids[0] == 1 && ids[1] == 0) || (ids[0] == 2 && ids[1] == 3) || (ids[0] == 3 && ids[1] == 2))
+                // theoretically don't have to check for both directions but it makes it safer
+                if((ids[0] == 0 && ids[1] == 1) || (ids[0] == 1 && ids[1] == 0) || 
+                        (ids[0] == 2 && ids[1] == 3) || (ids[0] == 3 && ids[1] == 2))
                     Coalitions[i].push_back(coal);
             }
 //			cout << "Coalition of size " << i+1 << " number " << j << endl << Coalitions[i][j] << endl;

@@ -209,6 +209,8 @@ int main(int argc, char **argv) {
                                 Robots[id].set_grabbed();
                              //   Objects[coal.get_object_id()].set_status(Object_status::Grabbed);
                             }*/
+                            Robots[ids[0]].set_grabbed();
+                            Robots[ids[1]].set_grabbed();
                             cout << "Robots " << ids[0] << " and " << ids[1] << " grabbed object " << coal.get_object_id() << endl;
                             // Here I somehow need to set the virtual object going up...
                         }
@@ -231,6 +233,16 @@ int main(int argc, char **argv) {
                     {
                         Objects[rob.get_assignment()].set_done();
                         rob.set_done();
+                    }
+
+                    if(rob.get_assignment() == 0)
+                    {
+     //                   cout << "robot " << rob.get_id() << " at z " << rob.get_end()(2) << endl;
+                        if((rob.get_end()(2) > 0.85))
+                        {
+                            rob.set_done();
+                            Objects[0].set_done();
+                        }
                     }
                     break;
 

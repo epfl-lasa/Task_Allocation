@@ -173,7 +173,7 @@ void Object::compute_travel_time(double avg_times[])
 
 void Object::dumb_predict_motion()
 {
-    if(DX_O(0) > 0.1)
+    if(DX_O(0) > 0.0)
     {
         double dist = OBJECT_MAX_X - X_O(0);
         int frames = dist/(DX_O(0)*dt);
@@ -209,7 +209,7 @@ void Object::dumb_predict_motion()
         //	cout << "P_O predicted for " << n_frames << " frames" << endl << P_O_prediction << endl;
 
     }
-    else
+    else // else don't do prediction, just set it to X_O to prevent segfaults and shit...
     {
         P_O_prediction.resize(X_O.size(), 1);
         P_O_prediction.setZero();
@@ -220,7 +220,6 @@ void Object::dumb_predict_motion()
         {
             P_O_G_prediction[j].resize(X_O.size(), 1);
             P_O_G_prediction[j].setZero();
-
             P_O_G_prediction[j].col(0) = P_O_prediction.col(0)+X_O_G[j];
         }
     }

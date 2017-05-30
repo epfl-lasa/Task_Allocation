@@ -199,7 +199,6 @@ void chatterCallback_rob3_id(const std_msgs::Int64 & msg)
 
 
 
-
 int main( int argc, char** argv )
 {
 	ros::init(argc, argv, "basic_shapes");
@@ -207,8 +206,8 @@ int main( int argc, char** argv )
     int id = 0;
 
 
-	marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
-	marker_virtual_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
+    marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
+    marker_virtual_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
     marker_filter_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
 	ros::Subscriber	sub_object = n.subscribe("/object/raw/position", 3, chatterCallback_object);
 	ros::Subscriber	sub_object_virtual = n.subscribe("/object/virtual/position", 3, chatterCallback_object_virtual);
@@ -322,6 +321,8 @@ int main( int argc, char** argv )
 	marker_virtual.color.b = 0.0f;
 	marker_virtual.color.a = 1.0;
 	marker_virtual.pose.position.x = 0.0 ;
+
+
 	marker_pub.publish(marker);
 	marker_virtual_pub.publish(marker_virtual);
 
