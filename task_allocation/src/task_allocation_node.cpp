@@ -211,7 +211,7 @@ int main(int argc, char **argv) {
                             }*/
                             Robots[ids[0]].set_grabbed();
                             Robots[ids[1]].set_grabbed();
-                            cout << "Robots " << ids[0] << " and " << ids[1] << " grabbed object " << coal.get_object_id() << endl;
+                     //       cout << "Robots " << ids[0] << " and " << ids[1] << " grabbed object " << coal.get_object_id() << endl;
                             // Here I somehow need to set the virtual object going up...
                         }
                     }
@@ -310,6 +310,7 @@ int main(int argc, char **argv) {
 
             clock_t end_pub = clock();
    //          cout << "time for the allocation loop is " << ((double)(end-begin))/CLOCKS_PER_SEC << " time for pub is " << ((double)(end_pub - end))/CLOCKS_PER_SEC << " total is " << ((double)(end_pub - begin))/CLOCKS_PER_SEC << endl;
+  //          cout << ((double)CLOCKS_PER_SEC)/((double)(end_pub-begin)) << endl;
         }
 
 
@@ -319,11 +320,11 @@ int main(int argc, char **argv) {
 
 
         // warning if we're too slow
-        if(r.cycleTime().toNSec() > r.expectedCycleTime().toNSec())
+  /*      if(r.cycleTime().toNSec() > r.expectedCycleTime().toNSec())
         {
             ROS_INFO_STREAM("Task allocation node is not reaching it's desired frequency! Frequency " << 1.0f/(r.cycleTime().toSec()) << " expected frequency " << 1.0f/(r.expectedCycleTime().toSec()));
         }
-	}
+*/	}
 }
 
 void init()
@@ -442,7 +443,7 @@ void add_objects_task_allocator()
     double_grab[1](1) = -0.1;
 
 
-    for(int i = 0; i < N_OBJ; i++)
+   for(int i = 0; i < N_OBJ; i++)
     {
         if(obj_sizes[(int)(SCENARIO)][i] == Object_sizes::LARGE) // shouldn't cast this to int. The clean way is making a switch statement but breaks the modularity of the code.
             Objects.push_back(Object(n_state,zeroVec,zeroVec, Task_allocator->get_max_time(), Task_allocator->get_dt(), double_grab, 2, weight, value, i));
@@ -451,15 +452,8 @@ void add_objects_task_allocator()
     }
 
 
-
-/*	Objects.push_back(task0);
-	Objects.push_back(task1);
-	Objects.push_back(task2);
-	Objects.push_back(task3);
-*/
-
-	for(auto & obj : Objects)
-		Task_allocator->add_task(&obj);
+    for(auto & obj : Objects)
+        Task_allocator->add_task(&obj);
 }
 
 

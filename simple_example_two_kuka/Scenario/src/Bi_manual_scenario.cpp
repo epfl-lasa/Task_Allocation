@@ -416,26 +416,6 @@ void Bi_manual_scenario::Topic_initialization()
 */
 	}
 
-	// large hack.
-	if(N_robots < 3)
-	{
-		pub2 = n->advertise<geometry_msgs::Pose>("/robot/base/2", 3);
-		pub3 = n->advertise<geometry_msgs::Pose>("/robot/base/3", 3);
-
-		geometry_msgs::Pose msg;
-		msg.position.x = X[2];
-		msg.position.y = Y[2];
-		msg.position.z = Z[2];
-		pub2.publish(msg);
-
-
-		msg.position.x = X[3];
-		msg.position.y = Y[3];
-		msg.position.z = Z[3];
-		pub3.publish(msg);
-	}
-
-
 	for(int i = 0; i < N_robots; i++)
 	{
 		if(i == 0)

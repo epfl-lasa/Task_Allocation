@@ -4,7 +4,7 @@
 #include "std_msgs/Int64.h"
 #include "common.h"
 
-#define UNALLOCATED_COLOR {0,1,1} // color for unallocated marker
+
 
 visualization_msgs::Marker marker;
 visualization_msgs::Marker marker_filtered;
@@ -20,7 +20,8 @@ double Z[] = {-0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5};
 int obj_done[N_OBJ];
 int rob_id[N_ROB];
 
-double colors[][3] = {{0,0,1},{1,0,0},{1,0,1},{1,1,1}, UNALLOCATED_COLOR};
+const double UNALLOCATED_COLOR[] =  {0,1,1}; // color for unallocated marker
+double colors[][3] = {{0,0,1},{1,0,0},{1,0,1},{1,1,1}};
 
 
 visualization_msgs::Marker marker_obj[N_OBJ];
@@ -41,9 +42,9 @@ void set_marker_color(visualization_msgs::Marker& mark, int index)
     }
     else
     {
-        mark.color.r = colors[N_OBJ][0];
-        mark.color.g = colors[N_OBJ][1];
-        mark.color.b = colors[N_OBJ][2];
+        mark.color.r = UNALLOCATED_COLOR[0];//colors[N_OBJ][0];
+        mark.color.g = UNALLOCATED_COLOR[1]; //colors[N_OBJ][1];
+        mark.color.b = UNALLOCATED_COLOR[2]; //colors[N_OBJ][2];
     }
 }
 
@@ -205,9 +206,17 @@ int main( int argc, char** argv )
 	ros::NodeHandle n;
     int id = 0;
 
+    for(int i = 0; i < N_ROB; i++)
+    {
+        rob_id[i] = -1;
+    }
+    for(int i = 0; i < N_OBJ; i++)
+    {
+        obj_done[i] = 0;
+    }
 
     marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
-    marker_virtual_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
+    marker_virtual_pub = n.advertise<visualization_msgs::Marker>("visualization_marker1", 1);
     marker_filter_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
 	ros::Subscriber	sub_object = n.subscribe("/object/raw/position", 3, chatterCallback_object);
 	ros::Subscriber	sub_object_virtual = n.subscribe("/object/virtual/position", 3, chatterCallback_object_virtual);

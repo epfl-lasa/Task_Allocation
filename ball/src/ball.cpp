@@ -382,10 +382,6 @@ int main(int argc, char **argv) {
 			Object_right.orientation.w=1;
 
 
-
-          //  obj_pos[0] = Object;
-      //     time1 = time2;
-      //      time2 = ros::Time::now();
             for(int i = 0; i < N_OBJ; i++)
             {
                 obj_pos[i].position.x = obj_pos[i].position.x + r.expectedCycleTime().toSec()*SIM_VELOCITY[i];
@@ -397,18 +393,8 @@ int main(int argc, char **argv) {
             {
                 obj_vel[i] = Object_vel;
                 obj_vel[i].position.x =  SIM_VELOCITY[i];
+                obj_acc[i] = Object_acc;
             }
- /*           obj_vel[0] = Object_vel;
-            obj_vel[1] = Object_vel;
-            obj_vel[2] = Object_vel;
-            obj_vel[3] = Object_vel;
-*/
-
-            obj_acc[0] = Object_acc;
-            obj_acc[1] = Object_acc;
-            obj_acc[2] = Object_acc;
-            obj_acc[3] = Object_acc;
-
 
             for(int i = 0; i < N_ROB; i++)
             {
@@ -423,31 +409,34 @@ int main(int argc, char **argv) {
                     obj_vel[grabbed[i]].position.z = 0;
                 }
 
-                if(grabbed[0] == 0 && grabbed[1] == 0)
+                if(N_ROB >= 2)
                 {
+                    if(grabbed[0] == 0 && grabbed[1] == 0)
+                    {
 
-                    obj_pos[0].position.x = 0.5*(rob_ends[0].position.x + rob_ends[1].position.x) + r.expectedCycleTime().toSec()*SIM_VELOCITY[0]*15;
-                    obj_pos[0].position.y = 0.5*(rob_ends[0].position.y + rob_ends[1].position.y);
-                    obj_pos[0].position.z = 0.5*(rob_ends[0].position.z + rob_ends[1].position.z) + LIFT_VELOCITY*r.expectedCycleTime().toSec();
-                    obj_vel[0].position.x = 0;
-                    obj_vel[0].position.y = 0;
-                    obj_vel[0].position.z = 0;
-                    Object = obj_pos[0];
+                        obj_pos[0].position.x = 0.5*(rob_ends[0].position.x + rob_ends[1].position.x) + r.expectedCycleTime().toSec()*SIM_VELOCITY[0]*15;
+                        obj_pos[0].position.y = 0.5*(rob_ends[0].position.y + rob_ends[1].position.y);
+                        obj_pos[0].position.z = 0.5*(rob_ends[0].position.z + rob_ends[1].position.z) + LIFT_VELOCITY*r.expectedCycleTime().toSec();
+                        obj_vel[0].position.x = 0;
+                        obj_vel[0].position.y = 0;
+                        obj_vel[0].position.z = 0;
+                        Object = obj_pos[0];
+                    }
                 }
-
-                if(grabbed[2] == 0 && grabbed[3] == 0)
+                if(N_ROB >= 4)
                 {
-                    obj_pos[0].position.x = 0.5*(rob_ends[2].position.x + rob_ends[3].position.x) + r.expectedCycleTime().toSec()*SIM_VELOCITY[0]*15;
-                    obj_pos[0].position.y = 0.5*(rob_ends[2].position.y + rob_ends[3].position.y);
-                    obj_pos[0].position.z = 0.5*(rob_ends[2].position.z + rob_ends[3].position.z) + r.expectedCycleTime().toSec()*LIFT_VELOCITY;
-                    obj_vel[0].position.x = 0;
-                    obj_vel[0].position.y = 0;
-                    obj_vel[0].position.z = 0;
-                    ROS_INFO_STREAM( "lifted object by " << LIFT_VELOCITY*r.expectedCycleTime().toSec() << " veloctiy " << LIFT_VELOCITY << " cycletime " <<  r.expectedCycleTime().toSec() << endl);
-                    Object = obj_pos[0];
+                    if(grabbed[2] == 0 && grabbed[3] == 0)
+                    {
+                        obj_pos[0].position.x = 0.5*(rob_ends[2].position.x + rob_ends[3].position.x) + r.expectedCycleTime().toSec()*SIM_VELOCITY[0]*15;
+                        obj_pos[0].position.y = 0.5*(rob_ends[2].position.y + rob_ends[3].position.y);
+                        obj_pos[0].position.z = 0.5*(rob_ends[2].position.z + rob_ends[3].position.z) + r.expectedCycleTime().toSec()*LIFT_VELOCITY;
+                        obj_vel[0].position.x = 0;
+                        obj_vel[0].position.y = 0;
+                        obj_vel[0].position.z = 0;
+                        ROS_INFO_STREAM( "lifted object by " << LIFT_VELOCITY*r.expectedCycleTime().toSec() << " veloctiy " << LIFT_VELOCITY << " cycletime " <<  r.expectedCycleTime().toSec() << endl);
+                        Object = obj_pos[0];
+                    }
                 }
-
-
 
             }
 
@@ -522,22 +511,30 @@ int main(int argc, char **argv) {
             switch(SCENARIO)
             {
                 case(Object_scenarios::ONE):
-
-                    obj_pos[0] = Object;
-
-
-                    obj_pos[1].position.x = Object.position.x + 0.5;
-                    obj_pos[1].position.y = Object.position.y + 0.2;
-                    obj_pos[1].position.z = Object.position.z;
-
-
-                    obj_pos[2].position.x = Object.position.x + 0.5;
-                    obj_pos[2].position.y = Object.position.y - 0.2;
-                    obj_pos[2].position.z = Object.position.z;
-
-                    obj_pos[3].position.x = Object.position.x - 0.5;
-                    obj_pos[3].position.y = Object.position.y;
-                    obj_pos[3].position.z = Object.position.z;
+                    for(int i = 0; i < N_OBJ; i++)
+                    {
+                        switch(i)
+                        {
+                        case(0):
+                            obj_pos[i] = Object;
+                            break;
+                        case(1):
+                            obj_pos[i].position.x = Object.position.x + 0.5;
+                            obj_pos[i].position.y = Object.position.y + 0.2;
+                            obj_pos[i].position.z = Object.position.z;
+                            break;
+                        case(2):
+                            obj_pos[i].position.x = Object.position.x + 0.5;
+                            obj_pos[i].position.y = Object.position.y - 0.2;
+                            obj_pos[i].position.z = Object.position.z;
+                            break;
+                        case(3):
+                            obj_pos[i].position.x = Object.position.x - 0.5;
+                            obj_pos[i].position.y = Object.position.y;
+                            obj_pos[i].position.z = Object.position.z;
+                            break;
+                        }
+                    }
 
                     break;
 
