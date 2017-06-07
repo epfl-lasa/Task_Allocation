@@ -211,7 +211,8 @@ int main(int argc, char **argv) {
                             }*/
                             Robots[ids[0]].set_grabbed();
                             Robots[ids[1]].set_grabbed();
-                     //       cout << "Robots " << ids[0] << " and " << ids[1] << " grabbed object " << coal.get_object_id() << endl;
+                            Objects[coal.get_object_id()].set_status(Object_status::Grabbed);
+                            cout << "Robots " << ids[0] << " and " << ids[1] << " grabbed object " << coal.get_object_id() << endl;
                             // Here I somehow need to set the virtual object going up...
                         }
                     }
@@ -242,6 +243,9 @@ int main(int argc, char **argv) {
                         {
                             rob.set_done();
                             Objects[0].set_done();
+                            for(auto & rob : Robots)
+                                if(rob.get_assignment() == 0)
+                                    rob.set_done();
                         }
                     }
                     break;
@@ -311,7 +315,15 @@ int main(int argc, char **argv) {
             clock_t end_pub = clock();
    //          cout << "time for the allocation loop is " << ((double)(end-begin))/CLOCKS_PER_SEC << " time for pub is " << ((double)(end_pub - end))/CLOCKS_PER_SEC << " total is " << ((double)(end_pub - begin))/CLOCKS_PER_SEC << endl;
   //          cout << ((double)CLOCKS_PER_SEC)/((double)(end_pub-begin)) << endl;
+
+      /*      for(auto & rob : Robots)
+            {
+                cout << "robot " << rob.get_id() << " target object " << rob.get_assignment() << " target position " << rob.get_target().transpose() << endl;
+            }
+*/
         }
+
+
 
 
 
@@ -320,11 +332,11 @@ int main(int argc, char **argv) {
 
 
         // warning if we're too slow
-  /*      if(r.cycleTime().toNSec() > r.expectedCycleTime().toNSec())
+        if(r.cycleTime().toNSec() > r.expectedCycleTime().toNSec())
         {
             ROS_INFO_STREAM("Task allocation node is not reaching it's desired frequency! Frequency " << 1.0f/(r.cycleTime().toSec()) << " expected frequency " << 1.0f/(r.expectedCycleTime().toSec()));
         }
-*/	}
+    }
 }
 
 void init()

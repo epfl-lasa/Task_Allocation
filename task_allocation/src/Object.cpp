@@ -173,10 +173,34 @@ void Object::compute_travel_time(double avg_times[])
 
 void Object::dumb_predict_motion()
 {
-    if(DX_O(0) > 0.0)
+
+    /* only predict if :
+    object in front of robots and going forward
+    object behind robots and going backward
+    object left of bots and going right
+    object right of bots and going left
+    ie look if it's gonna come towards the robots...
+    */
+
+  //  cout << "dx " << DX_O.transpose() << " XO " << X_O.transpose() << endl;
+    if((DX_O(0) > 0.0 && X_O(0) < OBJECT_MAX_X) || (DX_O(0) < 0 && X_O(1) < OBJECT_MIN_X) || (DX_O(1) < 0 && X_O(1) > 0) || (DX_O(1) > 0 && X_O(1) < 0))
     {
-        double dist = OBJECT_MAX_X - X_O(0);
-        int frames = dist/(DX_O(0)*dt);
+        double dist = 0;// = OBJECT_MAX_X - X_O(0);
+        int frames = 0;// = dist/(DX_O(0)*dt);
+        if(DX_O(0) != 0)
+        {
+            dist = OBJECT_MAX_X - X_O(0);
+            frames = dist/(DX_O(0)*dt);
+
+        }
+        else if(DX_O(1) != 0)
+        {
+            dist = abs(MID_BELT - X_O(1));
+            frames = dist/(abs(DX_O(1))*dt);
+   //         cout << "distance " << dist << " frames " << frames;
+        }
+        //	cout << "P_O predicted for " << n_frames << " frames" << endl << P_O_prediction << endl;
+
         frames = min(frames, n_frames);
         P_O_prediction.resize(X_O.size(), frames+1); // pat hack. Need to find a better way.
         P_O_prediction.setZero();
@@ -205,9 +229,6 @@ void Object::dumb_predict_motion()
             }
     //		cout << "for grabbing pos " << j << endl << P_O_G_prediction[j] << endl;
         }
-
-        //	cout << "P_O predicted for " << n_frames << " frames" << endl << P_O_prediction << endl;
-
     }
     else // else don't do prediction, just set it to X_O to prevent segfaults and shit...
     {
@@ -224,6 +245,7 @@ void Object::dumb_predict_motion()
         }
     }
 
+ //   cout << "done predicting" << endl;
 
     // old functionning way but sub-optimal.
 /*	P_O_prediction.resize(X_O.size(), n_frames+1);
@@ -320,7 +342,7 @@ int Object::get_n_grippers() const
 double Object::update_value()
 {
 // on one side, use sigmoid, on the other, use negation
-    double value_end = 5*X_O(0)+30;
+    double value_end = 5*X_O(0)+70;
   //  double speed = DX_O.block(0,0,3,1).norm();
     double speed = DX_O(0);
 //    double s1 = sigmoid(speed-MIN_SPEED); // purposedly done in Robot_agent to allow to allocate to the objects when they are in the workspace
@@ -331,7 +353,7 @@ double Object::update_value()
     value *= 2;
 	if(n_grabbing_pos > 1)
 	{
-		value *= 2.1;
+        value *= 2.1;
 	}
     if(X_O(0) > OBJECT_MAX_X) // too late to catch
 	{
@@ -339,6 +361,18 @@ double Object::update_value()
 	//	cout << "object " << id << " is set to 0 because X_O(0) is " << X_O(0) << endl;
 	}
 	// */
+
+
+    double dy =abs(MID_BELT - X_O(1));
+    double value_y = 0;
+    if(dy > Y_BELT)
+    {
+        value_y = 50-10*abs(dy);
+    }
+    if(value_y >= 0)
+        value += value_y;
+
+   // cout << "object " << id << " value " << value << " dy " << dy << " X_O " << X_O.transpose() << endl;
 	return value;
 
 }

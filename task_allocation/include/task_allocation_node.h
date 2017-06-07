@@ -21,7 +21,7 @@
 const double TASK_ALLOCATION_RATE = 10; // Hz, frequency at which to run the node
 
 const double dt = 0.100; // seconds
-const double max_time = 10; // seconds
+const double max_time = 40; // seconds
 
 
 // This is hideous, should just include "PATH.h"

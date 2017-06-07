@@ -340,11 +340,11 @@ int main(int argc, char **argv) {
             P_O(2) = Object.position.z;
 
 
-            Object.position.x = Object.position.x + r.expectedCycleTime().toSec()*SIM_VELOCITY[0];
-            Object.position.y = Object.position.y;
+            Object.position.x = Object.position.x + r.expectedCycleTime().toSec()*SIM_VELOCITY[0][0];
+            Object.position.y = Object.position.y + r.expectedCycleTime().toSec()*SIM_VELOCITY[1][0];
             Object.position.z = Object.position.z;
 
-            ROS_INFO_STREAM("moved object by " << r.expectedCycleTime().toSec()*SIM_VELOCITY[0] << endl);
+            ROS_INFO_STREAM("moved object by " << r.expectedCycleTime().toSec()*SIM_VELOCITY[0][0] << endl);
             // end patrick
 
 
@@ -384,15 +384,16 @@ int main(int argc, char **argv) {
 
             for(int i = 0; i < N_OBJ; i++)
             {
-                obj_pos[i].position.x = obj_pos[i].position.x + r.expectedCycleTime().toSec()*SIM_VELOCITY[i];
-
-                ROS_INFO_STREAM( "moved object " << i << " " << r.expectedCycleTime().toSec()*SIM_VELOCITY[i] << " in " << r.expectedCycleTime().toSec() << " seconds " << endl);
+                obj_pos[i].position.x = obj_pos[i].position.x + r.expectedCycleTime().toSec()*SIM_VELOCITY[0][i];
+                obj_pos[i].position.y = obj_pos[i].position.y + r.expectedCycleTime().toSec()*SIM_VELOCITY[1][i];
+                ROS_INFO_STREAM( "moved object " << i << " " << r.expectedCycleTime().toSec()*SIM_VELOCITY[0][i] << " in " << r.expectedCycleTime().toSec() << " seconds " << endl);
             }
 
             for(int i = 0; i < N_OBJ; i++)
             {
                 obj_vel[i] = Object_vel;
-                obj_vel[i].position.x =  SIM_VELOCITY[i];
+                obj_vel[i].position.x =  SIM_VELOCITY[0][i];
+                obj_vel[i].position.y = SIM_VELOCITY[1][i];
                 obj_acc[i] = Object_acc;
             }
 
@@ -414,7 +415,7 @@ int main(int argc, char **argv) {
                     if(grabbed[0] == 0 && grabbed[1] == 0)
                     {
 
-                        obj_pos[0].position.x = 0.5*(rob_ends[0].position.x + rob_ends[1].position.x) + r.expectedCycleTime().toSec()*SIM_VELOCITY[0]*15;
+                        obj_pos[0].position.x = 0.5*(rob_ends[0].position.x + rob_ends[1].position.x) + r.expectedCycleTime().toSec()*SIM_VELOCITY[0][0]*15;
                         obj_pos[0].position.y = 0.5*(rob_ends[0].position.y + rob_ends[1].position.y);
                         obj_pos[0].position.z = 0.5*(rob_ends[0].position.z + rob_ends[1].position.z) + LIFT_VELOCITY*r.expectedCycleTime().toSec();
                         obj_vel[0].position.x = 0;
@@ -427,7 +428,7 @@ int main(int argc, char **argv) {
                 {
                     if(grabbed[2] == 0 && grabbed[3] == 0)
                     {
-                        obj_pos[0].position.x = 0.5*(rob_ends[2].position.x + rob_ends[3].position.x) + r.expectedCycleTime().toSec()*SIM_VELOCITY[0]*15;
+                        obj_pos[0].position.x = 0.5*(rob_ends[2].position.x + rob_ends[3].position.x) + r.expectedCycleTime().toSec()*SIM_VELOCITY[0][0]*15;
                         obj_pos[0].position.y = 0.5*(rob_ends[2].position.y + rob_ends[3].position.y);
                         obj_pos[0].position.z = 0.5*(rob_ends[2].position.z + rob_ends[3].position.z) + r.expectedCycleTime().toSec()*LIFT_VELOCITY;
                         obj_vel[0].position.x = 0;
@@ -575,6 +576,11 @@ int main(int argc, char **argv) {
                 obj_pos[3].position.y = Object.position.y;
                 obj_pos[3].position.z = Object.position.z;
 
+                // to have one object different... scenario used for video
+                /*  obj_pos[3].position.x = -0.45;//Object.position.x + 0.5;
+                obj_pos[3].position.y = 2.5; //Object.position.y;
+                obj_pos[3].position.z = 0.2; //Object.position.z;
+*/
                 default:
                     break;
             }

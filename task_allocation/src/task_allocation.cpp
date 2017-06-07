@@ -134,8 +134,15 @@ void Task_allocation::clear_coalitions()
     // if it's allocated, reallocate to guarantee permanent reallocation
 	for(auto& obj : Objects)
 	{
-        if(obj->get_status() == Object_status::Allocated)
+        if(obj->get_status() != Object_status::Grabbed && obj->get_status() != Object_status::Done)
+        {
+     //       if(obj->get_id() == 0)
+       //     {
+         //       cout << "object 0 was " << (int)(obj->get_status()) << " and is freed" << endl;
+          //  }
             obj->set_status(Object_status::Unallocated);
+
+        }
 	}
 }
 
@@ -205,14 +212,20 @@ void Task_allocation::build_coalitions()
     {
         if(rob->get_status() == Robot_status::Unallocated)
         {
-         //   if(rob->get_id() == 0)
-           //     cout << "robot 0 is unallocated!" << endl;
             unallocated_robots.push_back(rob);
         }
     }
 
 // ****** make all the possible coalitions
-//cout << "build_coalitions: making the coalitions ..." << endl;
+
+/*    for(const auto & obj : Objects)
+    {
+        if(obj->get_status() == Object_status::Unallocated)
+        {
+            cout << "object " << obj->get_id() << " is unallocated" << endl;
+        }
+    }
+*/
     int n_bots = unallocated_robots.size();
  /*   cout << "have " << n_bots << " available: " ;
     for(int i = 0; i < n_bots; i++)
@@ -252,63 +265,12 @@ void Task_allocation::build_coalitions()
 //        cout << "perm matrix for i = " << i << " and n_bots = " << n_bots << " without dupes " << endl << perm << endl;
 
 
-        // SHOULD NOT DO PRUNING HERE ! perm DOES NOT REFER TO THE ACTUAL IDs of the robots!
-  /*     if(perm.cols() == 2)
-           cout << "perm matrix before pruning " << endl << perm << endl;
-        // pruning due to physical distance
-       // leave this in this order because it is not done in a clean fashion!
-        for(int u = 0; u < perm.rows(); u++)
-        {
-            if(perm.cols() == 2)
-            {
-  //              cout << "got more than 1 column in here " << perm.row(u) << endl;
-
-                if(perm.row(u)(0) == 0 && perm.row(u)(1) == 2)
-                {
-                    removeRow(perm, u);
-    //                cout << "removed because 0 and 2" << endl;
-                }
-
-                if(perm.row(u)(0) == 0 && perm.row(u)(1) == 3)
-                {
-                    removeRow(perm, u);
-      //              cout << "removed because 0 and 3" << endl;
-                }
-
-                if(perm.row(u)(0) == 1 && perm.row(u)(1) == 2)
-                {
-                    removeRow(perm, u);
-      //              cout << "removed because 1 and 2 " << endl;
-                }
-
-                if(perm.row(u)(0) == 1 && perm.row(u)(1) == 3)
-                {
-                    removeRow(perm, u);
-      //              cout << "removed because 1 and 3 " << endl;
-                }
-            }
-        }
-
-        if(perm.cols() == 2)
-        {
-
-            cout << "permutation matrix after pruning " << endl << perm << endl;
-            cout << "lets me build " << perm.rows() << " coalitions" << endl;
-
-        }
-*/
 		number_of_coalitions = perm.rows();
 		Coalitions.push_back( std::vector<Coalition>() );
-//		Coalitions[i].reserve(number_of_coalitions);
 
 		// the 2nd level is the ID of the coalition within that size
 		for(int j = 0; j < number_of_coalitions; j++)
 		{
-     /*       if(perm.cols() == 2)
-            {
-                cout << " adding new coal of 2 " << endl;
-            }
-       */
 			// make the coalition
             Coalition coal;
 			for(int k = 0; k < i+1; k++) // add all robots that should be in this coalition.
@@ -401,9 +363,8 @@ void Task_allocation::allocate()
 //    ROS_INFO_STREAM("Begin allocating");
 	for(int i = 0; i < n_objects; i++) // the boundary should be something else.... Needed because we need to check until we have all objects allocated.
 	{
-
-
 		build_coalitions();
+
     //    ROS_INFO_STREAM("Built coalitions, " << unallocated_robots.size() << " robots unallocated" << endl);
 		if(unallocated_robots.size() < 1)
 		{

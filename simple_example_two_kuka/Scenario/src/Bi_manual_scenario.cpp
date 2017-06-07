@@ -528,7 +528,7 @@ void Bi_manual_scenario::Parameter_initialization()
 	//	Y[0]=-1.43759;
 	//	Z[0]=0.149693;
 
-	// Base offset for KUKA 14 for Fender
+    // Base offset for KUKA 14 for Fender
 //	X[0]=-0.0284889; // removed by patrick
 //	Y[0]=-1.32351;
 //	Z[0]=0.105877;
@@ -565,6 +565,7 @@ void Bi_manual_scenario::Parameter_initialization()
 	*/
 
 	// Desired Target for KUKA 14
+    // was 0 0 1, 0 -1 0
     Desired_DirY[0](0)=0;		Desired_DirY[0](1)=0;			Desired_DirY[0](2)=1;
     Desired_DirZ[0](0)=0;		Desired_DirZ[0](1)=-1;			Desired_DirZ[0](2)=0;
     // Desired Target for KUKA 7
@@ -1237,8 +1238,8 @@ RobotInterface::Status Bi_manual_scenario::RobotUpdateCore(){
 					Desired_Velocity[i].block(0,0,3,1)=Desired_End_State[i].block(3,0,3,1);
 					c*/
 
-                Desired_Velocity[i].block(3,0,3,1)=(Desired_DirY[i]-lDirY[i])/(10*dt);
-                Desired_Velocity[i].block(6,0,3,1)=(Desired_DirZ[i]-lDirZ[i])/(10*dt);
+                Desired_Velocity[i].block(3,0,3,1)=(Desired_DirY[i]-lDirY[i])/(10*dt); // was 10
+                Desired_Velocity[i].block(6,0,3,1)=(Desired_DirZ[i]-lDirZ[i])/(10*dt); // was 10
           //      cout << "trying to set desired state for robot " << i << endl;
                 if(i == 0 || i == 1)
 				{

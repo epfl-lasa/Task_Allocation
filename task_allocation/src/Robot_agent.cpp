@@ -150,8 +150,8 @@ double Robot_agent::evaluate_task(const Object& obj)
     double rob_travel_dist = 0;
     double rob_travel_time = 0;
     double n_travel_time = 0;
-    double obj_speed = obj.get_DX_O()(0); // get velocity
-    double n_obj_speed = obj.get_N_DX_O()(0); // get its normalization factor
+    double obj_speed = obj.get_DX_O().norm(); // get velocity
+    double n_obj_speed = obj.get_N_DX_O().norm(); // get its normalization factor
 
     double s1 = sigmoid(n_obj_speed-OBJ_MIN_SPEED);
     double s2 = sigmoid(OBJ_MAX_SPEED-obj_speed);
@@ -166,9 +166,10 @@ double Robot_agent::evaluate_task(const Object& obj)
   //    cout << "robot " << id << " object " << obj.get_id() << " POG size " << POG[i].rows() << " " << POG[i].cols() << endl;
         for(int j = 0; j < POG[i].cols(); j++)
         {
-            if(abs((POG[i].col(j)(0)-X_base(0))) < 1.5)
+            VectorXd col = POG[i].col(j).block(0,0,3,1);
+            if((col - X_base).norm() < 1.5)
             {
-                VectorXd col = POG[i].col(j).block(0,0,3,1);
+
            //     cout << col << " has prob " << prob << endl;
               //  cout << col.transpose() << " has prob " << Workspace_model.PDF(col - X_base) << endl;
               //  cout << (POG[i].col(j).block(0,0,3,1) - X_base).transpose() << " has prob " << Workspace_model.PDF((POG[i].col(j).block(0,0,3,1) - X_base)) << endl;
@@ -206,11 +207,12 @@ double Robot_agent::evaluate_task(const Object& obj)
     }
     else
     {
+        double s3;
     //    travel_time = obj.get_travel_time(id/ 2); //((X_targ - obj.get_X_O().block(0,0,3,1)).norm())/(obj_speed*n_obj_speed);
         n_travel_time = obj.get_N_travel_time(id/2);
 
-        obj_travel_dist = max((double)(best_pos_overall(0) - obj.get_X_O()(0)), (double)0.0); // (best_pos_overall should be == to current position in worst case if there's not been a fuck-up...)
-        obj_travel_time = obj_travel_dist/obj.get_DX_O()(0);
+        obj_travel_dist = max((best_pos_overall - obj.get_X_O()).norm(), (double)0.0); // (best_pos_overall should be == to current position in worst case if there's not been a fuck-up...)
+        obj_travel_time = obj_travel_dist/(obj.get_DX_O().norm());
 
 
 
@@ -221,7 +223,7 @@ double Robot_agent::evaluate_task(const Object& obj)
        // cost = n_travel_time*rob_travel_dist/best_prob_overall;
 
         cost = (obj_travel_time + rob_travel_dist)/best_prob_overall;
-
+    //    cost = (0.05*obj_travel_time + rob_travel_dist)/best_prob_overall;
         // apply sigmoid from upper velocity boundary
         if(!std::isnan(s2) && s2 != 0)
             cost /= s2;
@@ -233,7 +235,7 @@ double Robot_agent::evaluate_task(const Object& obj)
 
         if(rob_travel_dist > 0.25) // only apply the time of travel if the robot will have to travel...
         {
-            double s3 = sigmoid(obj_travel_time - rob_travel_time - 0.2); // add some offset to guarantee robot is there in time...
+            s3 = sigmoid(obj_travel_time - rob_travel_time - 0.2); // add some offset to guarantee robot is there in time...
             if(!std::isnan(s3) && s3 != 0)
                 cost /= s3;
             else
@@ -241,6 +243,11 @@ double Robot_agent::evaluate_task(const Object& obj)
 
         }
 
+
+ //       if(id == 0)
+  //      {
+   //         cout << "robot 0 object " << obj.get_id() << " cost " << cost << " s2 " << s2 << " p " << best_prob_overall << " s3 " << s3 << endl;
+    //    }
 /*        if((id == 1 && obj.get_id() == 3))
         {
             cout << "rob travel dist " << rob_travel_dist << " obj travel dist " <<  obj_travel_dist << endl;

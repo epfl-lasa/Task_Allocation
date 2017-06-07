@@ -5,10 +5,10 @@ const int N_ROB = 4;
 const int N_OBJ = 4;
 
 const double OBJECT_MAX_X = 3.5; // end of conveyor
+const double OBJECT_MIN_X = -1; // begin of robot workspace
 
 const int MAX_COALITION_SIZE = 2;
 
-const double OBJ_MAX_PREDICTIONTIME = 100; // effectively useless
 
 const int N_CHECKPOINTS = 2;
 const double X_checkpoint[N_CHECKPOINTS] = {0, 2};
@@ -16,7 +16,7 @@ const double X_checkpoint[N_CHECKPOINTS] = {0, 2};
 const double ROBOT_MAX_COST = 1000000; // maximum costs for the robots, this guarantees they wont allocate if the value of the objects doesn't reach higher than this.
 
 
-const double SIM_VELOCITY[] = {0.2,0.4,0.4,0.4}; // units of grid/s. only used by ball.cpp. Makes it easier for us to have it here...
+const double SIM_VELOCITY[][N_OBJ] = {{0.6,0.6,0.6,0.6},{0.0,0.0,0.0,0.0}}; // units of grid/s. only used by ball.cpp. Makes it easier for us to have it here...
 
 const double LIFT_VELOCITY = 10;
 const double X_INIT = -3;
@@ -35,6 +35,9 @@ const Object_sizes obj_sizes[][N_OBJ] = {{Object_sizes::LARGE, Object_sizes::SMA
                                                    {Object_sizes::LARGE, Object_sizes::SMALL, Object_sizes::SMALL, Object_sizes::SMALL},
                                                    {Object_sizes::SMALL, Object_sizes::SMALL, Object_sizes::SMALL, Object_sizes::SMALL}};
 
+
+const double MID_BELT = -0.625;
+const double Y_BELT = 0.3;
 
 /*const Object_sizes scenario1[] = {Object_sizes::LARGE, Object_sizes::SMALL, Object_sizes::SMALL, Object_sizes::SMALL};
 const Object_sizes scenario2[] = {Object_sizes::LARGE, Object_sizes::SMALL, Object_sizes::SMALL, Object_sizes::SMALL};
