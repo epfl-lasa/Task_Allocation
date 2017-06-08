@@ -82,7 +82,7 @@ void Task_allocation::predict_motion()
 	for(auto & obj : Objects)
     {
     //    ROS_INFO_STREAM("predicting object " << obj->get_id());
-        if((!(obj->is_done())) && (obj->get_X_O()(0) < 3.5))
+        if((!(obj->is_done())) && (obj->get_X_O()(0) < OBJECT_MAX_X))
             obj->dumb_predict_motion();
     }
 }

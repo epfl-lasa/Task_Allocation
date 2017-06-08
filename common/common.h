@@ -16,7 +16,8 @@ const double X_checkpoint[N_CHECKPOINTS] = {0, 2};
 const double ROBOT_MAX_COST = 1000000; // maximum costs for the robots, this guarantees they wont allocate if the value of the objects doesn't reach higher than this.
 
 
-const double SIM_VELOCITY[][N_OBJ] = {{0.6,0.6,0.6,0.6},{0.0,0.0,0.0,0.0}}; // units of grid/s. only used by ball.cpp. Makes it easier for us to have it here...
+const double SIM_VELOCITY[][N_OBJ] = {{0.6,0.6,0.6,0.6},
+                                      {0.0,0.0,0.0,0.0}}; // units of grid/s. only used by ball.cpp. Makes it easier for us to have it here...
 
 const double LIFT_VELOCITY = 10;
 const double X_INIT = -3;

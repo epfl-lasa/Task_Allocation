@@ -183,8 +183,10 @@ void Object::dumb_predict_motion()
     */
 
   //  cout << "dx " << DX_O.transpose() << " XO " << X_O.transpose() << endl;
-    if((DX_O(0) > 0.0 && X_O(0) < OBJECT_MAX_X) || (DX_O(0) < 0 && X_O(1) < OBJECT_MIN_X) || (DX_O(1) < 0 && X_O(1) > 0) || (DX_O(1) > 0 && X_O(1) < 0))
+    if((DX_O(0) > 0.0 && X_O(0) < OBJECT_MAX_X) || (DX_O(0) < 0 && X_O(0) < OBJECT_MIN_X) || (DX_O(1) < 0 && X_O(1) > 0) || (DX_O(1) > 0 && X_O(1) < 0))
     {
+      //  cout << "dx " << DX_O.transpose() << " XO " << X_O.transpose() << endl;
+
         double dist = 0;// = OBJECT_MAX_X - X_O(0);
         int frames = 0;// = dist/(DX_O(0)*dt);
         if(DX_O(0) != 0)

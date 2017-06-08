@@ -386,6 +386,7 @@ int main(int argc, char **argv) {
             {
                 obj_pos[i].position.x = obj_pos[i].position.x + r.expectedCycleTime().toSec()*SIM_VELOCITY[0][i];
                 obj_pos[i].position.y = obj_pos[i].position.y + r.expectedCycleTime().toSec()*SIM_VELOCITY[1][i];
+       //         cout << "x y " << i << " "<< SIM_VELOCITY[0][i] << " " << SIM_VELOCITY[1][i]<<endl;
                 ROS_INFO_STREAM( "moved object " << i << " " << r.expectedCycleTime().toSec()*SIM_VELOCITY[0][i] << " in " << r.expectedCycleTime().toSec() << " seconds " << endl);
             }
 
@@ -438,10 +439,7 @@ int main(int argc, char **argv) {
                         Object = obj_pos[0];
                     }
                 }
-
             }
-
-
         }
 		if (COM==Com_Ball_INIT)
 		{/*
@@ -505,9 +503,6 @@ int main(int argc, char **argv) {
 			Object_right.orientation.y=0;
 			Object_right.orientation.z=0;
 			Object_right.orientation.w=1;
-
-
-
 
             switch(SCENARIO)
             {
@@ -607,22 +602,12 @@ int main(int argc, char **argv) {
 		Object_acc.orientation.x=0;					Object_acc.orientation.y=0;					Object_acc.orientation.z=0;
 		Object_acc.orientation.w=0;
 
-    //	chatter_pub.publish(Object); // removed pat
         chatter_pub.publish(obj_pos[0]);
 		chatter_pub_f.publish(Object_f);
 		chatter_pub_vel_f.publish(Object_vel);
 		chatter_pub_acc_f.publish(Object_acc);
         chatter_pub_object_left.publish(Object_left);
         chatter_pub_object_right.publish(Object_right);
-
-
-		// patrick  make our objects here... hard-coded 2 in front, big in middle, one in back
-
-
-
-
-		// all the same atm, but writing like this lets us change them... */
-
 
 
         for(int i = 0; i < N_OBJ; i++)

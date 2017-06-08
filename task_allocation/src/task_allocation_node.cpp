@@ -105,11 +105,14 @@ int main(int argc, char **argv) {
             Task_allocator->compute_normalized_velocities();
             Task_allocator->compute_normalized_travel_times();
     //        ROS_INFO_STREAM("predicting motion" << endl);
+   //         cout << "did some useless stuff" << endl;
             Task_allocator->predict_motion();
+     //       cout << "predicted motion" << endl;
    //         ROS_INFO_STREAM("updating robot business" << endl);
    //         Task_allocator->update_rob_business();
    //         ROS_INFO_STREAM("allocating" << endl);
             Task_allocator->allocate();
+    //        cout << "allocated" << endl;
    //         ROS_INFO_STREAM("computing intercepts" << endl);
             Task_allocator->compute_intercepts();
    //         ROS_INFO_STREAM("computing coordination" << endl);
@@ -314,7 +317,7 @@ int main(int argc, char **argv) {
 
             clock_t end_pub = clock();
    //          cout << "time for the allocation loop is " << ((double)(end-begin))/CLOCKS_PER_SEC << " time for pub is " << ((double)(end_pub - end))/CLOCKS_PER_SEC << " total is " << ((double)(end_pub - begin))/CLOCKS_PER_SEC << endl;
-  //          cout << ((double)CLOCKS_PER_SEC)/((double)(end_pub-begin)) << endl;
+            cout << ((double)CLOCKS_PER_SEC)/((double)(end_pub-begin)) << endl;
 
       /*      for(auto & rob : Robots)
             {
