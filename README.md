@@ -1,20 +1,18 @@
-
-
-To fix the illustration:
-
-You need to change the position of the robots and the object with respect to eachother and the world-frame.
-Open basic_shapes.cpp and change double B_t_U=; then open "kuka_bimanual_lwr_lasa.urdf.xacro" and change the position of the robots!
-
 Running the simulation:
 
-####Bringup simulation
+####Launch ros
 ```
-roslaunch kuka_lwr_bringup bimanual_simulation.launch --screen
+roscore
 ```
 
-##To move the robots! Run the fri_iiwa_ros interfece on both pcs 
+####Run task allocation
 ```
-rosrun fri_iiwa_ros fri_iiwa_example_ros
+rosrun task_allocation_node task_allocation_node
+```
+
+####Multi-arm
+```
+roslaunch kuka_lwr_bringup multiarm_simulation.launch
 ```
 ####Run robot_simulator module from ~/catkin_ws/src/robot-toolkit
 ```
@@ -34,3 +32,12 @@ rosrun rqt_gui rqt_gui --perspective-file  /home/sina/Dropbox/Sinas_stuff/catkin
 >> catch
 ```
 
+
+
+Task allocation "starts" at "init" where it receives info from robot_simulator.
+
+
+
+#Run a different scenario: modify "Scenario" to ONE, TWO or THREE in common.h
+
+#Object scenarios are placed with respect to object 0 currently...
