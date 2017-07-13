@@ -51,17 +51,18 @@ Constants from the report are kind of magic numbers. Should be moved to common.h
 
 Task allocation node has while loop so that it "starts" at "init" where it receives info from robot_simulator.
 
+All task allocation code sits in /Task_allocation, except for some variables in /common . This is because the packages were doing shit when trying to include a file (common.h) in multiple packages.
+Objects positions etc sit in ball.cpp
 
 ## Scenarios
-Object color is defined in ball.cpp
-
 ### common.h
 To run a different scenario: modify SCENARIO to Object_scenarios::ONE, TWO or THREE.
 Objects velocities are defined in sim_velocities[2][N_obj]. First one is X, second is Y. For each object.
 Objects can be small or large, which defines the size of the cube and a few other things (number of grasping positions etc)
+
+### ball.cpp
+Object colors and scenarios are defined here. 
 Object scenarios are placed with respect to object 0 currently...
-
-
 
 ## Objects
 Evaluates own trajectory and value. Uses "dumb_predict_motion()". Position gets assigned by callback.
