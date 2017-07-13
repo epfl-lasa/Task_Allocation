@@ -1,11 +1,16 @@
-Running the simulation:
+# Task allocation
+This code goes with the Multi-robot arm system task allocation project.
+It simulates multiple objects on a conveyor belt and robots placed along it should take those objects off the conveyor.
+
+
+# Running the simulation:
 
 Launch ros
 ```
 roscore
 ```
 
-#Run task allocation
+Run task allocation
 ```
 rosrun task_allocation_node task_allocation_node
 ```
@@ -33,12 +38,25 @@ Instructions same as always:
 >> catch
 ```
 
+Start/stop command added which toggles the run mode (starts/stops the task allocation and object motion).
+
+```
+>> stop 
+```
 
 
-Task allocation "starts" at "init" where it receives info from robot_simulator.
+# Code info
+Task allocation node has while loop so that it "starts" at "init" where it receives info from robot_simulator.
 
 
+## Scenarios
 
-#Run a different scenario: modify "Scenario" to ONE, TWO or THREE in common.h
+To run a different scenario: modify "Scenario" to ONE, TWO or THREE in common.h.
+Object scenarios are placed with respect to object 0 currently...
 
-#Object scenarios are placed with respect to object 0 currently...
+## Objects
+Evaluates own trajectory and value. Uses "dumb_predict_motion()". Position gets assigned by callback.
+
+## Robots
+Evaluates cost of objects. Position gets assigned by callbacks (!)
+
